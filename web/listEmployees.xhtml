@@ -1,0 +1,101 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <h:form id="tableEmployeesForm">
+        <h:panelGrid columns="7" style="margin-bottom:10px" cellpadding="5" >
+
+            <h:outputText value="Type something" />
+            <p:inputText value="#{employeeController.searchText}"/>
+            <p:selectOneMenu id="searchOption" value="#{employeeController.searchType}" style="width:125px">
+                <f:selectItem itemLabel="Employee Name" itemValue="1" />
+                <f:selectItem itemLabel="Employee ID" itemValue="2" />
+                <f:selectItem itemLabel="Service" itemValue="3" />
+                <f:selectItem itemLabel="Position" itemValue="4" />
+            </p:selectOneMenu>
+            <h:outputText value="Status" />
+            <p:selectOneMenu id="statusOption" value="#{employeeController.status}" style="width:125px">
+                <f:selectItem itemLabel="Active" itemValue="A" />
+                <f:selectItem itemLabel="Terminated" itemValue="T" />
+                <f:selectItem itemLabel="Both" itemValue="B" />
+            </p:selectOneMenu>
+            <p:commandButton value="Search" id="searchButton" icon="ui-icon-search" 
+                            ajax="true"
+                            update=":tabViewMain:mainBody"
+                            actionListener="#{employeeController.searchEmployee}"
+                            onclick="showTab(args,2)"/>
+
+            <f:facet name="footer">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" />
+            </f:facet>
+            <h:outputScript target="head">
+                function showTab(args, index){
+                    if(args.notValid){
+                        return;
+                    }
+                    PF('tabViewMain').select(index);
+                }
+            </h:outputScript>
+        </h:panelGrid>
+
+        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="tablePanel">
+            <p:dataTable var="employee" value="#{employeeController.items}" 
+                         id="employeesTable"
+                         rows="10"
+                         paginator="true">
+                <p:column width="10%">
+                    <p:commandButton value="Select" id="selectEmployee" 
+                                 ajax="true"
+                                 onclick="showTab(args,2)"
+                                 actionListener="#{employeeController.setCurrentTabIndex(1)}"
+                                update=":tabViewMain:mainBody">
+                        <f:setPropertyActionListener value="#{employee}"
+                                                     target="#{employeeController.selected}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column width="10%">
+                    <f:facet name="header">
+                        <h:outputText value="Employee ID" />
+                    </f:facet>
+                    <h:outputText value="#{employee.employeePK.idNumber}" />
+                </p:column>
+                <p:column width="20%">
+                    <f:facet name="header">
+                        <h:outputText value="Employee Surname" />
+                    </f:facet>
+                    <h:outputText value="#{employee.surname}" />
+                </p:column>
+                <p:column width="20%">
+                    <f:facet name="header">
+                        <h:outputText value="Employee Name" />
+                    </f:facet>
+                    <h:outputText value="#{employee.firstName}" />
+                </p:column>
+                <p:column width="20%">
+                    <f:facet name="header">
+                        <h:outputText value="Location" />
+                    </f:facet>
+                    <h:outputText value="#{employee.payrollCollection[0].accountNumber.accountDescription}" />
+                </p:column>
+                <p:column width="20%">
+                    <f:facet name="header">
+                        <h:outputText value="Employment Type" />
+                    </f:facet>
+                    <h:outputText value="#{employee.payrollCollection[0].employmentType.employmentTypeDescription}" />
+                </p:column>
+                //more columns
+            </p:dataTable>
+
+<!--            <h:panelGroup style="display:block; text-align:center" >
+                <p:commandButton value="Select" id="selectEmployee" 
+                                 ajax="true"
+                                 onclick="showTab(args,1)"
+                                update=":tabViewMain:mainBody"/>
+            </h:panelGroup>-->
+        </h:panelGrid>
+    </h:form>
+
+</ui:composition>

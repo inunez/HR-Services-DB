@@ -1,0 +1,127 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+          
+    <h:form id="mainBody">
+        <p:growl id="msgs" showDetail="true" />
+        <p:dashboard id="board" model="#{dashboardView.model}">
+
+            <p:ajax event="reorder" listener="#{dashboardView.handleReorder}" update="msgs" />
+
+            <c:set var="employeeSelected" value="#{employeeController.selected}"/>
+
+            <p:panel id="personalData" header="Personal Data">
+                <div class="panelPersonalData">
+                    <div>
+                        <div class="photoBox"/>
+                        <div class="rowHIName">
+                            <h:outputText value="Status:"/>
+                        </div>
+                        <div class="rowHIValue" id="#{employeeSelected.status1.description}">
+                            <h:outputText value="#{employeeSelected.status1.description}"/>
+                        </div>
+                        <div class="rowHIName">
+                            <h:outputText value="ID Number:"/>
+                        </div>
+                        <div class="rowHIValue">
+                            <h:outputText value="#{employeeSelected.employeePK.idNumber}"/>
+                        </div>
+                        <div class="rowHIName">
+                            <h:outputText value="Name:"/>
+                        </div>
+                        <div class="rowHIValue">
+                            <h:outputText value="#{employeeSelected.firstName}"/>
+                        </div>
+                        <div class="rowHIName">
+                            <h:outputText value="Surname:"/>
+                        </div>
+                        <div class="rowHIValue">
+                            <h:outputText value="#{employeeSelected.surname}" />
+                        </div>
+                        <div class="rowHIName">
+                            <h:outputText value="Account:"/>
+                        </div>
+                        <div class="rowHIValue">
+                            <h:outputText value="#{employeeSelected.payrollCollection[0].accountNumber.accountDescription}" />
+                        </div>
+
+                    </div>
+                    <div style="clear: left">
+                        <div class="rowLOName">
+                            <h:outputText value="Hire Date:" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.hireDate}">
+                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                            </h:outputText>
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Reports to:" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value= "#{employeeSelected.reportsToPositionId.employeeCollection[0].firstName} 
+                                          #{employeeSelected.reportsToPositionId.employeeCollection[0].surname}" />
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Home Address:" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.homeAddress}" />
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Suburb" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.suburb}" />
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Post Code / State" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.postcode} / #{employeeSelected.stateCode.stateCode}" />
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Email" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.businessEmail} " />
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Personal Email" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.personalEmail} " />
+                        </div>
+                    </div>
+                </div>
+            </p:panel>
+
+            <p:panel id="position" header="Position Information">
+                <h:outputText value="Finance Content" />
+                <div class="rowHIName">
+                    <h:outputText value="ID Number:"/>
+                </div>
+                <div class="rowHIValue">
+                    <h:outputText value="#{employeeSelected.employeePK.idNumber}"/>
+                </div>
+            </p:panel>
+
+            <p:panel id="earning" header="Earnings">
+                <h:outputText value="Lifestyle Content"  />
+            </p:panel>
+
+            <p:panel id="leave" header="Leaves">
+                <h:outputText value="Weather Content" />
+            </p:panel>
+
+            <p:panel id="policeCheckVisa" header="Police Check - Visa">
+                <h:outputText value="Politics Content" />
+            </p:panel>
+
+        </p:dashboard>
+    </h:form>
+</ui:composition>
