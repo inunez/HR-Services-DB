@@ -162,6 +162,9 @@ public class Payroll implements Serializable {
     }
 
     public String getBaseRateCode() {
+        if(baseRateCode == null){
+            baseRateCode = "N/A";
+        }
         return baseRateCode;
     }
 
@@ -426,4 +429,5 @@ public class Payroll implements Serializable {
         return "entities.Payroll[ payrollPK=" + payrollPK + " ]";
     }
     
-}
+} 
+
