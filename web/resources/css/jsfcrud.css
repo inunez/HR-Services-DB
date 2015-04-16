@@ -111,6 +111,23 @@ tr.jsfcrud_even_row {
     margin: 0px;
 }
 
+.rowHIName2{
+    background-color: #99ff99;
+    width: 40%;
+    color: #000000;
+    float: left;
+    margin-top: 5px;
+    /*font-size: large;*/
+}
+
+.rowHIValue2{
+    background-color: #99ff99;
+    width: 60%;
+    color: #000000;
+    float: left;
+    margin-top: 5px;
+}
+
 .photoBox{
     width: 25%;
     height: 100px;
@@ -131,6 +148,18 @@ tr.jsfcrud_even_row {
     position: relative;
 }*/
 
+.panelPositionData{
+    width: 500px; 
+    height: 250px;
+    /*position: relative;*/
+}
+
+.panelPayrollData{
+    width: 400px; 
+    height: 250px;
+    /*position: relative;*/
+}
+
 #board{
     /*width: 200%;*/
 }
@@ -143,5 +172,6 @@ tr.jsfcrud_even_row {
 #Active{
     background-color: green;
     color: black;
-}
+} 
+
 
