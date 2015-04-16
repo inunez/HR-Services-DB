@@ -46,7 +46,7 @@
                             <h:outputText value="Account:"/>
                         </div>
                         <div class="rowHIValue">
-                            <h:outputText value="#{employeeSelected.payrollCollection[0].accountNumber.accountDescription}" />
+                            <h:outputText value="#{employeeSelected.payrollCollection[0].accountNumber.accountNumber} - #{employeeSelected.payrollCollection[0].accountNumber.accountDescription}"/>
                         </div>
 
                     </div>
@@ -101,12 +101,52 @@
             </p:panel>
 
             <p:panel id="position" header="Position Information">
-                <h:outputText value="Finance Content" />
-                <div class="rowHIName">
-                    <h:outputText value="ID Number:"/>
-                </div>
-                <div class="rowHIValue">
-                    <h:outputText value="#{employeeSelected.employeePK.idNumber}"/>
+                <div class="panelPositionData">
+                    <div class="rowLOName">
+                        <h:outputText value="Position ID:"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.positionId.positionId}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Position Title:"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.positionId.positionTitle}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Classification:"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.classificationId.classificationDescription}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Reports To:"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.reportsToPositionId.positionTitle}"/>
+                    </div>
+                    <div class="rowHIName2">
+                        <h:outputText value="Name:"/>
+                    </div>
+                    <div class="rowHIValue2">
+                        <h:outputText value="#{employeeSelected.reportsToPositionId.employeeCollection[0].firstName} 
+                                      #{employeeSelected.reportsToPositionId.employeeCollection[0].surname}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Department:"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.departmentId.departmentId} - 
+                                               #{employeeSelected.departmentId.departmentDescription}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Award"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.awardId.awardCode} - 
+                                               #{employeeSelected.awardId.awardDescription}"/>
+                    </div>
                 </div>
             </p:panel>
 
@@ -122,6 +162,41 @@
                 <h:outputText value="Politics Content" />
             </p:panel>
 
+            <p:panel id="payroll" header="Payroll Details">
+                <div class="panelPayrollData">
+                    <div class="rowHIName2">
+                        <h:outputText value="Position:"/>
+                    </div>
+                    <div class="rowHIValue2">
+                        <h:outputText value="#{employeeSelected.positionId.positionTitle}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Employment Type"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.payrollCollection[0].employmentType.employmentTypeDescription}"/>
+                    </div>
+                    <div class="rowLOName">
+                        <h:outputText value="Rate"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="$#{employeeSelected.payrollCollection[0].baseRate}"/>
+                    </div>                    
+                    <div class="rowLOName">
+                        <h:outputText value="Base Hours"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.payrollCollection[0].baseHoursAmount}"/>
+                    </div>
+                    
+                    <div class="rowLOName">
+                        <h:outputText value="Classification"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.payrollCollection[0].baseRateCode}"/>
+                    </div>
+                </div>
+            </p:panel>
         </p:dashboard>
     </h:form>
 </ui:composition>
