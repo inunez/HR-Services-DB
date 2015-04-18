@@ -160,6 +160,24 @@ tr.jsfcrud_even_row {
     /*position: relative;*/
 }
 
+.panelEarningData{
+    width: 400px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.panelPoliceCheckData{
+    width: 400px; 
+    height: 100px;
+    /*position: relative;*/
+}
+
+.panelLeaveData{
+    width: 200px; 
+    height: 100px;
+    /*position: relative;*/
+}
+
 #board{
     /*width: 200%;*/
 }
@@ -175,3 +193,9 @@ tr.jsfcrud_even_row {
 } 
 
 
+.pf-dashboard-columnp:nth-child(1) {
+  width: 400px;
+}
+.pf-dashboard-columnp:nth-child(2) {
+  width: 500px;
+}

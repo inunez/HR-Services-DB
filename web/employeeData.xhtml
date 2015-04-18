@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-          
+    
     <h:form id="mainBody">
         <p:growl id="msgs" showDetail="true" />
         <p:dashboard id="board" model="#{dashboardView.model}">
@@ -150,18 +150,6 @@
                 </div>
             </p:panel>
 
-            <p:panel id="earning" header="Earnings">
-                <h:outputText value="Lifestyle Content"  />
-            </p:panel>
-
-            <p:panel id="leave" header="Leaves">
-                <h:outputText value="Weather Content" />
-            </p:panel>
-
-            <p:panel id="policeCheckVisa" header="Police Check - Visa">
-                <h:outputText value="Politics Content" />
-            </p:panel>
-
             <p:panel id="payroll" header="Payroll Details">
                 <div class="panelPayrollData">
                     <div class="rowHIName2">
@@ -197,6 +185,36 @@
                     </div>
                 </div>
             </p:panel>
+            
+            <p:panel id="earning" header="Earnings">
+                <div class="panelEarningData">
+                    <p:dataTable var="employeeEarning" value="#{employeeSelected.earningCollection}" 
+                                 scrollable="true" scrollHeight="105">
+                        <p:column headerText="Period Date">
+                            <h:outputText value="#{employeeEarning.periodStartDate}">
+                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <f:facet name="footer">
+                            <h:outputText value="#{employeeSelected.earningCollection.size()} items"/>
+                        </f:facet>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+
+            <p:panel id="leave" header="Leaves">
+                <div class="panelLeaveData">
+                    
+                </div>
+            </p:panel>
+
+            <p:panel id="policeCheck" header="Police Check">
+                <div class="panelPoliceCheckData">
+                    
+                </div>
+            </p:panel>
+
+            
         </p:dashboard>
     </h:form>
 </ui:composition>
