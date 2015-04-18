@@ -100,7 +100,7 @@ public class Visa implements Serializable {
     private Country visaCountry;
 //    @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)
     @JoinColumns({
-    @JoinColumn(name = "employee_status", referencedColumnName = "status"),
+    @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
     @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
     @ManyToOne(optional = false)
     private Employee employee;
@@ -120,8 +120,8 @@ public class Visa implements Serializable {
         this.ynPhoneCallDone = ynPhoneCallDone;
     }
 
-    public Visa(String idNumber, String passportNumber, Date updateDate) {
-        this.visaPK = new VisaPK(idNumber, passportNumber, updateDate);
+    public Visa(String idNumber, String status, String passportNumber, Date updateDate) {
+        this.visaPK = new VisaPK(idNumber, status, passportNumber, updateDate);
     }
 
     public VisaPK getVisaPK() {

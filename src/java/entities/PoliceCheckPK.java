@@ -28,6 +28,11 @@ public class PoliceCheckPK implements Serializable {
     private String idNumber;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 1)
+    @Column(name = "status")
+    private String status;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "update_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
@@ -35,8 +40,9 @@ public class PoliceCheckPK implements Serializable {
     public PoliceCheckPK() {
     }
 
-    public PoliceCheckPK(String idNumber, Date updateDate) {
+    public PoliceCheckPK(String idNumber, String status, Date updateDate) {
         this.idNumber = idNumber;
+        this.status = status;
         this.updateDate = updateDate;
     }
 
@@ -48,6 +54,14 @@ public class PoliceCheckPK implements Serializable {
         this.idNumber = idNumber;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
     public Date getUpdateDate() {
         return updateDate;
     }
@@ -60,6 +74,7 @@ public class PoliceCheckPK implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (idNumber != null ? idNumber.hashCode() : 0);
+        hash += (status != null ? status.hashCode() : 0);
         hash += (updateDate != null ? updateDate.hashCode() : 0);
         return hash;
     }
@@ -74,6 +89,9 @@ public class PoliceCheckPK implements Serializable {
         if ((this.idNumber == null && other.idNumber != null) || (this.idNumber != null && !this.idNumber.equals(other.idNumber))) {
             return false;
         }
+        if ((this.status == null && other.status != null) || (this.status != null && !this.status.equals(other.status))) {
+            return false;
+        }
         if ((this.updateDate == null && other.updateDate != null) || (this.updateDate != null && !this.updateDate.equals(other.updateDate))) {
             return false;
         }
@@ -82,7 +100,7 @@ public class PoliceCheckPK implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.PoliceCheckPK[ idNumber=" + idNumber + ", updateDate=" + updateDate + " ]";
+        return "entities.PoliceCheckPK[ idNumber=" + idNumber + ", status=" + status + ", updateDate=" + updateDate + " ]";
     }
     
 }

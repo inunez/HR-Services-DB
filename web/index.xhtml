@@ -3,13 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>"#{bundle.AppName}"</title>
         <h:outputStylesheet library="css" name="jsfcrud.css"/>
-        <!--<h:outputScript library="js" name="jsfcrud.js"/>-->
     </h:head>
 
     <h:body>
@@ -17,11 +15,12 @@
         <p:growl id="growl" life="3000" />
         
         <p:layout fullPage="true">
+
             <p:layoutUnit position="center" size="80" header="#{bundle.AppName}">
-                
+
                 <p:tabView dynamic="true" cache="true" id="tabViewMain" activeIndex="#{employeeController.currentTabIndex}">
                     <p:tab title="#{bundle.Home}">
-                        
+
                     </p:tab>
                     <p:tab title="#{bundle.Employee}" disabled="#{!employeeController.employeeSelected}" >
                         <ui:include src="/employeeData.xhtml" />
@@ -32,9 +31,10 @@
                 </p:tabView>
             </p:layoutUnit>
 
-            <p:layoutUnit position="south" size="60">
+            <p:layoutUnit position="south" size="20">
                 <p>footer</p>
             </p:layoutUnit>
+
         </p:layout>
 
     </h:body>

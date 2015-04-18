@@ -96,6 +96,24 @@
                         <div class="rowLOValue">
                             <h:outputText value="#{employeeSelected.personalEmail} " />
                         </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Police Check" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.policeCheckCollection[0].expiryDate}">
+                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                            </h:outputText>
+                            <h:outputText value=" Ref.:#{employeeSelected.policeCheckCollection[0].precedaComment} "/>
+                        </div>
+                        <div class="rowLOName">
+                            <h:outputText value="Visa Details" />
+                        </div>
+                        <div class="rowLOValue">
+                            <h:outputText value="#{employeeSelected.visaCollection[0].visaExpiryDate}">
+                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                            </h:outputText>
+                            <h:outputText value=" Ref.:#{employeeSelected.visaCollection[0].precedaComment1} "/>
+                        </div>
                     </div>
                 </div>
             </p:panel>
@@ -214,6 +232,11 @@
                 </div>
             </p:panel>
 
+            <p:panel id="visas" header="Visa Details">
+                <div class="panelPoliceCheckData">
+                    
+                </div>
+            </p:panel>
             
         </p:dashboard>
     </h:form>

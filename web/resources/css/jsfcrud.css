@@ -138,25 +138,19 @@ tr.jsfcrud_even_row {
 
 .panelPersonalData{
     width: 500px; 
-    height: 250px;
+    height: 300px;
     /*position: relative;*/
 }
 
-/*#personalData{
-    width: 100%; 
-    height: 250px;
-    position: relative;
-}*/
-
 .panelPositionData{
     width: 500px; 
-    height: 250px;
+    height: 150px;
     /*position: relative;*/
 }
 
 .panelPayrollData{
     width: 400px; 
-    height: 250px;
+    height: 120px;
     /*position: relative;*/
 }
 
@@ -168,13 +162,13 @@ tr.jsfcrud_even_row {
 
 .panelPoliceCheckData{
     width: 400px; 
-    height: 100px;
+    height: 80px;
     /*position: relative;*/
 }
 
 .panelLeaveData{
-    width: 200px; 
-    height: 100px;
+    width: 250px; 
+    height: 120px;
     /*position: relative;*/
 }
 
@@ -192,10 +186,7 @@ tr.jsfcrud_even_row {
     color: black;
 } 
 
-
-.pf-dashboard-columnp:nth-child(1) {
+/*.ui-dashboard-column:nth-child(1) {
   width: 400px;
-}
-.pf-dashboard-columnp:nth-child(2) {
-  width: 500px;
-}
+  height: 200px;
+}*/

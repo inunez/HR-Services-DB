@@ -100,11 +100,11 @@ public class PoliceCheck implements Serializable {
     @Size(max = 255)
     @Column(name = "prm_status")
     private String prmStatus;
-//    @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)
     @JoinColumns({
-    @JoinColumn(name = "employee_status", referencedColumnName = "status"),
+    @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
     @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
     @ManyToOne(optional = false)
+    
     private Employee employee;
 
     public PoliceCheck() {
@@ -124,8 +124,8 @@ public class PoliceCheck implements Serializable {
         this.ynPhoneCallDone = ynPhoneCallDone;
     }
 
-    public PoliceCheck(String idNumber, Date updateDate) {
-        this.policeCheckPK = new PoliceCheckPK(idNumber, updateDate);
+    public PoliceCheck(String idNumber, String status, Date updateDate) {
+        this.policeCheckPK = new PoliceCheckPK(idNumber, status, updateDate);
     }
 
     public PoliceCheckPK getPoliceCheckPK() {

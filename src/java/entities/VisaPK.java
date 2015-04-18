@@ -28,6 +28,11 @@ public class VisaPK implements Serializable {
     private String idNumber;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 1)
+    @Column(name = "status")
+    private String status;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 20)
     @Column(name = "passport_number")
     private String passportNumber;
@@ -40,10 +45,11 @@ public class VisaPK implements Serializable {
     public VisaPK() {
     }
 
-    public VisaPK(String idNumber, String passportNumber, Date updateDate) {
+    public VisaPK(String idNumber, String status, String passportNumber, Date updateDate) {
         this.idNumber = idNumber;
         this.passportNumber = passportNumber;
         this.updateDate = updateDate;
+        this.status = status;
     }
 
     public String getIdNumber() {
@@ -54,6 +60,14 @@ public class VisaPK implements Serializable {
         this.idNumber = idNumber;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
     public String getPassportNumber() {
         return passportNumber;
     }
@@ -74,6 +88,7 @@ public class VisaPK implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (idNumber != null ? idNumber.hashCode() : 0);
+        hash += (status != null ? status.hashCode() : 0);
         hash += (passportNumber != null ? passportNumber.hashCode() : 0);
         hash += (updateDate != null ? updateDate.hashCode() : 0);
         return hash;
@@ -89,6 +104,9 @@ public class VisaPK implements Serializable {
         if ((this.idNumber == null && other.idNumber != null) || (this.idNumber != null && !this.idNumber.equals(other.idNumber))) {
             return false;
         }
+        if ((this.status == null && other.status != null) || (this.status != null && !this.status.equals(other.status))) {
+            return false;
+        }
         if ((this.passportNumber == null && other.passportNumber != null) || (this.passportNumber != null && !this.passportNumber.equals(other.passportNumber))) {
             return false;
         }
@@ -100,7 +118,7 @@ public class VisaPK implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.VisaPK[ idNumber=" + idNumber + ", passportNumber=" + passportNumber + ", updateDate=" + updateDate + " ]";
+        return "entities.VisaPK[ idNumber=" + idNumber + ", status=" + status + ", passportNumber=" + passportNumber + ", updateDate=" + updateDate + " ]";
     }
     
 }
