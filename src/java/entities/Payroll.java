@@ -162,7 +162,7 @@ public class Payroll implements Serializable {
     }
 
     public String getBaseRateCode() {
-        if(baseRateCode == null){
+        if(baseRateCode == null || "".equals(baseRateCode)){
             baseRateCode = "N/A";
         }
         return baseRateCode;
