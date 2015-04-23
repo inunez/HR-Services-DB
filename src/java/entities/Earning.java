@@ -154,7 +154,7 @@ public class Earning implements Serializable {
     @ManyToOne
     private Award awardCode;
     @JoinColumns({
-        @JoinColumn(name = "employee_status", referencedColumnName = "status"),
+        @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
         @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
     @ManyToOne(optional = false)
     private Employee employee;

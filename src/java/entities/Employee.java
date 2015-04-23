@@ -6,7 +6,6 @@
 package entities;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -52,6 +51,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Employee.findByMobilePhone", query = "SELECT e FROM Employee e WHERE e.mobilePhone = :mobilePhone"),
     @NamedQuery(name = "Employee.findByBusinessEmail", query = "SELECT e FROM Employee e WHERE e.businessEmail = :businessEmail"),
     @NamedQuery(name = "Employee.findByPersonalEmail", query = "SELECT e FROM Employee e WHERE e.personalEmail = :personalEmail"),
+    @NamedQuery(name = "Employee.findEarningDistinct", query = "SELECT DISTINCT e.payDate, e.taxableGross, e.taxAmount, e.netPay FROM Earning e  WHERE e.earningPK.idNumber = :idNumber ORDER BY e.payDate DESC"),
     @NamedQuery(name = "Employee.findByProbationDueDate", query = "SELECT e FROM Employee e WHERE e.probationDueDate = :probationDueDate")})
 public class Employee implements Serializable {
     
@@ -132,20 +132,21 @@ public class Employee implements Serializable {
     @JoinColumn(name = "term_reason", referencedColumnName = "term_reason")
     @ManyToOne
     private TerminationReason termReason;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<EarningLeave> earningLeaveCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Earning> earningCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    private Collection<VisaComment> visaCommentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<EarningSummary> earningSummaryCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<PoliceCheck> policeCheckCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<PoliceCheckComment> policeCheckCommentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Visa> visaCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
-    private Collection<PoliceCheck> policeCheckCollection;
+    private Collection<VisaComment> visaCommentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Payroll> payrollCollection;
 
@@ -458,7 +459,11 @@ public class Employee implements Serializable {
     public void setPayrollCollection(Collection<Payroll> payrollCollection) {
         this.payrollCollection = payrollCollection;
     }
-
+    
+    public Collection<Earning> getEarningCollectionDistinct() {
+        return (Collection<Earning>) earningCollection.stream().distinct();
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

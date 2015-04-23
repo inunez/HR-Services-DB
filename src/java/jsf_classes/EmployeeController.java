@@ -1,11 +1,17 @@
 package jsf_classes;
 
+import entities.Earning;
 import entities.Employee;
+import entities.PoliceCheck;
 import jsf_classes.util.JsfUtil;
 import jsf_classes.util.JsfUtil.PersistAction;
 import session_beans.EmployeeFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -312,4 +318,20 @@ public class EmployeeController implements Serializable {
         this.searchType = searchType;
     }
     
+    public Collection<Earning> getEarningDistinctCollection() {
+        return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
+    }
+    
+    public ArrayList<PoliceCheck> getPoliceCheckList() {
+        ArrayList<PoliceCheck> policeCheckList;
+        policeCheckList = new ArrayList<>(selected.getPoliceCheckCollection());
+
+        Comparator<PoliceCheck> dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
+        Collections.sort(policeCheckList, dateComparator);
+        return policeCheckList;
+    }
+    
 }
+
+
+                        

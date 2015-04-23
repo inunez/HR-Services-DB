@@ -101,7 +101,7 @@
                         </div>
                         <div class="rowLOValue">
                             <h:outputText value="#{employeeSelected.policeCheckCollection[0].expiryDate}">
-                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                                <f:convertDateTime pattern="dd/MM/yy"/>
                             </h:outputText>
                             <h:outputText value=" Ref.:#{employeeSelected.policeCheckCollection[0].precedaComment} "/>
                         </div>
@@ -110,7 +110,7 @@
                         </div>
                         <div class="rowLOValue">
                             <h:outputText value="#{employeeSelected.visaCollection[0].visaExpiryDate}">
-                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                                <f:convertDateTime pattern="dd/MM/yy"/>
                             </h:outputText>
                             <h:outputText value=" Ref.:#{employeeSelected.visaCollection[0].precedaComment1} "/>
                         </div>
@@ -167,6 +167,28 @@
                     </div>
                 </div>
             </p:panel>
+            
+            <p:panel id="leave" header="Leaves">
+                <div class="panelLeaveData">
+                    <p:dataTable var="leave" value="#{employeeSelected.earningLeaveCollection}" 
+                                 scrollable="true" scrollHeight="80">
+                        <p:column headerText="Classification" width="30%" sortBy="#{leave.earningLeavePK.classification}" sortable="true">
+                            <h:outputText value="#{leave.earningLeavePK.classification}"/>
+                        </p:column>
+                        <p:column headerText="Accrual Method" width="30%">
+                            <h:outputText value="#{leave.accrualMethod}"/>
+                        </p:column>
+                        <p:column headerText="Up to Date" width="20%">
+                            <h:outputText value="#{leave.earningLeavePK.dateAccruedTo}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Balance" width="20%">
+                            <h:outputText value="#{leave.totalEntitlement}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
 
             <p:panel id="payroll" header="Payroll Details">
                 <div class="panelPayrollData">
@@ -194,7 +216,6 @@
                     <div class="rowLOValue">
                         <h:outputText value="#{employeeSelected.payrollCollection[0].baseHoursAmount}"/>
                     </div>
-                    
                     <div class="rowLOName">
                         <h:outputText value="Classification"/>
                     </div>
@@ -206,34 +227,120 @@
             
             <p:panel id="earning" header="Earnings">
                 <div class="panelEarningData">
-                    <p:dataTable var="employeeEarning" value="#{employeeSelected.earningCollection}" 
-                                 scrollable="true" scrollHeight="105">
+                    <c:set var="employeeEarnings" value="#{employeeController.getEarningDistinctCollection()}"/>
+                    <p:dataTable var="employeeEarning" value="#{employeeEarnings}" 
+                                 scrollable="true" scrollHeight="170">
                         <p:column headerText="Period Date">
-                            <h:outputText value="#{employeeEarning.periodStartDate}">
-                                <f:convertDateTime pattern="dd MMMM yyyy"/>
+                            <h:outputText value="#{employeeEarning[0]}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
                             </h:outputText>
                         </p:column>
+                        <p:column headerText="Taxable Gross">
+                            <h:outputText value="#{employeeEarning[1]}">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tax Amount">
+                            <h:outputText value="#{employeeEarning[2]}">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Net Pay">
+                            <h:outputText value="#{employeeEarning[3]}">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                        </p:column>                              
+                        
                         <f:facet name="footer">
-                            <h:outputText value="#{employeeSelected.earningCollection.size()} items"/>
+                            <h:outputText value="#{employeeEarnings.size()} items"/>
                         </f:facet>
                     </p:dataTable>
                 </div>
             </p:panel>
 
-            <p:panel id="leave" header="Leaves">
-                <div class="panelLeaveData">
-                    
+            <p:panel id="policeCheck" header="Police Check History and Comments">
+                <div class="panelPoliceCheckData">
+                    <p:dataTable var="policeCheckHistory" value="#{employeeController.getPoliceCheckList()}" 
+                                 scrollable="true" scrollHeight="60">
+                        <p:column headerText="Expiry Date" width="35%" sortBy="#{policeCheckHistory.expiryDate}">
+                            <h:outputText value="#{policeCheckHistory.expiryDate}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Preceda Comment" width="65%">
+                            <h:outputText value="#{policeCheckHistory.precedaComment}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                     <p:dataTable var="policeCheckComments" value="#{employeeSelected.policeCheckCommentCollection}" 
+                                 scrollable="true" scrollHeight="60">
+                        <p:column headerText="Date" width="20%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                            <h:outputText value="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
+                            </h:outputText>
+                        </p:column>
+                         <p:column headerText="Comment" width="55%">
+                            <h:outputText value="#{policeCheckComments.comment}"/>
+                        </p:column>
+<!--                        <p:column headerText="User">
+                            <h:outputText value="#{policeCheckComments.user}"/>
+                        </p:column>-->
+                        <p:column headerText="Infra ticket" width="25%">
+                            <h:outputText value="#{policeCheckComments.infraTicket}"/>
+                        </p:column>
+                    </p:dataTable>                       
                 </div>
             </p:panel>
 
-            <p:panel id="policeCheck" header="Police Check">
-                <div class="panelPoliceCheckData">
-                    
+            <p:panel id="visa" header="Visa Details">
+                <div class="panelVisaData">
+                     <p:dataTable var="visa" value="#{employeeSelected.visaCollection}" 
+                                 scrollable="true" scrollHeight="60">
+                        <p:column headerText="Expiry Date" width="35%" sortBy="#{visa.visaExpiryDate}">
+                            <h:outputText value="#{visa.visaExpiryDate}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Preceda Comment" width="65%">
+                            <h:outputText value="#{visa.precedaComment1}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                     <p:dataTable var="visaComments" value="#{employeeSelected.visaCommentCollection}" 
+                                 scrollable="true" scrollHeight="60">
+                        <p:column headerText="Date" width="20%" sortBy="#{visaComments.visaCommentPK.commentDate}">
+                            <h:outputText value="#{visaComments.visaCommentPK.commentDate}">
+                                <f:convertDateTime pattern="dd/MM/yy"/>
+                            </h:outputText>
+                        </p:column>
+                         <p:column headerText="Comment" width="55%">
+                            <h:outputText value="#{visaComments.comment}"/>
+                        </p:column>
+<!--                        <p:column headerText="User">
+                            <h:outputText value="#{visaComments.user}"/>
+                        </p:column>-->
+                        <p:column headerText="Infra ticket" width="25%">
+                            <h:outputText value="#{visaComments.infraTicket}"/>
+                        </p:column>
+                    </p:dataTable>           
                 </div>
             </p:panel>
 
-            <p:panel id="visas" header="Visa Details">
-                <div class="panelPoliceCheckData">
+            <p:panel id="earningSummary" header="Earning Summary">
+                <div class="panelEarningSummaryData">
+                    <div class="rowLOName">
+                        <h:outputText value="Last pay Date"/>
+                    </div>
+                    <div class="rowLOValue">
+                        <h:outputText value="#{employeeSelected.earningSummaryCollection[0].earningSummaryPK.paidUpToDate}">
+                            <f:convertDateTime pattern="dd/MM/yy"/>
+                        </h:outputText>
+                    </div>
+                </div>
+            </p:panel>
+
+            <p:panel id="structure" header="Structure">
+                <div class="panelStructureData">
                     
                 </div>
             </p:panel>
