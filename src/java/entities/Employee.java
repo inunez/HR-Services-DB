@@ -53,8 +53,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Employee.findByPersonalEmail", query = "SELECT e FROM Employee e WHERE e.personalEmail = :personalEmail"),
     @NamedQuery(name = "Employee.findEarningDistinct", query = "SELECT DISTINCT e.payDate, e.taxableGross, e.taxAmount, e.netPay FROM Earning e  WHERE e.earningPK.idNumber = :idNumber ORDER BY e.payDate DESC"),
     @NamedQuery(name = "Employee.findByProbationDueDate", query = "SELECT e FROM Employee e WHERE e.probationDueDate = :probationDueDate")})
+
 public class Employee implements Serializable {
-    
+   
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected EmployeePK employeePK;
@@ -149,7 +150,11 @@ public class Employee implements Serializable {
     private Collection<VisaComment> visaCommentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Payroll> payrollCollection;
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<Uniform> uniformCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Collection<Plaxa> plaxaCollection;
+    
     public Employee() {
     }
 
@@ -463,6 +468,24 @@ public class Employee implements Serializable {
     public Collection<Earning> getEarningCollectionDistinct() {
         return (Collection<Earning>) earningCollection.stream().distinct();
     }
+ 
+    @XmlTransient
+    public Collection<Uniform> getUniformCollection() {
+        return uniformCollection;
+    }
+
+    public void setUniformCollection(Collection<Uniform> uniformCollection) {
+        this.uniformCollection = uniformCollection;
+    }
+
+    @XmlTransient
+    public Collection<Plaxa> getPlaxaCollection() {
+        return plaxaCollection;
+    }
+
+    public void setPlaxaCollection(Collection<Plaxa> plaxaCollection) {
+        this.plaxaCollection = plaxaCollection;
+    }
     
     @Override
     public int hashCode() {
@@ -488,5 +511,6 @@ public class Employee implements Serializable {
     public String toString() {
         return "entities.Employee[ employeePK=" + employeePK + " ]";
     }
+
     
 }

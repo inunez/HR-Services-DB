@@ -8,7 +8,7 @@
     <h:form id="tableEmployeesForm">
         <h:panelGrid columns="7" style="margin-bottom:10px" cellpadding="5" >
 
-            <h:outputText value="Type something" />
+            <h:outputText value="Search for" />
             <p:inputText value="#{employeeController.searchText}"/>
             <p:selectOneMenu id="searchOption" value="#{employeeController.searchType}" style="width:125px">
                 <f:selectItem itemLabel="Employee Name" itemValue="1" />
@@ -37,6 +37,7 @@
                         return;
                     }
                     PF('tabViewMain').select(index);
+                    
                 }
             </h:outputScript>
         </h:panelGrid>

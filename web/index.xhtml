@@ -7,22 +7,23 @@
 
     <h:head>
         <title>"#{bundle.AppName}"</title>
+        <h:outputStylesheet name="css/jsfcrud.css"/>
         <h:outputStylesheet library="css" name="jsfcrud.css"/>
     </h:head>
 
     <h:body>
 
         <p:growl id="growl" life="3000" />
-        
+
         <p:layout fullPage="true">
 
-            <p:layoutUnit position="center" size="80" header="#{bundle.AppName}">
+            <p:layoutUnit position="center" size="80" >
 
                 <p:tabView dynamic="true" cache="true" id="tabViewMain" activeIndex="#{employeeController.currentTabIndex}">
                     <p:tab title="#{bundle.Home}">
 
                     </p:tab>
-                    <p:tab title="#{bundle.Employee}" disabled="#{!employeeController.employeeSelected}" >
+                    <p:tab id="menuEmployeeData" title="#{bundle.Employee}" disabled="#{!employeeController.employeeSelected}" >
                         <ui:include src="/employeeData.xhtml" />
                     </p:tab>
                     <p:tab title="#{bundle.ListEmployees}">
@@ -38,6 +39,5 @@
         </p:layout>
 
     </h:body>
-
 </html>
 

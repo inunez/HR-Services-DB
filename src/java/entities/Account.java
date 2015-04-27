@@ -8,12 +8,14 @@ package entities;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Account.findByAccountNumber", query = "SELECT a FROM Account a WHERE a.accountNumber = :accountNumber"),
     @NamedQuery(name = "Account.findByAccountDescription", query = "SELECT a FROM Account a WHERE a.accountDescription = :accountDescription")})
 public class Account implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -46,7 +49,13 @@ public class Account implements Serializable {
     private Collection<Earning> earningCollection;
     @OneToMany(mappedBy = "accountNumber")
     private Collection<Payroll> payrollCollection;
-
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    private Collection<UniformAccount> uniformAccountCollection;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    private Collection<PlaxaAccount> plaxaAccountCollection;
+    
     public Account() {
     }
 
@@ -111,6 +120,23 @@ public class Account implements Serializable {
     @Override
     public String toString() {
         return "entities.Account[ accountNumber=" + accountNumber + " ]";
+    }
+
+    @XmlTransient
+    public Collection<UniformAccount> getUniformAccountCollection() {
+        return uniformAccountCollection;
+    }
+
+    public void setUniformAccountCollection(Collection<UniformAccount> uniformAccountCollection) {
+        this.uniformAccountCollection = uniformAccountCollection;
+    }
+
+    public Collection<PlaxaAccount> getPlaxaAccountCollection() {
+        return plaxaAccountCollection;
+    }
+
+    public void setPlaxaAccountCollection(Collection<PlaxaAccount> plaxaAccountCollection) {
+        this.plaxaAccountCollection = plaxaAccountCollection;
     }
     
 }

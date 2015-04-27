@@ -2,7 +2,9 @@ package jsf_classes;
 
 import entities.Earning;
 import entities.Employee;
+import entities.Plaxa;
 import entities.PoliceCheck;
+import entities.Uniform;
 import jsf_classes.util.JsfUtil;
 import jsf_classes.util.JsfUtil.PersistAction;
 import session_beans.EmployeeFacade;
@@ -331,6 +333,15 @@ public class EmployeeController implements Serializable {
         return policeCheckList;
     }
     
+    public Collection<Plaxa> getPlaxaSortedCollection() {
+        return selected.getPlaxaCollection();
+        //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
+    }
+    
+    public Collection<Uniform> getUniformSortedCollection() {
+        return selected.getUniformCollection();
+        //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
+    }
 }
 
 

@@ -144,13 +144,16 @@ public class VisaCommentController implements Serializable {
             String values[] = value.split(SEPARATOR_ESCAPED);
             key = new entities.VisaCommentPK();
             key.setIdNumber(values[0]);
-            key.setCommentDate(java.sql.Date.valueOf(values[1]));
+            key.setStatus(values[1]);
+            key.setCommentDate(java.sql.Date.valueOf(values[2]));
             return key;
         }
 
         String getStringKey(entities.VisaCommentPK value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value.getIdNumber());
+            sb.append(SEPARATOR);
+            sb.append(value.getStatus());
             sb.append(SEPARATOR);
             sb.append(value.getCommentDate());
             return sb.toString();

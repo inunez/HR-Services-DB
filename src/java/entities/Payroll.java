@@ -138,8 +138,6 @@ public class Payroll implements Serializable {
         @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
         @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
     @ManyToOne(optional = false)
-//    @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)
-//    @ManyToOne
     private Employee employee;
  
     public Payroll() {
