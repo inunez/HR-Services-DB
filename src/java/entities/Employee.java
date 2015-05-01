@@ -52,7 +52,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Employee.findByBusinessEmail", query = "SELECT e FROM Employee e WHERE e.businessEmail = :businessEmail"),
     @NamedQuery(name = "Employee.findByPersonalEmail", query = "SELECT e FROM Employee e WHERE e.personalEmail = :personalEmail"),
     @NamedQuery(name = "Employee.findEarningDistinct", query = "SELECT DISTINCT e.payDate, e.taxableGross, e.taxAmount, e.netPay FROM Earning e  WHERE e.earningPK.idNumber = :idNumber ORDER BY e.payDate DESC"),
-    @NamedQuery(name = "Employee.findByProbationDueDate", query = "SELECT e FROM Employee e WHERE e.probationDueDate = :probationDueDate")})
+    @NamedQuery(name = "Employee.findByProbationDueDate", query = "SELECT e FROM Employee e WHERE e.probationDueDate = :probationDueDate"),
+    @NamedQuery(name = "Employee.findByAccount", query = "SELECT e FROM Employee e JOIN e.payrollCollection p JOIN p.accountNumber a WHERE UPPER(a.accountDescription) LIKE :accountDesc AND e.employeePK.status = :status ORDER BY e.employeePK.idNumber"),
+    @NamedQuery(name = "Employee.findByPosition", query = "SELECT e FROM Employee e JOIN e.positionId p WHERE UPPER(p.positionTitle) LIKE :position AND e.employeePK.status = :status ORDER BY e.employeePK.idNumber")
+})
 
 public class Employee implements Serializable {
    

@@ -241,6 +241,9 @@ public class EmployeeController implements Serializable {
         
         showEmployeesTable = false;
         
+        search[2] = "status";
+        search[3] = status;
+        
         tempString = searchText;
         switch (type) {
             case SEARCH_BY_NAME:
@@ -257,17 +260,18 @@ public class EmployeeController implements Serializable {
                 break;
             case SEARCH_BY_SERVICE:
                 search[0]="findByAccount";
-                search[1]="accountNumber";
+                search[1]="accountDesc";
+                searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             case SEARCH_BY_POSITION:
                 search[0]="findByPosition";
-                search[1]="positionId";
+                search[1]="position";
+                searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             default:
                 throw new AssertionError();
         }
-        search[2] = "status";
-        search[3] = status;
+
         try {
             items = ejbFacade.getEmployeeByType(searchText,search);
             if(items.size()== 1){

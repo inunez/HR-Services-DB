@@ -37,7 +37,9 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
       namedQuery = em.createNamedQuery("Employee.".concat(searchType[0]), 
                 Employee.class);
       namedQuery.setParameter(searchType[1], searchText);
-      namedQuery.setParameter(searchType[2], searchType[3]);
+      if(!"".equals(searchType[2])){
+        namedQuery.setParameter(searchType[2], searchType[3]);
+      }
 //      return em.createNamedQuery("Employee.".concat(searchType[0]), 
 //                Employee.class).setParameter(searchType[1], searchText).getResultList();
       return namedQuery.getResultList();
