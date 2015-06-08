@@ -110,7 +110,7 @@ public class ClassificationController implements Serializable {
         }
     }
 
-    public Classification getClassification(java.lang.Short id) {
+    public Classification getClassification(String id) {
         return getFacade().find(id);
     }
 
@@ -135,13 +135,13 @@ public class ClassificationController implements Serializable {
             return controller.getClassification(getKey(value));
         }
 
-        java.lang.Short getKey(String value) {
-            java.lang.Short key;
-            key = Short.valueOf(value);
+        String getKey(String value) {
+            String key;
+            key = value;
             return key;
         }
 
-        String getStringKey(java.lang.Short value) {
+        String getStringKey(String value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

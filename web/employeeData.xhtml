@@ -171,12 +171,12 @@
             <p:panel id="leave" header="Leaves">
                 <div class="panelLeaveData">
                     <p:dataTable var="leave" value="#{employeeSelected.earningLeaveCollection}" 
-                                 scrollable="true" scrollHeight="80">
+                                 scrollable="true" scrollHeight="100">
                         <p:column headerText="Classification" width="30%" sortable="true">
-                            <h:outputText value="#{leave.earningLeavePK.classification}"/>
+                            <h:outputText value="#{leave.classificationLeave.classificationDescription}"/>
                         </p:column>
                         <p:column headerText="Acc.Method" width="30%">
-                            <h:outputText value="#{leave.accrualMethod}"/>
+                            <h:outputText value="#{leave.accrualMethod.accrualMethodDescription}"/>
                         </p:column>
                         <p:column headerText="Date" width="20%">
                             <h:outputText value="#{leave.earningLeavePK.dateAccruedTo}">
@@ -229,34 +229,35 @@
             
             <p:panel id="earning" header="Earnings">
                 <div class="panelEarningData">
-                    <c:set var="employeeEarnings" value="#{employeeController.getEarningDistinctCollection()}"/>
-                    <p:dataTable var="employeeEarning" value="#{employeeEarnings}" 
-                                 scrollable="true" scrollHeight="170">
-                        <p:column headerText="Period Date">
-                            <h:outputText value="#{employeeEarning[0]}">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Taxable Gross">
-                            <h:outputText value="#{employeeEarning[1]}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Tax Amount">
-                            <h:outputText value="#{employeeEarning[2]}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Net Pay">
-                            <h:outputText value="#{employeeEarning[3]}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                        </p:column>                              
-                        
-                        <f:facet name="footer">
-                            <h:outputText value="#{employeeEarnings.size()} items"/>
-                        </f:facet>
-                    </p:dataTable>
+                    <c:if test="#{not empty employeeController.getEarningDistinctCollection()}">
+                        <p:dataTable var="employeeEarning" value="#{employeeController.getEarningDistinctCollection()}" 
+                                     scrollable="true" scrollHeight="190">
+                            <p:column headerText="Period Date">
+                                <h:outputText value="#{employeeEarning[0]}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Taxable Gross">
+                                <h:outputText value="#{employeeEarning[1]}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Tax Amount">
+                                <h:outputText value="#{employeeEarning[2]}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Net Pay">
+                                <h:outputText value="#{employeeEarning[3]}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </p:column>                              
+
+                            <f:facet name="footer">
+                                <h:outputText value="#{employeeEarnings.size()} items"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </c:if>
                 </div>
             </p:panel>
 
@@ -333,8 +334,9 @@
                     <div class="rowLOName">
                         <h:outputText value="Last pay Date"/>
                     </div>
+                    <c:set var="employeeEarningsSummary" value="#{employeeController.getEarningSummaryList()[0]}"/>
                     <div class="rowLOValue">
-                        <h:outputText value="#{employeeSelected.earningSummaryCollection[0].earningSummaryPK.paidUpToDate}">
+                        <h:outputText value="#{employeeEarningsSummary.earningSummaryPK.paidUpToDate}">
                             <f:convertDateTime pattern="dd/MM/yyyy"/>
                         </h:outputText>
                     </div>
@@ -344,32 +346,32 @@
                     <div class="rowLOName">
                         <h:outputText value="Total Earning"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ytdTotalEarnings}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ytdTotalEarnings}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Taxable Gross"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].taxableGross}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.taxableGross}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Tax"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ytdTax}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ytdTax}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Net Pay"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ytdNetPay}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ytdNetPay}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
@@ -379,32 +381,32 @@
                     <div class="rowLOName">
                         <h:outputText value="Total Earning"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ptdTotalEarnings}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ptdTotalEarnings}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Taxable Gross"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ptdTaxableGross}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ptdTaxableGross}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Tax"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ptdTax}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ptdTax}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Net Pay"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].ptdNet}">
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.ptdNet}">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
                     </div>
@@ -414,20 +416,20 @@
                     <div class="rowLOName">
                         <h:outputText value="Last Period"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].hoursWorkedThisPay}"/>
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.hoursWorkedThisPay}"/>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Since Hired"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].sinceHired}"/>
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.sinceHired}"/>
                     </div>
                     <div class="rowLOName">
                         <h:outputText value="Last Position"/>
                     </div>
-                    <div class="rowLOValue">
-                            <h:outputText value="#{employeeSelected.earningSummaryCollection[0].serviceHourslastsalarycode}"/>
+                    <div class="rowLOValueRight">
+                            <h:outputText value="#{employeeEarningsSummary.serviceHourslastsalarycode}"/>
                     </div>
                 </div>
             </p:panel>
@@ -475,7 +477,9 @@
                         <h:outputText value="Location"/>
                     </div>
                     <div class="rowLOValue" style="width:60%">
-                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A'}"/>
+                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
+                                               (uniformSorted.accountNumber ne null ?
+                                               uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
                     </div>
                     <div class="rowLOName" style="width:38%">
                         <h:outputText value="Sent on"/>

@@ -43,7 +43,7 @@ public class EarningLeavePK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 1)
-    @Column(name = "classification")
+    @Column(name = "classification_code")
     private String classification;
 
     public EarningLeavePK() {

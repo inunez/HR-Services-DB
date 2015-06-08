@@ -33,23 +33,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Plaxa.findByIdNumber", query = "SELECT p FROM Plaxa p WHERE p.plaxaPK.idNumber = :idNumber"),
     @NamedQuery(name = "Plaxa.findByStatus", query = "SELECT p FROM Plaxa p WHERE p.plaxaPK.status = :status"),
     @NamedQuery(name = "Plaxa.findByPlaxaId", query = "SELECT p FROM Plaxa p WHERE p.plaxaId = :plaxaId"),
-    @NamedQuery(name = "Plaxa.findByReportsToFirstName", query = "SELECT p FROM Plaxa p WHERE p.reportsToFirstName = :reportsToFirstName"),
-    @NamedQuery(name = "Plaxa.findByReportsToSurname", query = "SELECT p FROM Plaxa p WHERE p.reportsToSurname = :reportsToSurname"),
+    @NamedQuery(name = "Plaxa.findByReportsToFullName", query = "SELECT p FROM Plaxa p WHERE p.reportsToFullName = :reportsToFullName"),
     @NamedQuery(name = "Plaxa.findByDateLastActivity", query = "SELECT p FROM Plaxa p WHERE p.dateLastActivity = :dateLastActivity")})
 
 public class Plaxa implements Serializable {
+    @Size(max = 100)
+    @Column(name = "reports_to_full_name")
+    private String reportsToFullName;
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PlaxaPK plaxaPK;
     @Size(max = 45)
     @Column(name = "plaxa_id")
     private String plaxaId;
-    @Size(max = 45)
-    @Column(name = "reports_to_first_name")
-    private String reportsToFirstName;
-    @Size(max = 45)
-    @Column(name = "reports_to_surname")
-    private String reportsToSurname;
     @Column(name = "date_last_activity")
     @Temporal(TemporalType.DATE)
     private Date dateLastActivity;
@@ -91,26 +87,6 @@ public class Plaxa implements Serializable {
     public void setPlaxaId(String plaxaId) {
         this.plaxaId = plaxaId;
     }
-
-    public String getReportsToFirstName() {
-        return reportsToFirstName;
-    }
-
-    public void setReportsToFirstName(String reportsToFirstName) {
-        this.reportsToFirstName = reportsToFirstName;
-    }
-
-    public String getReportsToSurname() {
-        return reportsToSurname;
-    }
-
-    public void setReportsToSurname(String reportsToSurname) {
-        this.reportsToSurname = reportsToSurname;
-    }
-
-    public String getReportsToFullName() {
-        return reportsToFirstName.concat(" ".concat(reportsToSurname));
-    }
     
     public Date getDateLastActivity() {
         return dateLastActivity;
@@ -144,6 +120,14 @@ public class Plaxa implements Serializable {
         this.statusCode = statusCode;
     }
 
+    public String getReportsToFullName() {
+        return reportsToFullName;
+    }
+
+    public void setReportsToFullName(String reportsToFullName) {
+        this.reportsToFullName = reportsToFullName;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

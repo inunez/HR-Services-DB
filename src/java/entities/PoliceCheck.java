@@ -36,9 +36,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PoliceCheck.findByExpiryDate", query = "SELECT p FROM PoliceCheck p WHERE p.expiryDate = :expiryDate"),
     @NamedQuery(name = "PoliceCheck.findByPrecedaComment", query = "SELECT p FROM PoliceCheck p WHERE p.precedaComment = :precedaComment"),
     @NamedQuery(name = "PoliceCheck.findByUpdateDate", query = "SELECT p FROM PoliceCheck p WHERE p.policeCheckPK.updateDate = :updateDate"),
-    @NamedQuery(name = "PoliceCheck.findBySnReceived", query = "SELECT p FROM PoliceCheck p WHERE p.snReceived = :snReceived"),
+    @NamedQuery(name = "PoliceCheck.findBySnReceived", query = "SELECT p FROM PoliceCheck p WHERE p.ynReceived = :ynReceived"),
     @NamedQuery(name = "PoliceCheck.findByFirstReportDate", query = "SELECT p FROM PoliceCheck p WHERE p.firstReportDate = :firstReportDate"),
-    @NamedQuery(name = "PoliceCheck.findByFynFirstReportSent", query = "SELECT p FROM PoliceCheck p WHERE p.fynFirstReportSent = :fynFirstReportSent"),
+    @NamedQuery(name = "PoliceCheck.findByynFirstReportSent", query = "SELECT p FROM PoliceCheck p WHERE p.ynFirstReportSent = :ynFirstReportSent"),
     @NamedQuery(name = "PoliceCheck.findByFirstLetterDate", query = "SELECT p FROM PoliceCheck p WHERE p.firstLetterDate = :firstLetterDate"),
     @NamedQuery(name = "PoliceCheck.findByYnFirstLetterSent", query = "SELECT p FROM PoliceCheck p WHERE p.ynFirstLetterSent = :ynFirstLetterSent"),
     @NamedQuery(name = "PoliceCheck.findBySecondLetterDate", query = "SELECT p FROM PoliceCheck p WHERE p.secondLetterDate = :secondLetterDate"),
@@ -47,28 +47,31 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PoliceCheck.findByYnThirdlettersent", query = "SELECT p FROM PoliceCheck p WHERE p.ynThirdlettersent = :ynThirdlettersent"),
     @NamedQuery(name = "PoliceCheck.findByManagerPhoneCallDate", query = "SELECT p FROM PoliceCheck p WHERE p.managerPhoneCallDate = :managerPhoneCallDate"),
     @NamedQuery(name = "PoliceCheck.findByYnPhoneCallDone", query = "SELECT p FROM PoliceCheck p WHERE p.ynPhoneCallDone = :ynPhoneCallDone"),
-    @NamedQuery(name = "PoliceCheck.findByPrmStatus", query = "SELECT p FROM PoliceCheck p WHERE p.prmStatus = :prmStatus")})
+    @NamedQuery(name = "PoliceCheck.findByPrmStatus", query = "SELECT p FROM PoliceCheck p WHERE p.prmStatus = :prmStatus"),
+    @NamedQuery(name = "PoliceCheck.findPoliceCheckByFullName", query = "SELECT pc FROM PoliceCheck pc JOIN pc.employee e WHERE CONCAT(e.firstName, ' ', e.surname) LIKE :fullName AND e.employeePK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}")})
+ 
 public class PoliceCheck implements Serializable {
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "yn_received")
+    private boolean ynReceived;
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PoliceCheckPK policeCheckPK;
+    @NotNull
     @Column(name = "expiry_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
     @Size(max = 255)
     @Column(name = "preceda_comment")
     private String precedaComment;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "sn_received")
-    private boolean snReceived;
     @Column(name = "first_report_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date firstReportDate;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "fyn_first_report_sent")
-    private boolean fynFirstReportSent;
+    @Column(name = "yn_first_report_sent")
+    private boolean ynFirstReportSent;
     @Column(name = "first_letter_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date firstLetterDate;
@@ -104,7 +107,6 @@ public class PoliceCheck implements Serializable {
     @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
     @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
     @ManyToOne(optional = false)
-    
     private Employee employee;
 
     public PoliceCheck() {
@@ -114,10 +116,10 @@ public class PoliceCheck implements Serializable {
         this.policeCheckPK = policeCheckPK;
     }
 
-    public PoliceCheck(PoliceCheckPK policeCheckPK, boolean snReceived, boolean fynFirstReportSent, boolean ynFirstLetterSent, boolean ynSecondLetterSent, boolean ynThirdlettersent, boolean ynPhoneCallDone) {
+    public PoliceCheck(PoliceCheckPK policeCheckPK, boolean ynReceived, boolean ynFirstReportSent, boolean ynFirstLetterSent, boolean ynSecondLetterSent, boolean ynThirdlettersent, boolean ynPhoneCallDone) {
         this.policeCheckPK = policeCheckPK;
-        this.snReceived = snReceived;
-        this.fynFirstReportSent = fynFirstReportSent;
+        this.ynReceived = ynReceived;
+        this.ynFirstReportSent = ynFirstReportSent;
         this.ynFirstLetterSent = ynFirstLetterSent;
         this.ynSecondLetterSent = ynSecondLetterSent;
         this.ynThirdlettersent = ynThirdlettersent;
@@ -153,11 +155,11 @@ public class PoliceCheck implements Serializable {
     }
 
     public boolean getSnReceived() {
-        return snReceived;
+        return ynReceived;
     }
 
-    public void setSnReceived(boolean snReceived) {
-        this.snReceived = snReceived;
+    public void setSnReceived(boolean ynReceived) {
+        this.ynReceived = ynReceived;
     }
 
     public Date getFirstReportDate() {
@@ -168,12 +170,12 @@ public class PoliceCheck implements Serializable {
         this.firstReportDate = firstReportDate;
     }
 
-    public boolean getFynFirstReportSent() {
-        return fynFirstReportSent;
+    public boolean getynFirstReportSent() {
+        return ynFirstReportSent;
     }
 
-    public void setFynFirstReportSent(boolean fynFirstReportSent) {
-        this.fynFirstReportSent = fynFirstReportSent;
+    public void setYnFirstReportSent(boolean ynFirstReportSent) {
+        this.ynFirstReportSent = ynFirstReportSent;
     }
 
     public Date getFirstLetterDate() {
@@ -280,5 +282,12 @@ public class PoliceCheck implements Serializable {
     public String toString() {
         return "entities.PoliceCheck[ policeCheckPK=" + policeCheckPK + " ]";
     }
-    
+
+    public boolean getYnReceived() {
+        return ynReceived;
+    }
+
+    public void setYnReceived(boolean ynReceived) {
+        this.ynReceived = ynReceived;
+    }
 }

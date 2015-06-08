@@ -7,7 +7,10 @@ package session_beans;
 
 import entities.Earning;
 import entities.Employee;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,7 +47,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
 //                Employee.class).setParameter(searchType[1], searchText).getResultList();
       return namedQuery.getResultList();
     }
-    
+        
     public Collection<Earning> getEarningDistinctCollection(String idNumber) {
         Query namedQuery;
         namedQuery = em.createNamedQuery("Employee.findEarningDistinct", Earning.class);

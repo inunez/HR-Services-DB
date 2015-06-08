@@ -282,7 +282,7 @@ public class Employee implements Serializable {
     }
 
     public String getBusinessEmail() {
-        if (businessEmail == null){
+        if (businessEmail == null || "".equals(businessEmail)){
             businessEmail = "N/A";
         }
         return businessEmail;
@@ -293,7 +293,7 @@ public class Employee implements Serializable {
     }
 
     public String getPersonalEmail() {
-        if (personalEmail == null){
+        if (personalEmail == null || "".equals(personalEmail) ) {
             personalEmail = "N/A";
         }
         return personalEmail;

@@ -1,0 +1,94 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <h:form id="tablePoliceCheckForm">
+        <h:panelGrid columns="7" style="margin-bottom:10px" cellpadding="5" >
+
+            <h:outputText value="Search for" />
+            <p:inputText value="#{policeCheckController.searchText}"/>
+            <p:selectOneMenu id="searchOption" value="#{policeCheckController.searchType}" style="width:125px">
+                <f:selectItem itemLabel="Employee Name" itemValue="1" />
+                <f:selectItem itemLabel="Employee ID" itemValue="2" />
+                <f:selectItem itemLabel="Service" itemValue="3" />
+                <f:selectItem itemLabel="Position" itemValue="4" />
+            </p:selectOneMenu>
+            <h:outputText value="Status" />
+            <p:selectOneMenu id="statusOption" value="#{policeCheckController.status}" style="width:125px">
+                <f:selectItem itemLabel="Active" itemValue="A" />
+                <f:selectItem itemLabel="Terminated" itemValue="T" />
+                <f:selectItem itemLabel="Both" itemValue="B" />
+            </p:selectOneMenu>
+            <p:commandButton value="Search" id="searchButton" icon="ui-icon-search" 
+                            ajax="true"
+                            update=":tabViewMain:mainBody"
+                            actionListener="#{policeCheckController.searchPoliceChecks}"
+                            onclick="showTab(args,3)"/>
+
+            <f:facet name="footer">
+                <p:messages id="messages" showDetail="true" autoUpdate="true" />
+            </f:facet>
+            <h:outputScript target="head">
+                function showTab(args, index){
+                    if(args.notValid){
+                        return;
+                    }
+                    PF('tabViewMain').select(index);
+                    
+                }
+            </h:outputScript>
+        </h:panelGrid>
+
+        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="tablePanel">
+            <p:dataTable var="policeCheck" value="#{policeCheckController.items}" 
+                         id="policeChecksTable" rowKey="#{policeCheck.policeCheckPK.idNumber}"
+                         selection="#{policeCheckController.selectedPoliceChecks}"
+                         scrollable="true"
+                         scrollHeight="450"
+                         scrollWidth="98%">
+                <f:facet name="header">
+                    <p:commandButton icon="ui-icon-search" value="View"
+                                     process="policeChecksTable" oncomplete="PF('multiPoliceChecksDialog').show()"
+                                     update=":tabViewMain:tablePoliceCheckForm:multiPoliceCheckDetail" />
+                </f:facet>
+                
+                <p:column width="20" selectionMode="multiple"/>
+                <p:column width="45" sortBy="#{policeCheck.policeCheckPK.idNumber}" headerText="Select">
+                    <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.employee.surname}" headerText="Surname">
+                     <h:outputText value="#{policeCheck.employee.surname}" />
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.employee.firstName}" headerText="Name">
+                    <h:outputText value="#{policeCheck.employee.firstName}" />
+                </p:column>
+                <p:column width="160" sortBy="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" headerText="Location">
+                    <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.expiryDate}" headerText="Expiry Date" style="text-align: center">
+                    <h:outputText value="#{policeCheck.expiryDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="200" sortBy="#{policeCheck.employee.policeCheckCommentCollection[0].comment}" headerText="HR Services Comments">
+                    <h:outputText value="#{policeCheck.employee.policeCheckCommentCollection[0].comment}" />
+                </p:column>
+                <p:column width="200" sortBy="#{policeCheckPoliceCheck.precedaComment}" headerText="Preceda Comments">
+                    <h:outputText value="#{policeCheck.precedaComment}" />
+                </p:column>
+                <p:column width="150" sortBy="#{policeCheck.employee.reportsToPositionId.employeeCollection[0].firstName} 
+                                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" headerText="Reports To">
+                    <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                </p:column>
+
+            </p:dataTable>
+
+        </h:panelGrid>
+        <ui:include src="/editPoliceChecks.xhtml" />
+    </h:form>
+
+</ui:composition>

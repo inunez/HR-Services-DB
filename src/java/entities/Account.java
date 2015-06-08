@@ -34,6 +34,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Account.findByAccountNumber", query = "SELECT a FROM Account a WHERE a.accountNumber = :accountNumber"),
     @NamedQuery(name = "Account.findByAccountDescription", query = "SELECT a FROM Account a WHERE a.accountDescription = :accountDescription")})
 public class Account implements Serializable {
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
+    private PlaxaAccount plaxaAccount;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
+    private UniformAccount uniformAccount;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -137,6 +141,22 @@ public class Account implements Serializable {
 
     public void setPlaxaAccountCollection(Collection<PlaxaAccount> plaxaAccountCollection) {
         this.plaxaAccountCollection = plaxaAccountCollection;
+    }
+
+    public PlaxaAccount getPlaxaAccount() {
+        return plaxaAccount;
+    }
+
+    public void setPlaxaAccount(PlaxaAccount plaxaAccount) {
+        this.plaxaAccount = plaxaAccount;
+    }
+
+    public UniformAccount getUniformAccount() {
+        return uniformAccount;
+    }
+
+    public void setUniformAccount(UniformAccount uniformAccount) {
+        this.uniformAccount = uniformAccount;
     }
     
 }

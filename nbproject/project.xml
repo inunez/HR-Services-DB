@@ -11,11 +11,12 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.PrimeFaces 5.2.classpath}</file>
+                    <file>${libs.PrimeFaces5.2.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.PrimeFaces5.2.classpath}</file>
+                    <file>${libs.junit_4.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
             <web-module-additional-libraries/>

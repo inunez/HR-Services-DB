@@ -36,8 +36,9 @@ public class Classification implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
+    @Size(max = 5)
     @Column(name = "classification_id")
-    private Short classificationId;
+    private String classificationId;
     @Size(max = 255)
     @Column(name = "classification_description")
     private String classificationDescription;
@@ -47,15 +48,15 @@ public class Classification implements Serializable {
     public Classification() {
     }
 
-    public Classification(Short classificationId) {
+    public Classification(String classificationId) {
         this.classificationId = classificationId;
     }
 
-    public Short getClassificationId() {
+    public String getClassificationId() {
         return classificationId;
     }
 
-    public void setClassificationId(Short classificationId) {
+    public void setClassificationId(String classificationId) {
         this.classificationId = classificationId;
     }
 

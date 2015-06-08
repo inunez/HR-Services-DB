@@ -6,6 +6,9 @@ import jsf_classes.util.JsfUtil.PersistAction;
 import session_beans.PoliceCheckFacade;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -14,10 +17,15 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import static jsf_classes.util.JsfUtil.addErrorMessage;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 @Named("policeCheckController")
 @SessionScoped
@@ -26,11 +34,66 @@ public class PoliceCheckController implements Serializable {
     @EJB
     private session_beans.PoliceCheckFacade ejbFacade;
     private List<PoliceCheck> items = null;
+    private List<PoliceCheck> selectedPoliceChecks = null;
     private PoliceCheck selected;
 
+    private String searchText;
+    private String searchType;
+    private boolean showPoliceCheckTable = false;
+    private boolean policeCheckSelected = false;
+    private int currentTabIndex=0;
+    private String status="";
+    
+    private final int SEARCH_BY_NAME = 1;
+    private final int SEARCH_BY_ID = 2;
+    private final int SEARCH_BY_SERVICE = 3;
+    private final int SEARCH_BY_POSITION = 4;
+
     public PoliceCheckController() {
+        searchType = Integer.toString(SEARCH_BY_NAME);
+        status = "A";
     }
 
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
+    public String getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+
+    public boolean isShowPoliceCheckTable() {
+        return showPoliceCheckTable;
+    }
+
+    public void setShowPoliceCheckTable(boolean showPoliceCheckTable) {
+        this.showPoliceCheckTable = showPoliceCheckTable;
+    }
+
+    public boolean isPoliceCheckSelected() {
+        return policeCheckSelected;
+    }
+
+    public void setPoliceCheckSelected(boolean policeCheckSelected) {
+        this.policeCheckSelected = policeCheckSelected;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
     public PoliceCheck getSelected() {
         return selected;
     }
@@ -76,9 +139,11 @@ public class PoliceCheckController implements Serializable {
         }
     }
 
-    public List<PoliceCheck> getItems() {
+    public List<PoliceCheck> getItems() throws ParseException {
         if (items == null) {
-            items = getFacade().findAll();
+            this.searchText = "";
+            searchPoliceChecks();
+//            items = getFacade().findAll();
         }
         return items;
     }
@@ -169,7 +234,90 @@ public class PoliceCheckController implements Serializable {
                 return null;
             }
         }
-
     }
 
+    public void searchPoliceChecks() throws ParseException{
+        String tempString;
+        String [] search = new String[4];
+        int type = Integer.parseInt(searchType);
+        
+        showPoliceCheckTable = false;
+        
+        search[2] = "status";
+        search[3] = status;
+        
+        tempString = searchText;
+        switch (type) {
+            case SEARCH_BY_NAME:
+                search[0]="findPoliceCheckByFullName";
+                search[1]="fullName";
+                searchText = "%".concat(searchText).concat("%");
+                break;
+            case SEARCH_BY_ID:
+                search[0]="findPoliceCheckByIdNumber";
+                search[1]="idNumber";
+                searchText = "000000".concat(searchText);
+                int len = searchText.length();
+                searchText = searchText.substring(len-6);
+                break;
+            case SEARCH_BY_SERVICE:
+                search[0]="findPoliceCheckByAccount";
+                search[1]="accountDesc";
+                searchText = "%".concat(searchText.toUpperCase()).concat("%");
+                break;
+            case SEARCH_BY_POSITION:
+                search[0]="findPoliceCheckByPosition";
+                search[1]="position";
+                searchText = "%".concat(searchText.toUpperCase()).concat("%");
+                break;
+            default:
+                throw new AssertionError();
+        }
+
+        try {
+            items = ejbFacade.getPoliceCheckByType(searchText,search);
+            
+            if(items.size()>0){
+                Comparator<PoliceCheck> dateComparator;
+                
+                dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
+                Collections.sort(items, dateComparator.reversed());
+                
+                showPoliceCheckTable = true;
+                currentTabIndex = 3;
+            }else{
+                RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+                addErrorMessage("No results found");
+                currentTabIndex = 3;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+            addErrorMessage("No results found");
+        }
+        searchText = tempString;
+    }
+    
+    
+    public List<PoliceCheck> getSelectedPoliceChecks() {
+        return selectedPoliceChecks;
+    }
+ 
+    public void setSelectedPoliceChecks(List<PoliceCheck> selectedPoliceChecks) {
+        this.selectedPoliceChecks = selectedPoliceChecks;
+    }
+    
+    public void onRowSelect(SelectEvent event) {
+        FacesMessage msg = new FacesMessage("PoliceCheck Selected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+ 
+    public void onRowUnselect(UnselectEvent event) {
+        FacesMessage msg = new FacesMessage("PoliceCheck Unselected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
+    public void save(){
+        
+    }
+    
 }

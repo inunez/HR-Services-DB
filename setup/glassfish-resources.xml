@@ -10,6 +10,6 @@
         <property name="URL" value="jdbc:mysql://localhost:3306/hrservices_db?zeroDateTimeBehavior=convertToNull"/>
             <property name="User" value="root"/>
         <property name="Password" value="purple"/>
-        <property name="databaseName" value="hrservices_db"/>
+        <property name="database" value="hrservices_db"/>
     </jdbc-connection-pool>
 </resources>

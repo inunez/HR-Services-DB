@@ -32,6 +32,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PlaxaStream.findByStreamId", query = "SELECT p FROM PlaxaStream p WHERE p.streamId = :streamId"),
     @NamedQuery(name = "PlaxaStream.findByStramDescription", query = "SELECT p FROM PlaxaStream p WHERE p.stramDescription = :stramDescription")})
 public class PlaxaStream implements Serializable {
+    @Size(max = 45)
+    @Column(name = "stream_description")
+    private String streamDescription;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -99,6 +102,14 @@ public class PlaxaStream implements Serializable {
     @Override
     public String toString() {
         return "entities.PlaxaStream[ streamId=" + streamId + " ]";
+    }
+
+    public String getStreamDescription() {
+        return streamDescription;
+    }
+
+    public void setStreamDescription(String streamDescription) {
+        this.streamDescription = streamDescription;
     }
     
 }

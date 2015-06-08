@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "VisaComment.findByUser", query = "SELECT v FROM VisaComment v WHERE v.user = :user"),
     @NamedQuery(name = "VisaComment.findByInfraTicket", query = "SELECT v FROM VisaComment v WHERE v.infraTicket = :infraTicket")})
 public class VisaComment implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected VisaCommentPK visaCommentPK;
@@ -127,5 +128,5 @@ public class VisaComment implements Serializable {
     public String toString() {
         return "entities.VisaComment[ visaCommentPK=" + visaCommentPK + " ]";
     }
-    
+
 }

@@ -110,7 +110,14 @@ tr.jsfcrud_even_row {
     border: solid 1px;
     margin: 0px;
 }
-
+.rowLOValueRight{
+    width: 67%;
+    float: right;
+    border: solid 1px;
+    margin: 0px;
+    padding-right: 1%;
+    text-align: right;
+}
 .rowHIName2{
     background-color: #99ff99;
     width: 40%;
@@ -156,7 +163,7 @@ tr.jsfcrud_even_row {
 
 .panelEarningData{
     width: 400px; 
-    height: 240px;
+    height: 260px;
     /*position: relative;*/
 }
 
@@ -168,7 +175,7 @@ tr.jsfcrud_even_row {
 
 .panelLeaveData{
     width: 400px; 
-    height: 110px;
+    height: 130px;
     /*position: relative;*/
 }
 
@@ -212,4 +219,9 @@ tr.jsfcrud_even_row {
     text-align:center; 
     width: 100%; 
     font-weight: bold;
+}
+
+.policeChecksTable{
+/*    width: 1400px;*/
+    /*height: 450%;*/
 }

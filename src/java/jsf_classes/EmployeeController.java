@@ -1,6 +1,7 @@
 package jsf_classes;
 
 import entities.Earning;
+import entities.EarningSummary;
 import entities.Employee;
 import entities.Plaxa;
 import entities.PoliceCheck;
@@ -41,7 +42,6 @@ public class EmployeeController implements Serializable {
     private String searchType;
     private boolean showEmployeesTable = false;
     private boolean employeeSelected = false;
-
     private int currentTabIndex=0;
     private String status="";
     
@@ -85,7 +85,18 @@ public class EmployeeController implements Serializable {
         return showEmployeesTable;
     }
 
-    
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
+    public String getSearchType() {
+        return searchType;
+    }
+
     public int getCurrentTabIndex() {
         return currentTabIndex;
     }
@@ -234,6 +245,7 @@ public class EmployeeController implements Serializable {
         }
 
     } 
+    
     public void searchEmployee(){
         String tempString = "";
         String [] search = new String[4];
@@ -308,42 +320,57 @@ public class EmployeeController implements Serializable {
         searchText = tempString;
     }
     
-    public String getSearchText() {
-        return searchText;
-    }
-
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    public String getSearchType() {
-        return searchType;
-    }
-
+    
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
     
     public Collection<Earning> getEarningDistinctCollection() {
-        return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
-    }
-    
-    public ArrayList<PoliceCheck> getPoliceCheckList() {
-        ArrayList<PoliceCheck> policeCheckList;
-        policeCheckList = new ArrayList<>(selected.getPoliceCheckCollection());
+        Collection<Earning> earnings = null;
+        if(selected != null){
+            earnings = getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
+        }
+        return (earnings);
 
-        Comparator<PoliceCheck> dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
-        Collections.sort(policeCheckList, dateComparator);
+    }
+
+    public ArrayList<EarningSummary> getEarningSummaryList() {
+        ArrayList<EarningSummary> earningSummaryList = null;
+        
+        earningSummaryList = new ArrayList<>(selected.getEarningSummaryCollection());
+        if (selected != null) {
+            Comparator<EarningSummary> dateComparator = (EarningSummary p1, EarningSummary p2) -> p2.getEarningSummaryPK().getPaidUpToDate().compareTo(p1.getEarningSummaryPK().getPaidUpToDate());
+            Collections.sort(earningSummaryList, dateComparator);
+        }
+        return earningSummaryList;
+    }
+
+    public ArrayList<PoliceCheck> getPoliceCheckList() {
+        ArrayList<PoliceCheck> policeCheckList = null;
+        if (selected != null) {
+            policeCheckList = new ArrayList<>(selected.getPoliceCheckCollection());
+
+            Comparator<PoliceCheck> dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
+            Collections.sort(policeCheckList, dateComparator);
+        }
         return policeCheckList;
     }
     
     public Collection<Plaxa> getPlaxaSortedCollection() {
-        return selected.getPlaxaCollection();
+        Collection<Plaxa> plaxas = null;
+        if (selected != null) {
+            plaxas = selected.getPlaxaCollection();
+        }
+        return plaxas;
         //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
     }
     
     public Collection<Uniform> getUniformSortedCollection() {
-        return selected.getUniformCollection();
+        Collection<Uniform> uniforms = null;
+        if (selected != null) {
+            uniforms = selected.getUniformCollection();
+        }
+        return uniforms;
         //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
     }
 }

@@ -127,5 +127,5 @@ public class PoliceCheckComment implements Serializable {
     public String toString() {
         return "entities.PoliceCheckComment[ policeCheckCommentPK=" + policeCheckCommentPK + " ]";
     }
-    
+
 }

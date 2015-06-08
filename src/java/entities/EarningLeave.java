@@ -46,12 +46,18 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "EarningLeave.findByPaidSinceAnnivProrataPortion", query = "SELECT e FROM EarningLeave e WHERE e.paidSinceAnnivProrataPortion = :paidSinceAnnivProrataPortion"),
     @NamedQuery(name = "EarningLeave.findByLeaveTakenValue", query = "SELECT e FROM EarningLeave e WHERE e.leaveTakenValue = :leaveTakenValue")})
 public class EarningLeave implements Serializable {
+    @JoinColumns({
+        @JoinColumn(name = "accrual_method_code", referencedColumnName = "accrual_method_code"),
+        @JoinColumn(name = "classification_code", referencedColumnName = "classification_code", insertable = false, updatable = false)})
+    @ManyToOne(optional = false)
+    private AccrualMethod accrualMethod;
+    @JoinColumn(name = "classification_code", referencedColumnName = "classification_code", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private ClassificationLeave classificationLeave;
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected EarningLeavePK earningLeavePK;
     @Size(max = 10)
-    @Column(name = "accrual_method")
-    private String accrualMethod;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "last_years_prorata")
     private Double lastYearsProrata;
@@ -98,14 +104,6 @@ public class EarningLeave implements Serializable {
 
     public void setEarningLeavePK(EarningLeavePK earningLeavePK) {
         this.earningLeavePK = earningLeavePK;
-    }
-
-    public String getAccrualMethod() {
-        return accrualMethod;
-    }
-
-    public void setAccrualMethod(String accrualMethod) {
-        this.accrualMethod = accrualMethod;
     }
 
     public Double getLastYearsProrata() {
@@ -227,6 +225,22 @@ public class EarningLeave implements Serializable {
     @Override
     public String toString() {
         return "entities.EarningLeave[ earningLeavePK=" + earningLeavePK + " ]";
+    }
+
+    public AccrualMethod getAccrualMethod() {
+        return accrualMethod;
+    }
+
+    public void setAccrualMethod(AccrualMethod accrualMethod) {
+        this.accrualMethod = accrualMethod;
+    }
+
+    public ClassificationLeave getClassificationLeave() {
+        return classificationLeave;
+    }
+
+    public void setClassificationLeave(ClassificationLeave classificationLeave) {
+        this.classificationLeave = classificationLeave;
     }
     
 }
