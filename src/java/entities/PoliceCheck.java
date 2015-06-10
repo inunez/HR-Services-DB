@@ -147,6 +147,9 @@ public class PoliceCheck implements Serializable {
     }
 
     public String getPrecedaComment() {
+        if(precedaComment == null || precedaComment.isEmpty()){
+            precedaComment = "N/A";
+        }
         return precedaComment;
     }
 

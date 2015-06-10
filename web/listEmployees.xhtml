@@ -49,9 +49,9 @@
                          paginator="true">
                 <p:column width="8%">
                     <p:commandButton value="Select" id="selectEmployee" 
-                                 ajax="true"
-                                 onclick="showTab(args,2)"
-                                 actionListener="#{employeeController.setCurrentTabIndex(1)}"
+                                ajax="true"
+                                onclick="showTab(args,2)"
+                                actionListener="#{employeeController.setCurrentTabIndex(1)}"
                                 update=":tabViewMain:mainBody">
                         <f:setPropertyActionListener value="#{employee}"
                                                      target="#{employeeController.selected}" />

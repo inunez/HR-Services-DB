@@ -23,7 +23,7 @@
                 <f:selectItem itemLabel="Both" itemValue="B" />
             </p:selectOneMenu>
             <p:commandButton value="Search" id="searchButton" icon="ui-icon-search" 
-                            ajax="true"
+                             ajax="true" action="#{employeeController.setCurrentTabIndex(3)}"
                             update=":tabViewMain:mainBody"
                             actionListener="#{policeCheckController.searchPoliceChecks}"
                             onclick="showTab(args,3)"/>
@@ -52,11 +52,19 @@
                 <f:facet name="header">
                     <p:commandButton icon="ui-icon-search" value="View"
                                      process="policeChecksTable" oncomplete="PF('multiPoliceChecksDialog').show()"
-                                     update=":tabViewMain:tablePoliceCheckForm:multiPoliceCheckDetail" />
+                                     action="#{policeCheckController.setEditType('VIEW')}"
+                                     update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg"
+                                     disabled="#{policeCheckController.selectedPoliceChecks.size() eq 0}">
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-document" value="Edit"
+                                     process="policeChecksTable" oncomplete="PF('multiPoliceChecksDialog').show()"
+                                     action="#{policeCheckController.setEditType('EDIT')}"
+                                     update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg">
+                    </p:commandButton>
                 </f:facet>
                 
                 <p:column width="20" selectionMode="multiple"/>
-                <p:column width="45" sortBy="#{policeCheck.policeCheckPK.idNumber}" headerText="Select">
+                <p:column width="45" sortBy="#{policeCheck.policeCheckPK.idNumber}" headerText="ID">
                     <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.employee.surname}" headerText="Surname">
@@ -88,7 +96,7 @@
             </p:dataTable>
 
         </h:panelGrid>
-        <ui:include src="/editPoliceChecks.xhtml" />
+        <ui:include src="/editPoliceChecks.xhtml"/>
     </h:form>
 
 </ui:composition>

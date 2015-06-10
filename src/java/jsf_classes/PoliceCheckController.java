@@ -31,17 +31,20 @@ import org.primefaces.event.UnselectEvent;
 @SessionScoped
 public class PoliceCheckController implements Serializable {
 
+    public enum EditType {
+        VIEW, EDIT, COMMENT, BULK_COMMENT
+    }
+     
     @EJB
     private session_beans.PoliceCheckFacade ejbFacade;
     private List<PoliceCheck> items = null;
     private List<PoliceCheck> selectedPoliceChecks = null;
     private PoliceCheck selected;
+    private EditType editType;
 
     private String searchText;
     private String searchType;
-    private boolean showPoliceCheckTable = false;
     private boolean policeCheckSelected = false;
-    private int currentTabIndex=0;
     private String status="";
     
     private final int SEARCH_BY_NAME = 1;
@@ -52,6 +55,7 @@ public class PoliceCheckController implements Serializable {
     public PoliceCheckController() {
         searchType = Integer.toString(SEARCH_BY_NAME);
         status = "A";
+        editType = EditType.VIEW;
     }
 
     public String getSearchText() {
@@ -68,14 +72,6 @@ public class PoliceCheckController implements Serializable {
 
     public void setSearchType(String searchType) {
         this.searchType = searchType;
-    }
-
-    public boolean isShowPoliceCheckTable() {
-        return showPoliceCheckTable;
-    }
-
-    public void setShowPoliceCheckTable(boolean showPoliceCheckTable) {
-        this.showPoliceCheckTable = showPoliceCheckTable;
     }
 
     public boolean isPoliceCheckSelected() {
@@ -102,6 +98,14 @@ public class PoliceCheckController implements Serializable {
         this.selected = selected;
     }
 
+    public EditType getEditType() {
+        return editType;
+    }
+
+    public void setEditType(EditType editType) {
+        this.editType = editType;
+    }
+    
     protected void setEmbeddableKeys() {
         selected.getPoliceCheckPK().setIdNumber(selected.getEmployee().getEmployeePK().getIdNumber());
     }
@@ -241,8 +245,6 @@ public class PoliceCheckController implements Serializable {
         String [] search = new String[4];
         int type = Integer.parseInt(searchType);
         
-        showPoliceCheckTable = false;
-        
         search[2] = "status";
         search[3] = status;
         
@@ -275,20 +277,24 @@ public class PoliceCheckController implements Serializable {
         }
 
         try {
-            items = ejbFacade.getPoliceCheckByType(searchText,search);
+            List<PoliceCheck> itemsFound = ejbFacade.getPoliceCheckByType(searchText,search);
+            if(items == null){
+                items = itemsFound;
+                if (items.size() > 0) {
+                    Comparator<PoliceCheck> dateComparator;
+
+                    dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
+                    Collections.sort(items, dateComparator.reversed());
+                }
+            }
             
-            if(items.size()>0){
-                Comparator<PoliceCheck> dateComparator;
-                
-                dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
-                Collections.sort(items, dateComparator.reversed());
-                
-                showPoliceCheckTable = true;
-                currentTabIndex = 3;
+            if(itemsFound.size()>0){
+                if(itemsFound.size() < items.size()){
+                    selectedPoliceChecks = itemsFound;
+                }
             }else{
                 RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
                 addErrorMessage("No results found");
-                currentTabIndex = 3;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
@@ -321,3 +327,4 @@ public class PoliceCheckController implements Serializable {
     }
     
 }
+

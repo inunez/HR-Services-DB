@@ -3,35 +3,184 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     
     <p:dialog header="Edit Police Checks" widgetVar="multiPoliceChecksDialog" modal="true" appendTo="@(body)"
-              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade">
-        <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5" id="multiPoliceCheckDetail">
-                         
-            <h:outputText value="Type something" />
-            <p:inputText value="#{policeCheckController.selected.employee.firstName}"/>
-           
-            <h:panelGroup style="display:block; text-align:center">
-                <p:commandButton value="Save" id="saveButton" icon="ui-icon-save" 
-                                 oncomplete="handleSaveRequest(args)"
-                                 update=":tabViewMain:tablePoliceCheckForm"/>
-                                 actionListener="#{policeCheckController.save()}"
-            </h:panelGroup>
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="multiPoliceChecksDlg">
+        
+        <f:facet name="footer">
+            <p:messages id="messagesMulti" showDetail="true" autoUpdate="true" />
+        </f:facet>
 
-            <f:facet name="footer">
-                <p:messages id="messagesMulti" showDetail="true" autoUpdate="true" />
-            </f:facet>
-            
-            <h:outputScript target="head">
-                function handleSaveRequest(args) { 
-                if( args.notValid | args.tableShown  ){
-                return;
-                }
-                PF('multiPoliceChecksDialog').hide();
-                }  
-            </h:outputScript>
+        <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="viewPoliceCheckDetail" 
+                     rendered="#{policeCheckController.editType eq 'VIEW'}">
+            <p:panel class="policeCheckDetail" header="Police Check Details" >
+                <c:set var="policeCheck" value="#{policeCheckController.selectedPoliceChecks[0]}"/>
+                <div class="rowLOName">             
+                    <h:outputText value="Employee ID"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Full Name"/>
+                </div>       
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.surname} #{policeCheck.employee.firstName}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Location"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Expiry Date"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.expiryDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </div>
+
+                <div class="rowLOName"> 
+                    <h:outputText value="Preceda Comment"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.precedaComment}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Reports To"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                </div>
+            </p:panel>
+            <br/>
+            <h:outputText value="HR Services Comments" style="width: 500px; text-align: center"/>
+            <br/>
+            <p:dataTable var="policeCheckComments" value="#{policeCheck.employee.policeCheckCommentCollection}" 
+                         scrollable="true" scrollHeight="50" class="multiPoliceCheckComments">
+                <p:column headerText="Date" width="20%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                    <h:outputText value="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Comment" width="40%">
+                    <h:outputText value="#{policeCheckComments.comment}"/>
+                </p:column>
+                <p:column headerText="User" width="20%">
+                    <h:outputText value="#{policeCheckComments.user}"/>
+                </p:column>
+                <p:column headerText="Infra ticket" width="20%">
+                    <h:outputText value="#{policeCheckComments.infraTicket}"/>
+                </p:column>
+            </p:dataTable>  
+            <!--</div>-->
+
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Back" id="backButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="handleSaveRequest(args)"
+                                 update=":tabViewMain:tablePoliceCheckForm">
+                </p:commandButton>
+            </h:panelGroup>
         </h:panelGrid>
+
+        <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="editPoliceCheckDetail" 
+                     rendered="#{policeCheckController.editType eq 'EDIT'}">
+            <p:panel class="policeCheckDetail" header="Edit Police Check Details" >
+                <c:set var="policeCheck" value="#{policeCheckController.selectedPoliceChecks[0]}"/>
+                <div class="rowLOName">             
+                    <h:outputText value="Employee ID"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Full Name"/>
+                </div>       
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.surname} #{policeCheck.employee.firstName}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Location"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Expiry Date"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:inputText value="#{policeCheck.expiryDate}" style="width: 300px">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:inputText>
+                </div>
+
+                <div class="rowLOName"> 
+                    <h:outputText value="Preceda Comment"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.precedaComment}" />
+                </div>
+
+                <div class="rowLOName">             
+                    <h:outputText value="Reports To"/>
+                </div>
+                <div class="rowLOValue">
+                    <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                </div>
+            </p:panel>
+            <br/>
+            <h:outputText value="HR Services Comments" style="width: 500px; text-align: center"/>
+            <br/>
+            <p:dataTable var="policeCheckComments" value="#{policeCheck.employee.policeCheckCommentCollection}" 
+                         scrollable="true" scrollHeight="50" class="multiPoliceCheckComments">
+                <p:column headerText="Date" width="20%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                    <h:outputText value="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Comment" width="40%">
+                    <h:outputText value="#{policeCheckComments.comment}"/>
+                </p:column>
+                <p:column headerText="User" width="20%">
+                    <h:outputText value="#{policeCheckComments.user}"/>
+                </p:column>
+                <p:column headerText="Infra ticket" width="20%">
+                    <h:outputText value="#{policeCheckComments.infraTicket}"/>
+                </p:column>
+            </p:dataTable>  
+            <br/>
+            
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Save" id="saveButton" icon="ui-icon-disk" 
+                                 oncomplete="handleSaveRequest(args)"
+                                 update=":tabViewMain:tablePoliceCheckForm"
+                                 actionListener="#{policeCheckController.save()}">
+                </p:commandButton>
+            </h:panelGroup>
+        </h:panelGrid>
+
+        <h:outputScript target="head">
+            function handleSaveRequest(args) { 
+            if( args.notValid | args.tableShown  ){
+            return;
+            }
+            PF('multiPoliceChecksDialog').hide();
+            }  
+        </h:outputScript>
+
     </p:dialog> 
     
 </ui:composition>

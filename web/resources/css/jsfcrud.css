@@ -173,6 +173,30 @@ tr.jsfcrud_even_row {
     /*position: relative;*/
 }
 
+.policeCheckDetail{
+    width: 500px; 
+    height: 170px;
+    /*position: relative;*/
+}
+
+.viewPoliceCheckDetail{
+    width: 500px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.editPoliceCheckDetail{
+    width: 500px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.multiPoliceCheckComments{
+    width: 500px; 
+    height: 100px;
+    /*position: relative;*/
+}
+
 .panelLeaveData{
     width: 400px; 
     height: 130px;
