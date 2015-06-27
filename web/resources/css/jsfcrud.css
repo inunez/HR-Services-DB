@@ -110,6 +110,32 @@ tr.jsfcrud_even_row {
     border: solid 1px;
     margin: 0px;
 }
+
+.rowEditName{
+    width: 30%;
+    /*padding-top: 2px;*/
+    height: 20px;
+    float: left;
+    /*border: solid 1px;*/
+}
+
+.rowEditValue{
+    width: 35%;
+    height: 20px;
+    /*padding-top: 2px;*/
+    float: left;
+    /*border: solid 1px;*/
+    margin: 0px;
+}
+
+.rowEditMessage{
+    width: 33%;
+    /*padding-top: 2px;*/
+    height: 20px;
+    float: right;
+    /*border: solid 1px;*/
+}
+
 .rowLOValueRight{
     width: 67%;
     float: right;
@@ -173,9 +199,21 @@ tr.jsfcrud_even_row {
     /*position: relative;*/
 }
 
-.policeCheckDetail{
+.policeCheckDetailComment{
+    width: 400px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.policeCheckDetailView{
     width: 500px; 
-    height: 170px;
+    height: 200px;
+    /*position: relative;*/
+}
+
+.policeCheckDetailEdit{
+    width: 500px; 
+    height: 250px;
     /*position: relative;*/
 }
 
@@ -248,4 +286,8 @@ tr.jsfcrud_even_row {
 .policeChecksTable{
 /*    width: 1400px;*/
     /*height: 450%;*/
+}
+
+#ui-datepicker-div {   
+    z-index: 9999 !important;   
 }

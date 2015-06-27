@@ -51,10 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PoliceCheck.findPoliceCheckByFullName", query = "SELECT pc FROM PoliceCheck pc JOIN pc.employee e WHERE CONCAT(e.firstName, ' ', e.surname) LIKE :fullName AND e.employeePK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}")})
  
 public class PoliceCheck implements Serializable {
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "yn_received")
-    private boolean ynReceived;
+    
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PoliceCheckPK policeCheckPK;
@@ -103,6 +100,18 @@ public class PoliceCheck implements Serializable {
     @Size(max = 255)
     @Column(name = "prm_status")
     private String prmStatus;
+    @Column(name = "processed_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date processedDate;
+    @Column(name = "yn_processed")
+    private Boolean ynProcessed;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "yn_received")
+    private boolean ynReceived;
+    @Column(name = "received_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date receivedDate;
     @JoinColumns({
     @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
     @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)})
@@ -155,14 +164,6 @@ public class PoliceCheck implements Serializable {
 
     public void setPrecedaComment(String precedaComment) {
         this.precedaComment = precedaComment;
-    }
-
-    public boolean getSnReceived() {
-        return ynReceived;
-    }
-
-    public void setSnReceived(boolean ynReceived) {
-        this.ynReceived = ynReceived;
     }
 
     public Date getFirstReportDate() {
@@ -246,6 +247,10 @@ public class PoliceCheck implements Serializable {
     }
 
     public String getPrmStatus() {
+        
+        if(prmStatus == null || "".equals(prmStatus)){
+            prmStatus = "N/A";
+        }
         return prmStatus;
     }
 
@@ -292,5 +297,29 @@ public class PoliceCheck implements Serializable {
 
     public void setYnReceived(boolean ynReceived) {
         this.ynReceived = ynReceived;
+    }
+
+    public Date getProcessedDate() {
+        return processedDate;
+    }
+
+    public void setProcessedDate(Date processedDate) {
+        this.processedDate = processedDate;
+    }
+
+    public Boolean getYnProcessed() {
+        return ynProcessed;
+    }
+
+    public void setYnProcessed(Boolean ynProcessed) {
+        this.ynProcessed = ynProcessed;
+    }
+
+    public Date getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(Date receivedDate) {
+        this.receivedDate = receivedDate;
     }
 }

@@ -28,6 +28,11 @@ public class PoliceCheckCommentPK implements Serializable {
     private String idNumber;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 1)
+    @Column(name = "status")
+    private String status;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "comment_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date commentDate;
@@ -35,8 +40,9 @@ public class PoliceCheckCommentPK implements Serializable {
     public PoliceCheckCommentPK() {
     }
 
-    public PoliceCheckCommentPK(String idNumber, Date commentDate) {
+    public PoliceCheckCommentPK(String idNumber, String status, Date commentDate) {
         this.idNumber = idNumber;
+        this.status = status;
         this.commentDate = commentDate;
     }
 
@@ -48,6 +54,14 @@ public class PoliceCheckCommentPK implements Serializable {
         this.idNumber = idNumber;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
     public Date getCommentDate() {
         return commentDate;
     }
@@ -60,6 +74,7 @@ public class PoliceCheckCommentPK implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (idNumber != null ? idNumber.hashCode() : 0);
+        hash += (status != null ? status.hashCode() : 0);
         hash += (commentDate != null ? commentDate.hashCode() : 0);
         return hash;
     }
@@ -74,6 +89,9 @@ public class PoliceCheckCommentPK implements Serializable {
         if ((this.idNumber == null && other.idNumber != null) || (this.idNumber != null && !this.idNumber.equals(other.idNumber))) {
             return false;
         }
+        if ((this.status == null && other.status != null) || (this.status != null && !this.status.equals(other.status))) {
+            return false;
+        }
         if ((this.commentDate == null && other.commentDate != null) || (this.commentDate != null && !this.commentDate.equals(other.commentDate))) {
             return false;
         }
@@ -82,7 +100,7 @@ public class PoliceCheckCommentPK implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.PoliceCheckCommentPK[ idNumber=" + idNumber + ", commentDate=" + commentDate + " ]";
+        return "entities.PoliceCheckCommentPK[ idNumber=" + idNumber +  ", status=" + status + ", commentDate=" + commentDate + " ]";
     }
     
 }

@@ -1,14 +1,18 @@
 package jsf_classes;
 
 import entities.PoliceCheck;
+import entities.PoliceCheckComment;
 import jsf_classes.util.JsfUtil;
 import jsf_classes.util.JsfUtil.PersistAction;
 import session_beans.PoliceCheckFacade;
 
 import java.io.Serializable;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -32,21 +36,25 @@ import org.primefaces.event.UnselectEvent;
 public class PoliceCheckController implements Serializable {
 
     public enum EditType {
+
         VIEW, EDIT, COMMENT, BULK_COMMENT
     }
-     
+
     @EJB
     private session_beans.PoliceCheckFacade ejbFacade;
     private List<PoliceCheck> items = null;
     private List<PoliceCheck> selectedPoliceChecks = null;
     private PoliceCheck selected;
+    private PoliceCheck tempSelected;
+    private PoliceCheckComment selectedComment;
+
     private EditType editType;
 
     private String searchText;
     private String searchType;
     private boolean policeCheckSelected = false;
-    private String status="";
-    
+    private String status = "";
+
     private final int SEARCH_BY_NAME = 1;
     private final int SEARCH_BY_ID = 2;
     private final int SEARCH_BY_SERVICE = 3;
@@ -89,13 +97,24 @@ public class PoliceCheckController implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
     public PoliceCheck getSelected() {
         return selected;
     }
 
     public void setSelected(PoliceCheck selected) {
         this.selected = selected;
+    }
+
+    public PoliceCheck getTempSelected() {
+        if (tempSelected == null && selectedPoliceChecks != null) {
+            createTempPoliceCheck(selectedPoliceChecks.get(0));
+        }
+        return tempSelected;
+    }
+
+    public void setTempSelected(PoliceCheck tempSelected) {
+        this.tempSelected = tempSelected;
     }
 
     public EditType getEditType() {
@@ -105,7 +124,21 @@ public class PoliceCheckController implements Serializable {
     public void setEditType(EditType editType) {
         this.editType = editType;
     }
-    
+
+    public PoliceCheckComment getSelectedComment() {
+        if(selectedComment == null && selectedPoliceChecks != null) {
+            Date commentDate = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            selectedComment = new PoliceCheckComment(tempSelected.getPoliceCheckPK().getIdNumber(), tempSelected.getPoliceCheckPK().getStatus(), 
+                    commentDate);
+            selectedComment.setEmployee(tempSelected.getEmployee());
+        }
+        return selectedComment;
+    }
+
+    public void setSelectedComment(PoliceCheckComment selectedComment) {
+        this.selectedComment = selectedComment;
+    }
+
     protected void setEmbeddableKeys() {
         selected.getPoliceCheckPK().setIdNumber(selected.getEmployee().getEmployeePK().getIdNumber());
     }
@@ -240,36 +273,36 @@ public class PoliceCheckController implements Serializable {
         }
     }
 
-    public void searchPoliceChecks() throws ParseException{
+    public void searchPoliceChecks() throws ParseException {
         String tempString;
-        String [] search = new String[4];
+        String[] search = new String[4];
         int type = Integer.parseInt(searchType);
-        
+
         search[2] = "status";
         search[3] = status;
-        
+
         tempString = searchText;
         switch (type) {
             case SEARCH_BY_NAME:
-                search[0]="findPoliceCheckByFullName";
-                search[1]="fullName";
+                search[0] = "findPoliceCheckByFullName";
+                search[1] = "fullName";
                 searchText = "%".concat(searchText).concat("%");
                 break;
             case SEARCH_BY_ID:
-                search[0]="findPoliceCheckByIdNumber";
-                search[1]="idNumber";
+                search[0] = "findPoliceCheckByIdNumber";
+                search[1] = "idNumber";
                 searchText = "000000".concat(searchText);
                 int len = searchText.length();
-                searchText = searchText.substring(len-6);
+                searchText = searchText.substring(len - 6);
                 break;
             case SEARCH_BY_SERVICE:
-                search[0]="findPoliceCheckByAccount";
-                search[1]="accountDesc";
+                search[0] = "findPoliceCheckByAccount";
+                search[1] = "accountDesc";
                 searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             case SEARCH_BY_POSITION:
-                search[0]="findPoliceCheckByPosition";
-                search[1]="position";
+                search[0] = "findPoliceCheckByPosition";
+                search[1] = "position";
                 searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             default:
@@ -277,8 +310,8 @@ public class PoliceCheckController implements Serializable {
         }
 
         try {
-            List<PoliceCheck> itemsFound = ejbFacade.getPoliceCheckByType(searchText,search);
-            if(items == null){
+            List<PoliceCheck> itemsFound = ejbFacade.getPoliceCheckByType(searchText, search);
+            if (items == null) {
                 items = itemsFound;
                 if (items.size() > 0) {
                     Comparator<PoliceCheck> dateComparator;
@@ -287,12 +320,12 @@ public class PoliceCheckController implements Serializable {
                     Collections.sort(items, dateComparator.reversed());
                 }
             }
-            
-            if(itemsFound.size()>0){
-                if(itemsFound.size() < items.size()){
+
+            if (itemsFound.size() > 0) {
+                if (itemsFound.size() < items.size()) {
                     selectedPoliceChecks = itemsFound;
                 }
-            }else{
+            } else {
                 RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
                 addErrorMessage("No results found");
             }
@@ -302,29 +335,110 @@ public class PoliceCheckController implements Serializable {
         }
         searchText = tempString;
     }
-    
-    
+
     public List<PoliceCheck> getSelectedPoliceChecks() {
         return selectedPoliceChecks;
     }
- 
+
     public void setSelectedPoliceChecks(List<PoliceCheck> selectedPoliceChecks) {
         this.selectedPoliceChecks = selectedPoliceChecks;
     }
-    
+
     public void onRowSelect(SelectEvent event) {
         FacesMessage msg = new FacesMessage("PoliceCheck Selected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
- 
+
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage("PoliceCheck Unselected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-    
-    public void save(){
-        
+
+    public void onReceivedOptionChange() {
+        if (tempSelected == null) {
+            createTempPoliceCheck(selectedPoliceChecks.get(0));
+        }
+
+        if (tempSelected.getYnReceived()) {
+            if (tempSelected.getReceivedDate() == null) {
+                tempSelected.setReceivedDate(Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+            }
+        } else {
+            tempSelected.setReceivedDate(null);
+        }
+
+    }
+
+    public void onProcessedOptionChange() {
+        if (tempSelected == null) {
+            createTempPoliceCheck(selectedPoliceChecks.get(0));
+        }
+
+        if (tempSelected.getYnProcessed()) {
+            if (selected.getProcessedDate() == null) {
+                tempSelected.setProcessedDate(Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+            }
+        } else {
+            tempSelected.setProcessedDate(null);
+        }
+
+    }
+
+    public void cancel() {
+        tempSelected = null;
+        selectedPoliceChecks.clear();
+    }
+
+    public void cancelComment() {
+        selectedComment = null;
     }
     
-}
+    public void saveComment(){
+        if(selectedComment != null){
+            selectedComment.setUser("Test");
+            tempSelected.getEmployee().getPoliceCheckCommentCollection().add(selectedComment);
+            selectedComment = null;
+        }else{
+            //error
+        }
+    }
+        
+    public void saveSingle() {
+        if (selectedPoliceChecks.size() == 1) {
+            selected = selectedPoliceChecks.get(0);
+            selected.setExpiryDate(tempSelected.getExpiryDate());
+            selected.setYnReceived(tempSelected.getYnReceived());
+            selected.setReceivedDate(tempSelected.getReceivedDate());
+            selected.setEmployee(tempSelected.getEmployee());
+            update();
+            tempSelected = null;
+            selectedPoliceChecks.clear();
+        } else {
+            /*TO DO error message*/
+        }
+    }
 
+    private void createTempPoliceCheck(PoliceCheck policeCheck) {
+        tempSelected = new PoliceCheck(policeCheck.getPoliceCheckPK().getIdNumber(), policeCheck.getPoliceCheckPK().getStatus(),
+                policeCheck.getPoliceCheckPK().getUpdateDate());
+        tempSelected.setEmployee(policeCheck.getEmployee());
+        tempSelected.setExpiryDate(policeCheck.getExpiryDate());
+        tempSelected.setFirstLetterDate(policeCheck.getFirstLetterDate());
+        tempSelected.setFirstReportDate(policeCheck.getFirstReportDate());
+        tempSelected.setManagerPhoneCallDate(policeCheck.getManagerPhoneCallDate());
+        tempSelected.setPrecedaComment(policeCheck.getPrecedaComment());
+        tempSelected.setPrmStatus(policeCheck.getPrmStatus());
+        tempSelected.setProcessedDate(policeCheck.getProcessedDate());
+        tempSelected.setReceivedDate(policeCheck.getReceivedDate());
+        tempSelected.setSecondLetterDate(policeCheck.getSecondLetterDate());
+        tempSelected.setThirdLetterDate(policeCheck.getThirdLetterDate());
+        tempSelected.setYnFirstLetterSent(policeCheck.getYnFirstLetterSent());
+        tempSelected.setYnFirstReportSent(policeCheck.getynFirstReportSent());
+        tempSelected.setYnPhoneCallDone(policeCheck.getYnPhoneCallDone());
+        tempSelected.setYnProcessed(policeCheck.getYnProcessed());
+        tempSelected.setYnReceived(policeCheck.getYnReceived());
+        tempSelected.setYnSecondLetterSent(policeCheck.getYnSecondLetterSent());
+        tempSelected.setYnThirdlettersent(policeCheck.getYnThirdlettersent());
+    }
+
+}

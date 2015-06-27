@@ -59,8 +59,8 @@ public class PoliceCheckComment implements Serializable {
         this.policeCheckCommentPK = policeCheckCommentPK;
     }
 
-    public PoliceCheckComment(String idNumber, Date commentDate) {
-        this.policeCheckCommentPK = new PoliceCheckCommentPK(idNumber, commentDate);
+    public PoliceCheckComment(String idNumber, String status, Date commentDate) {
+        this.policeCheckCommentPK = new PoliceCheckCommentPK(idNumber, status, commentDate);
     }
 
     public PoliceCheckCommentPK getPoliceCheckCommentPK() {
