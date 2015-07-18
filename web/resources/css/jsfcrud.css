@@ -81,7 +81,7 @@ tr.jsfcrud_even_row {
     top: 50%;
 }
 
-.rowHIName{
+.fieldNameHigh2Cols{
     background-color: #99ff99;
     width: 21%;
     color: #000000;
@@ -90,7 +90,7 @@ tr.jsfcrud_even_row {
     /*font-size: large;*/
 }
 
-.rowHIValue{
+.fieldValueHigh2Cols{
     background-color: #99ff99;
     width: 50%;
     color: #000000;
@@ -98,45 +98,106 @@ tr.jsfcrud_even_row {
     margin-top: 5px;
 }
 
-.rowLOName{
+.fieldName2Cols{
     width: 30%;
     float: left;
     border: solid 1px;
 }
 
-.rowLOValue{
+.fieldValue2Cols{
     width: 68%;
     float: right;
     border: solid 1px;
     margin: 0px;
 }
 
-.rowEditName{
+.fieldName3Cols{
     width: 30%;
-    /*padding-top: 2px;*/
-    height: 20px;
     float: left;
-    /*border: solid 1px;*/
+    border: solid 1px;
 }
 
-.rowEditValue{
-    width: 35%;
-    height: 20px;
-    /*padding-top: 2px;*/
+.fieldOption3Cols{
+    width: 15%;
     float: left;
-    /*border: solid 1px;*/
+    border: solid 1px;
+}
+
+.fieldValue3Cols{
+    width: 53%;
+    float: right;
+    border: solid 1px;
     margin: 0px;
 }
 
-.rowEditMessage{
-    width: 33%;
-    /*padding-top: 2px;*/
-    height: 20px;
-    float: right;
-    /*border: solid 1px;*/
+.inputTextAreaName2Cols{
+    width: 30%;
+    height: 30px;
+    float: left;
+    padding-top: 12px
 }
 
-.rowLOValueRight{
+
+.inputFieldName2Cols{
+    width: 30%;
+    height: 20px;
+    float: left;
+}
+
+.inputTextValue2Cols{
+    width: 70%;
+    height: 60px;
+    float: left;
+    margin: 0px;
+}
+
+.inputFieldName3Cols{
+    width: 30%;
+    height: 20px;
+    float: left;
+}
+
+.inputFieldValue3Cols{
+    width: 33%;
+    height: 20px;
+    float: left;
+    margin: 0px;
+}
+
+.inputFieldMessage3Cols{
+    width: 35%;
+    height: 20px;
+    float: right;
+}
+
+.inputFieldName4Cols{
+    width: 30%;
+    height: 20px;
+    float: left;
+    height: 23px; 
+    padding-top: 6px
+}
+
+.optionValue4Cols{
+    width: 15%;
+    float: left;
+}
+
+.inputFieldValue4Cols{
+    width: 33%;
+    float: left;
+    margin: 0px;
+    height: 29px;
+}
+
+.inputFieldMessage4Cols{
+    width: 22%;
+    float: left;
+    height: 29px; 
+}
+
+
+.fieldValueRight2Cols{
     width: 67%;
     float: right;
     border: solid 1px;
@@ -144,7 +205,7 @@ tr.jsfcrud_even_row {
     padding-right: 1%;
     text-align: right;
 }
-.rowHIName2{
+.fieldNameHigh2Cols2{
     background-color: #99ff99;
     width: 40%;
     color: #000000;
@@ -153,7 +214,7 @@ tr.jsfcrud_even_row {
     /*font-size: large;*/
 }
 
-.rowHIValue2{
+.fieldValueHigh2Cols2{
     background-color: #99ff99;
     width: 60%;
     color: #000000;
@@ -213,7 +274,7 @@ tr.jsfcrud_even_row {
 
 .policeCheckDetailEdit{
     width: 500px; 
-    height: 250px;
+    height: 335px;
     /*position: relative;*/
 }
 
@@ -229,6 +290,11 @@ tr.jsfcrud_even_row {
     /*position: relative;*/
 }
 
+.policeCheckDetailEditMulti{
+    width: 500px; 
+    height: 250px;
+    /*position: relative;*/
+}
 .multiPoliceCheckComments{
     width: 500px; 
     height: 100px;

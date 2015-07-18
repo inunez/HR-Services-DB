@@ -54,15 +54,16 @@
                 <f:facet name="header">
                     <h:panelGroup style="display:block; text-align:left">
                         <p:commandButton icon="ui-icon-search" value="View" id="viewButton"
-                                         process="policeChecksTable" oncomplete="PF('multiPoliceChecksDialog').show()"
+                                         process="@form" oncomplete="PF('multiPoliceChecksDialog').show()"
                                          action="#{policeCheckController.setEditType('VIEW')}"
                                          update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg"
                                          disabled="#{(policeCheckController.selectedPoliceChecks eq null) or 
                                                  (policeCheckController.selectedPoliceChecks.size() eq 0)}">
                         </p:commandButton>
-                        <p:commandButton icon="ui-icon-document" value="Edit" id="viewEdit"
-                                         process="policeChecksTable" oncomplete="PF('multiPoliceChecksDialog').show()"
+                        <p:commandButton icon="ui-icon-document" value="Edit" id="editButton"
+                                         oncomplete="PF('multiPoliceChecksDialog').show()"
                                          action="#{policeCheckController.setEditType('EDIT')}"
+                                         process="@form" 
                                          update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg"
                                          disabled="#{policeCheckController.selectedPoliceChecks eq null or 
                                                  policeCheckController.selectedPoliceChecks.size() eq 0}">
@@ -70,10 +71,12 @@
                     </h:panelGroup>
                 </f:facet>
 
-                <p:ajax event="rowSelect" update="@this" listener="#{policeCheckController.onRowSelect}" /> 
-                <p:ajax event="rowUnselect" update="@this" listener="#{policeCheckController.onRowUnselect}"/> 
-                <p:ajax event="rowSelectCheckbox" update="@this" listener="#{policeCheckController.onRowSelect}" /> 
-                <p:ajax event="rowUnselectCheckbox" update="@this" listener="#{policeCheckController.onRowUnselect}"/> 
+                <p:ajax event="rowSelect" update="viewButton editButton" listener="#{policeCheckController.onRowSelect}" /> 
+                <p:ajax event="rowUnselect" update="viewButton editButton" listener="#{policeCheckController.onRowUnselect}"/> 
+                <p:ajax event="rowSelectCheckbox" update="viewButton editButton" listener="#{policeCheckController.onRowSelect}" /> 
+                <p:ajax event="rowUnselectCheckbox" update="viewButton editButton" listener="#{policeCheckController.onRowUnselect}"/> 
+                <p:ajax event="rowDblselect" update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg" 
+                        global="false" oncomplete="PF('multiPoliceChecksDialog').show()" listener="#{policeCheckController.onRowDblClckSelect}"/>
 
                 <p:column width="20" selectionMode="multiple"/>
                 <p:column width="45" sortBy="#{policeCheck.policeCheckPK.idNumber}" headerText="ID">
@@ -90,7 +93,7 @@
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.expiryDate}" headerText="Expiry Date" style="text-align: center">
                     <h:outputText value="#{policeCheck.expiryDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="200" sortBy="#{policeCheckPoliceCheck.precedaComment}" headerText="Preceda Comments">
@@ -106,16 +109,31 @@
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.receivedDate}" headerText="Received on">
                     <h:outputText value="#{policeCheck.receivedDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.processedDate}" headerText="Processed on">
                     <h:outputText value="#{policeCheck.processedDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="200" sortBy="#{policeCheck.prmStatus}" headerText="PRM Status">
                     <h:outputText value="#{policeCheck.prmStatus}" />
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.firstReportDate}" headerText="First Report Sent">
+                    <h:outputText value="#{policeCheck.firstReportDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.firstLetterDate}" headerText="First Letter Sent">
+                    <h:outputText value="#{policeCheck.firstLetterDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="100" sortBy="#{policeCheck.secondLetterDate}" headerText="Second Letter Sent">
+                    <h:outputText value="#{policeCheck.secondLetterDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                    </h:outputText>
                 </p:column>
 
             </p:dataTable>

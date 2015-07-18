@@ -74,6 +74,9 @@ public class Position implements Serializable {
 
     @XmlTransient
     public Collection<Employee> getEmployeeCollection() {
+//        if("70760001".equals(positionId) ){
+//            System.out.println("aca");
+//        }
         return employeeCollection;
     }
 

@@ -66,6 +66,11 @@ public class PoliceCheckComment implements Serializable {
     public PoliceCheckCommentPK getPoliceCheckCommentPK() {
         return policeCheckCommentPK;
     }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     public void setPoliceCheckCommentPK(PoliceCheckCommentPK policeCheckCommentPK) {
         this.policeCheckCommentPK = policeCheckCommentPK;

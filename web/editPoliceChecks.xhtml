@@ -8,59 +8,98 @@
 
     <p:dialog header="Edit Police Checks" widgetVar="multiPoliceChecksDialog" modal="true" appendTo="@(body)"
               closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="multiPoliceChecksDlg">
-        <p:ajax event="close" listener="#{policeCheckController.cancel()}"/>
+        <p:ajax event="close" listener="#{policeCheckController.cancel()}" update="tabViewMain:tablePoliceCheckForm"/>
         <h:form id="formPoliceCheckDialog">
             <f:facet name="footer">
                 <p:messages id="messagesMulti" showDetail="true" autoUpdate="true" />
             </f:facet>
 
+            <!--***************** V I E W *********************-->
+
             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="viewPoliceCheckDetail" 
                          rendered="#{policeCheckController.editType eq 'VIEW'}">
                 <p:panel class="policeCheckDetailView" header="Police Check Details" >
                     <c:set var="policeCheck" value="#{policeCheckController.selectedPoliceChecks[0]}"/>
-                    <div class="rowLOName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Employee ID"/>
                     </div>
-                    <div class="rowLOValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
                     </div>
 
-                    <div class="rowLOName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Full Name"/>
                     </div>       
-                    <div class="rowLOValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.employee.surname} #{policeCheck.employee.firstName}" />
                     </div>
 
-                    <div class="rowLOName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Location"/>
                     </div>
-                    <div class="rowLOValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
                     </div>
 
-                    <div class="rowLOName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Expiry Date"/>
                     </div>
-                    <div class="rowLOValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.expiryDate}">
                             <f:convertDateTime pattern="dd/MM/yyyy"/>
                         </h:outputText>
                     </div>
 
-                    <div class="rowLOName"> 
+                    <div class="fieldName2Cols"> 
                         <h:outputText value="Preceda Comment"/>
                     </div>
-                    <div class="rowLOValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.precedaComment}" />
                     </div>
 
-                    <div class="rowLOName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Reports To"/>
                     </div>
-                    <div class="rowLOValue">
-                        <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{policeCheck.employee.reportsToPositionId.employeeCollection.size() eq 0 ? 'N/A' :
+                                               policeCheck.employee.reportsToPositionId.employeeCollection[0].firstName} 
                                       #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="Report Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{policeCheck.ynFirstReportSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{policeCheck.firstReportDate eq null ? '-' : policeCheck.firstReportDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="First Letter Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{policeCheck.ynFirstLetterSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{policeCheck.firstLetterDate eq null ? '-' : policeCheck.firstLetterDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="Seconde Letter Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{policeCheck.ynSecondLetterSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{policeCheck.secondLetterDate eq null ? '-' : policeCheck.secondLetterDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
                     </div>
                 </p:panel>
                 <br/>
@@ -88,162 +127,378 @@
                 <h:panelGroup style="display:block; text-align:center">
                     <p:commandButton value="Back" id="backButton" icon="i-icon-arrowreturnthick-1-w" 
                                      oncomplete="handleSaveRequest(args)"
-                                     update=":tabViewMain:tablePoliceCheckForm">
+                                     actionListener="#{policeCheckController.cancel()}"
+                                     update="tabViewMain:tablePoliceCheckForm">
                     </p:commandButton>
                 </h:panelGroup>
             </h:panelGrid>
 
+            <!--***************** E D I T *********************-->
+
             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="editPoliceCheckDetail" 
-                         rendered="#{policeCheckController.editType eq 'EDIT'}">
+                         rendered="#{policeCheckController.editType eq 'EDIT' and policeCheckController.selectedPoliceChecks.size() eq 1}">
                 <p:panel class="policeCheckDetailEdit" header="Edit Police Check Details" >
                     <c:set var="policeCheck" value="#{policeCheckController.tempSelected}"/>
 
-                    <div class="rowEditName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Employee ID"/>
                     </div>
-                    <div class="rowEditValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
                     </div>
-                    <div class="rowEditMessage"></div>
 
-                    <div class="rowEditName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Full Name"/>
                     </div>       
-                    <div class="rowEditValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.employee.surname} #{policeCheck.employee.firstName}" />
                     </div>
-                    <div class="rowEditMessage"></div>
 
-                    <div class="rowEditName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Location"/>
                     </div>
-                    <div class="rowEditValue">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
                     </div>
-                    <div class="rowEditMessage"></div>
 
-                    <div class="rowEditName" style="height: 30px">             
-                        <h:outputText value="Expiry Date"/>
+                    <div class="inputFieldName3Cols" style="height: 30px">             
+                        <p:outputLabel value="Expiry Date" for="expiryCalendar"/>
                     </div>
-                    <div class="rowEditValue" style="height: 30px">
-                        <p:calendar id="popup" value="#{policeCheck.expiryDate}" showOn="button" required="true" 
+                    <div class="inputFieldValue3Cols" style="height: 30px">
+                        <p:calendar id="expiryCalendar" value="#{policeCheck.expiryDate}" showOn="button" required="true" 
                                     requiredMessage="Expiry Date is mandatory" mode="popup" showButtonPanel="true" 
                                     size="12"/>
                     </div>
-                    <div class="rowEditMessage" style="height: 30px"></div>
+                    <div class="inputFieldMessage3Cols" style="height: 30px"><p:message for="expiryCalendar"/></div>
 
-                    <div class="rowEditName"> 
+                    <div class="fieldName2Cols"> 
                         <h:outputText value="Preceda Comment"/>
                     </div>
-                    <div class="rowEditValue" style="width: 300px">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.precedaComment}" />
                     </div>
-                    <!--<div class="rowEditMessage"><p/></div>-->
 
-                    <div class="rowEditName">             
+                    <div class="fieldName2Cols">             
                         <h:outputText value="Reports To"/>
                     </div>
-                    <div class="rowEditValue">
-                        <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection.size() eq 0 ? 'N/A' : 
+                                               policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
                                       #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
                     </div>
-                    <div class="rowEditMessage"><p/></div>
 
-                    <div class="rowEditName" style="height: 23px; padding-top: 6px">             
-                        <h:outputText value="Form Received"/>
+                    <div class="inputFieldName4Cols">             
+                        <p:outputLabel value="Form Received" for="receivedCalendar" id="labelReceived"/>
                     </div>
-                    <div class="rowEditValue" style="height: 29px; padding-left: 30px; width: 30px">
+                    <div class="optionValue4Cols">
                         <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynReceived}">
-                            <p:ajax listener="#{policeCheckController.onReceivedOptionChange}" update="popup2 saveButton"/> 
+                            <p:ajax listener="#{policeCheckController.onReceivedOptionChange}" update="receivedCalendar saveButton labelReceived"/> 
                         </p:inputSwitch>
                     </div>
-                    <div class="rowEditMessage" style="height: 29px">
-                        <p:calendar id="popup2" value="#{policeCheck.receivedDate}" showOn="button" disabled="#{policeCheck.ynReceived ne true}"
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="receivedCalendar" value="#{policeCheck.receivedDate}" showOn="button" disabled="#{policeCheck.ynReceived ne true}"
                                     requiredMessage="Received Date is mandatory" showButtonPanel="true"
-                                    size="12"/> <!--required="true"--> 
+                                    required="#{policeCheck.ynReceived eq true}" size="12"/> 
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="receivedCalendar"/>
                     </div>
 
-                    <div class="rowEditName" style="height: 23px; padding-top: 6px">             
-                        <h:outputLabel value="Form Processed"/>
+                    <div class="inputFieldName4Cols">             
+                        <p:outputLabel value="Form Processed" for="processedCalendar" id="labelProcessed"/>
                     </div>
-                    <div class="rowEditValue" style="height: 29px; padding-left: 30px; width: 30px">
+                    <div class="optionValue4Cols">
                         <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynProcessed}">
-                            <p:ajax listener="#{policeCheckController.onReceivedOptionChange}" update="popup3 saveButton"/> 
+                            <p:ajax listener="#{policeCheckController.onProcessedOptionChange}" update="processedCalendar saveButton labelProcessed"/> 
                         </p:inputSwitch>
                     </div>
-                    <div class="rowEditMessage" style="height: 29px;">
-                        <p:calendar id="popup3" value="#{policeCheck.processedDate}" showOn="button" disabled="#{policeCheck.ynProcessed ne true}"
-                                    required="true" requiredMessage="Processed Date is mandatory" showButtonPanel="true" 
-                                    size="12"/>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="processedCalendar" value="#{policeCheck.processedDate}" showOn="button" disabled="#{policeCheck.ynProcessed ne true}"
+                                    requiredMessage="Processed Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheck.ynProcessed eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="processedCalendar"/>
                     </div>
 
-                    <div class="rowEditName" style="padding-top: 5px"> 
+                    <div class="inputFieldName4Cols">           
+                        <p:outputLabel value="First Report Sent" for="reportCalendar" id="labelReport"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynFirstReportSent}">
+                            <p:ajax listener="#{policeCheckController.onReportedOptionChange}" update="reportCalendar saveButton labelReport"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="reportCalendar" value="#{policeCheck.firstReportDate}" showOn="button" disabled="#{policeCheck.ynFirstReportSent ne true}"
+                                    requiredMessage="Report Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheck.ynFirstReportSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="reportCalendar"/>
+                    </div>
+
+                    <div class="inputFieldName4Cols">
+                        <p:outputLabel value="First Letter Sent" for="firstLetterCalendar" id="labelFirstLetter"/>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="firstLetterCalendar" value="#{policeCheck.firstLetterDate}" showOn="button" 
+                                    disabled="#{policeCheck.ynFirstLetterSent ne true}"
+                                    requiredMessage="First Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheck.ynFirstLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynFirstLetterSent}">
+                            <p:ajax listener="#{policeCheckController.onFirstLetterOptionChange}" update="firstLetterCalendar saveButton labelFirstLetter"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="firstLetterCalendar"/>
+                    </div>
+
+                    <div class="inputFieldName4Cols">       
+                        <p:outputLabel value="Second Letter Sent" for="firstLetterCalendar" id="labelSecondLetter"/>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="secondLetterCalendar" value="#{policeCheck.secondLetterDate}" showOn="button" 
+                                    disabled="#{policeCheck.ynSecondLetterSent ne true}"
+                                    requiredMessage="Second Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheck.ynSecondLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynSecondLetterSent}">
+                            <p:ajax listener="#{policeCheckController.onSecondLetterOptionChange}" update="secondLetterCalendar saveButton labelSecondLetter"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="secondLetterCalendar"/>
+                    </div>
+
+                    <div class="fieldName2Cols"> 
                         <h:outputText value="PRM Status"/>
                     </div>
-                    <div class="rowEditValue" style="padding-top: 5px">
+                    <div class="fieldValue2Cols">
                         <h:outputText value="#{policeCheck.prmStatus}" />
                     </div>
-                    <div class="rowEditMessage"><p/></div>
                 </p:panel>
 
                 <br/>
-                <h:outputText value="HR Services Comments" style="width: 500px; text-align: center"/>
+                <h:outputText value="HR Services Comments"/>
                 <br/>
                 <p:dataTable var="policeCheckComments" value="#{policeCheck.employee.policeCheckCommentCollection}" 
-                             scrollable="true" scrollHeight="50" class="multiPoliceCheckComments">
-                    <p:column headerText="Date" width="20%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                             scrollable="true" scrollHeight="70" class="multiPoliceCheckComments"
+                             selection="#{policeCheckController.selectedComments}" rowKey="#{policeCheckComments.policeCheckCommentPK.commentDate}">
+                    
+                    <p:ajax event="rowSelect" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton" /> 
+                    <p:ajax event="rowUnselect" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton"/> 
+                    <p:ajax event="rowSelectCheckbox" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton"/> 
+                    <p:ajax event="rowUnselectCheckbox" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton"/> 
+
+                    <p:column width="7%" selectionMode="multiple"/>
+                    <p:column headerText="Date" width="17%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
                         <h:outputText value="#{policeCheckComments.policeCheckCommentPK.commentDate}">
                             <f:convertDateTime pattern="dd/MM/yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Comment" width="40%">
-                        <h:outputText value="#{policeCheckComments.comment}"/>
+                    <p:column headerText="Comment" width="36%" >
+                        <h:inputText value="#{policeCheckComments.comment}" maxlength="255"/>
                     </p:column>
-                    <p:column headerText="User" width="20%">
+                    <p:column headerText="User" width="15%">
                         <h:outputText value="#{policeCheckComments.user}"/>
                     </p:column>
-                    <p:column headerText="Infra ticket" width="20%">
-                        <h:outputText value="#{policeCheckComments.infraTicket}"/>
+                    <p:column headerText="Infra ticket" width="25%">
+                        <h:inputText value="#{policeCheckComments.infraTicket}" maxlength="10"/>
                     </p:column>
                 </p:dataTable>  
                 <br/>
 
                 <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="Delete Comment" id="deleteCommentButton" icon="ui-icon-trash" 
+                                     update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:editPoliceCheckDetail" 
+                                     process="@this @form"
+                                     actionListener="#{policeCheckController.deleteComments()}"
+                                     disabled="#{policeCheckController.selectedComments.size() eq 0}">
+                    </p:commandButton>
                     <p:commandButton value="Add Comment" id="addCommentButton" icon="ui-icon-add" 
                                      oncomplete="PF('commentPoliceChecksDialog').show()"
                                      update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckCommentDialog"
-                                     rendered="#{policeCheckController.selectedPoliceChecks.size() eq 1}"
+                                     process="@this @form"
                                      disabled="#{policeCheckController.tempSelected eq null}">
                     </p:commandButton>
                     <p:commandButton value="Cancel" id="cancelButton" icon="i-icon-arrowreturnthick-1-w" 
                                      oncomplete="handleSaveRequest(args)"
-                                     process="@this,formPoliceCheckDialog"
-                                     update=":tabViewMain:tablePoliceCheckForm @this"
-                                     actionListener="#{policeCheckController.cancel()}">
+                                     process="@this @form">
                     </p:commandButton>
                     <p:commandButton value="Save" id="saveButton" icon="ui-icon-disk" 
-                                     oncomplete="handleSaveRequest(args)"
-                                     update=":tabViewMain:tablePoliceCheckForm"
                                      process="@this @form"
+                                     update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog"
                                      rendered="#{policeCheckController.selectedPoliceChecks.size() eq 1}"
                                      disabled="#{policeCheckController.tempSelected eq null}"
-                                     actionListener="#{policeCheckController.saveSingle()}">
+                                     actionListener="#{policeCheckController.save()}"
+                                     oncomplete="handleSaveRequest(args)">
                     </p:commandButton>
                 </h:panelGroup>
             </h:panelGrid>
 
+            <!--***************** M U L T I   E D I T *********************-->
+
+            <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="editMultiPoliceCheckDetail" 
+                         rendered="#{policeCheckController.editType eq 'EDIT' and policeCheckController.selectedPoliceChecks.size() gt 1}">
+                <p:panel class="policeCheckDetailEditMulti" header="Edit Multiple Police Check Details" id="panelMultiEdit">
+                    <c:set var="policeCheckMulti" value="#{policeCheckController.tempSelected}"/>
+
+                    <div class=" inputFieldName4Cols">       
+                        <p:selectBooleanCheckbox value="#{policeCheckController.arrayChanges[1]}" id="checkReceived">
+                            <p:ajax update="@form" event="change" listener="#{policeCheckController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" Form Received" for="receivedMultiCalendar" id="labelReceivedMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheckMulti.ynReceived}"
+                                       disabled="#{policeCheckController.arrayChanges[1] ne true}">
+                            <p:ajax listener="#{policeCheckController.onReceivedOptionChange}" 
+                                    update="receivedMultiCalendar saveMultiButton labelReceivedMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="receivedMultiCalendar" value="#{policeCheckMulti.receivedDate}" showOn="button" 
+                                    disabled="#{policeCheckMulti.ynReceived ne true}"
+                                    requiredMessage="Received Date is mandatory" showButtonPanel="true"
+                                    required="#{policeCheckMulti.ynReceived eq true}" size="12"/> 
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="receivedMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{policeCheckController.arrayChanges[2]}">
+                            <p:ajax update="@form" event="change" listener="#{policeCheckController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" Form Processed" for="processedMultiCalendar" id="labelProcessedMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheckMulti.ynProcessed}"
+                                       disabled="#{policeCheckController.arrayChanges[2] ne true}">
+                            <p:ajax listener="#{policeCheckController.onProcessedOptionChange}" update="processedMultiCalendar saveMultiButton labelProcessedMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="processedMultiCalendar" value="#{policeCheckMulti.processedDate}" showOn="button" disabled="#{policeCheckMulti.ynProcessed ne true}"
+                                    requiredMessage="Processed Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheckMulti.ynProcessed eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="processedMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{policeCheckController.arrayChanges[3]}">
+                            <p:ajax update="@form" event="change" listener="#{policeCheckController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" First Report Sent" for="reportCalendar" id="labelReportMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheckMulti.ynFirstReportSent}"
+                                       disabled="#{policeCheckController.arrayChanges[3] ne true}">
+                            <p:ajax listener="#{policeCheckController.onReportedOptionChange}" update="reportMultiCalendar saveMultiButton labelReportMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="reportMultiCalendar" value="#{policeCheckMulti.firstReportDate}" showOn="button" disabled="#{policeCheckMulti.ynFirstReportSent ne true}"
+                                    requiredMessage="Report Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheckMulti.ynFirstReportSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="reportMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{policeCheckController.arrayChanges[4]}">
+                            <p:ajax update="@form" event="change" listener="#{policeCheckController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" First Letter Sent" for="firstLetterCalendar" id="labelFirstLetterMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheckMulti.ynFirstLetterSent}"
+                                       disabled="#{policeCheckController.arrayChanges[4] ne true}">
+                            <p:ajax listener="#{policeCheckController.onFirstLetterOptionChange}" update="firstLetterMultiCalendar saveMultiButton labelFirstLetterMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="firstLetterMultiCalendar" value="#{policeCheckMulti.firstLetterDate}" showOn="button" 
+                                    disabled="#{policeCheckMulti.ynFirstLetterSent ne true}"
+                                    requiredMessage="First Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheckMulti.ynFirstLetterSent eq true}" size="12"/>  
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="firstLetterMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{policeCheckController.arrayChanges[5]}">
+                            <p:ajax update="@form" event="change" listener="#{policeCheckController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" Second Letter Sent" for="firstLetterCalendar" id="labelSecondLetterMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheckMulti.ynSecondLetterSent}"
+                                       disabled="#{policeCheckController.arrayChanges[5] ne true}">
+                            <p:ajax listener="#{policeCheckController.onSecondLetterOptionChange}" update="secondLetterMultiCalendar saveMultiButton labelSecondLetterMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="secondLetterMultiCalendar" value="#{policeCheckMulti.secondLetterDate}" showOn="button" 
+                                    disabled="#{policeCheckMulti.ynSecondLetterSent ne true}"
+                                    requiredMessage="Second Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{policeCheckMulti.ynSecondLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="secondLetterMultiCalendar"/>
+                    </div>
+
+                    <div class="inputTextAreaName2Cols">             
+                        <h:outputText value="New Comment"/>
+                    </div>
+                    <div class="inputTextValue2Cols">
+                        <p:inputTextarea autoResize="false" cols="38" maxlength="255" value="#{policeCheckController.newCommentText}"
+                                         id="commentMultiText"/>
+                    </div>
+
+                </p:panel>
+                <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="Cancel" id="cancelMultiButton" icon="i-icon-arrowreturnthick-1-w" 
+                                     oncomplete="handleSaveRequest(args)"
+                                     actionListener="#{policeCheckController.cancel()}">
+                    </p:commandButton>
+                    <p:commandButton value="Save" id="saveMultiButton" icon="ui-icon-disk" 
+                                     disabled="#{!policeCheckController.changeSelected}"
+                                     process="editMultiPoliceCheckDetail"
+                                     update="tabViewMain:tablePoliceCheckForm"
+                                     actionListener="#{policeCheckController.save()}"
+                                     oncomplete="handleSaveRequest(args)">
+                    </p:commandButton>
+                </h:panelGroup>
+            </h:panelGrid>
+
+
+            <!--***************** J A V A   S C R I P T *********************-->
+
             <h:outputScript target="head">
                 function handleSaveRequest(args) { 
-                if( args.notValid | args.tableShown  ){
-                return;
-                }
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                <!--PF('multiPoliceChecksDialog').show();-->
+                return false;
+                }else{
                 PF('multiPoliceChecksDialog').hide();
+                }
                 }  
             </h:outputScript>
 
         </h:form>
     </p:dialog> 
 
+    <!--***************** C O M M E N T S *********************-->
 
     <p:dialog header="Add Comments" widgetVar="commentPoliceChecksDialog" modal="true" appendTo="@(body)"
               closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="commentPoliceChecksDlg">
@@ -251,48 +506,50 @@
         <h:form id="formPoliceCheckCommentDialog">
             <p:panel class="policeCheckDetailComment">
                 <c:set var="selectedComment" value="#{policeCheckController.selectedComment}"/>
-                <div class="rowLOName">             
+                <div class="fieldName2Cols">             
                     <h:outputText value="Employee ID"/>
                 </div>
-                <div class="rowLOValue">
+                <div class="fieldValue2Cols">
                     <h:outputText value="#{policeCheck.policeCheckPK.idNumber}" />
                 </div>
 
-                <div class="rowLOName">             
+                <div class="fieldName2Cols">             
                     <h:outputText value="Full Name"/>
                 </div>       
-                <div class="rowLOValue">
+                <div class="fieldValue2Cols">
                     <h:outputText value="#{policeCheck.employee.surname} #{policeCheck.employee.firstName}" />
                 </div>
 
-                <div class="rowLOName">             
+                <div class="fieldName2Cols">             
                     <h:outputText value="Expiry Date"/>
                 </div>
-                <div class="rowLOValue">
+                <div class="fieldValue2Cols">
                     <h:outputText value="#{policeCheck.expiryDate}">
                         <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </div>
-                
-                <div class="rowEditName" style="height: 60px">             
+
+                <div class="inputTextAreaName2Cols">             
                     <h:outputText value="New Comment"/>
                 </div>
-                <div class="rowEditValue"  style="height: 60px">
-                    <p:inputTextarea autoResize="false" maxlength="255" value="#{selectedComment.comment}"
-                                     style="width: 180%" id="commentText"/>
+                <div class="inputTextValue2Cols">
+                    <p:inputTextarea autoResize="false" cols="33" maxlength="255" value="#{selectedComment.comment}"
+                                     id="commentText"/>
                 </div>
-                <div class="rowEditMessage" style="height: 60px"></div>
 
-                <div class="rowEditName">             
+                <div class="inputFieldName3Cols">             
                     <h:outputText value="Infra Ticket"/>
                 </div>
-                <div class="rowEditValue">
-                    <h:inputText value="#{selectedComment.infraTicket}"/>
+                <div class="inputFieldValue3Cols">
+                    <p:inputMask id="infraTicket" value="#{selectedComment.infraTicket}" mask="999999"/>
+<!--                    <h:inputText value="#{selectedComment.infraTicket}">
+                        <f:convertNumber maxIntegerDigits="7"/>
+                    </h:inputText>-->
                 </div>
-                <div class="rowEditMessage"></div>
+                <div class="inputFieldMessage3Cols"></div>
 
             </p:panel>
-
+            <br/>
             <h:panelGroup style="display:block; text-align:center">
                 <p:commandButton value="Cancel" id="cancelCommentButton" icon="i-icon-arrowreturnthick-1-w" 
                                  oncomplete="PF('commentPoliceChecksDialog').hide()"

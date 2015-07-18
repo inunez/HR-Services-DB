@@ -20,9 +20,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
-import jsf_classes.exceptions.NonexistentEntityException;
-import jsf_classes.exceptions.PreexistingEntityException;
-import jsf_classes.exceptions.RollbackFailureException;
+import controllers.exceptions.NonexistentEntityException;
+import controllers.exceptions.PreexistingEntityException;
+import controllers.exceptions.RollbackFailureException;
 
 /**
  *

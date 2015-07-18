@@ -6,8 +6,11 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -175,6 +178,23 @@ public class Employee implements Serializable {
 
     public void setEmployeePK(EmployeePK employeePK) {
         this.employeePK = employeePK;
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Employee cloned = (Employee) super.clone();
+        
+        ArrayList <PoliceCheckComment> newComments = new ArrayList();
+        for (PoliceCheckComment newComment : policeCheckCommentCollection) {
+            try {
+                newComments.add((PoliceCheckComment) newComment.clone());
+            } catch (CloneNotSupportedException ex) {
+//                Logger.getLogger(Employee.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        cloned.policeCheckCommentCollection = newComments;
+        
+        return cloned;
     }
 
     public String getSurname() {
