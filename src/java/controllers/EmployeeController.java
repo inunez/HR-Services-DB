@@ -28,24 +28,38 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
+import entities.EarningLeave;
+import entities.Payroll;
+import entities.Visa;
+import java.util.Date;
+import java.util.stream.Collectors;
 import org.primefaces.context.RequestContext;
-
 
 @Named("employeeController")
 @SessionScoped
 public class EmployeeController implements Serializable {
 
-    @EJB private session_beans.EmployeeFacade ejbFacade;
+    @EJB
+    private session_beans.EmployeeFacade ejbFacade;
     private List<Employee> items = null;
     private Employee selected;
     private String searchText;
     private String searchType;
     private boolean showEmployeesTable = false;
     private boolean employeeSelected = false;
-    private int currentTabIndex=0;
-    private String status="";
-    
-    private final int[] DEFAULT_RANGE = {0,99};
+    private int currentTabIndex = 0;
+    private String status = "";
+
+    Collection<Uniform> uniformSortedCollection;
+    Collection<Earning> earningDistinctCollection;
+    ArrayList<EarningSummary> earningSummaryList;
+    ArrayList<Payroll> payrollList;
+    ArrayList<EarningLeave> leaveList;
+    ArrayList<PoliceCheck> policeCheckList;
+    ArrayList<Visa> visaList;
+    ArrayList<Employee> reportsToList;
+
+    private final int[] DEFAULT_RANGE = {0, 99};
     private final int SEARCH_BY_NAME = 1;
     private final int SEARCH_BY_ID = 2;
     private final int SEARCH_BY_SERVICE = 3;
@@ -54,6 +68,7 @@ public class EmployeeController implements Serializable {
     public EmployeeController() {
         searchType = Integer.toString(SEARCH_BY_NAME);
         status = "A";
+        clearCollections();
     }
 
     public boolean isEmployeeSelected() {
@@ -63,7 +78,7 @@ public class EmployeeController implements Serializable {
     public void setEmployeeSelected(boolean employeeSelected) {
         this.employeeSelected = employeeSelected;
     }
-    
+
     public Employee getSelected() {
         return selected;
     }
@@ -75,10 +90,11 @@ public class EmployeeController implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
     public void setSelected(Employee selected) {
         this.selected = selected;
-        employeeSelected = selected != null; 
+        employeeSelected = selected != null;
+        clearCollections();
     }
 
     public boolean isShowEmployeesTable() {
@@ -104,13 +120,13 @@ public class EmployeeController implements Serializable {
     public void setCurrentTabIndex(int currentTabIndex) {
         this.currentTabIndex = currentTabIndex;
     }
-    
+
     public void setShowEmployeesTable(boolean showEmployeesTable) {
         this.showEmployeesTable = showEmployeesTable;
     }
-    
+
     protected void setEmbeddableKeys() {
-            selected.getEmployeePK().setStatus(selected.getStatus1().getStatus());
+        selected.getEmployeePK().setStatus(selected.getStatus1().getStatus());
     }
 
     protected void initializeEmbeddableKey() {
@@ -147,7 +163,7 @@ public class EmployeeController implements Serializable {
     }
 
     public List<Employee> getItems() {
-        
+
         if (items == null) {
             this.searchText = "";
             searchEmployee();
@@ -197,7 +213,7 @@ public class EmployeeController implements Serializable {
         return getFacade().findAll();
     }
 
-    @FacesConverter(forClass=Employee.class)
+    @FacesConverter(forClass = Employee.class)
     public static class EmployeeControllerConverter implements Converter {
 
         private static final String SEPARATOR = "#";
@@ -208,7 +224,7 @@ public class EmployeeController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            EmployeeController controller = (EmployeeController)facesContext.getApplication().getELResolver().
+            EmployeeController controller = (EmployeeController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "employeeController");
             return controller.getEmployee(getKey(value));
         }
@@ -244,40 +260,40 @@ public class EmployeeController implements Serializable {
             }
         }
 
-    } 
-    
-    public void searchEmployee(){
+    }
+
+    public void searchEmployee() {
         String tempString = "";
-        String [] search = new String[4];
+        String[] search = new String[4];
         int type = Integer.parseInt(searchType);
-        
+
         showEmployeesTable = false;
-        
+
         search[2] = "status";
         search[3] = status;
-        
+
         tempString = searchText;
         switch (type) {
             case SEARCH_BY_NAME:
-                search[0]="findByFullName";
-                search[1]="fullName";
+                search[0] = "findByFullName";
+                search[1] = "fullName";
                 searchText = "%".concat(searchText).concat("%");
                 break;
             case SEARCH_BY_ID:
-                search[0]="findByIdNumber";
-                search[1]="idNumber";
+                search[0] = "findByIdNumber";
+                search[1] = "idNumber";
                 searchText = "000000".concat(searchText);
                 int len = searchText.length();
-                searchText = searchText.substring(len-6);
+                searchText = searchText.substring(len - 6);
                 break;
             case SEARCH_BY_SERVICE:
-                search[0]="findByAccount";
-                search[1]="accountDesc";
+                search[0] = "findByAccount";
+                search[1] = "accountDesc";
                 searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             case SEARCH_BY_POSITION:
-                search[0]="findByPosition";
-                search[1]="position";
+                search[0] = "findByPosition";
+                search[1] = "position";
                 searchText = "%".concat(searchText.toUpperCase()).concat("%");
                 break;
             default:
@@ -285,19 +301,20 @@ public class EmployeeController implements Serializable {
         }
 
         try {
-            items = ejbFacade.getEmployeeByType(searchText,search);
-            if(items.size()== 1){
+            items = ejbFacade.getEmployeeByType(searchText, search);
+            if (items.size() == 1) {
+                clearCollections();
                 selected = items.get(0);
-                currentTabIndex=1;
-            }else{
+                currentTabIndex = 1;
+            } else {
                 //test
 //                RequestContext.getCurrentInstance().addCallbackParam("tableShown", true);
-                if(items.size()>0){
-                    int max = DEFAULT_RANGE[1] > items.size()?items.size():DEFAULT_RANGE[1]; 
+                if (items.size() > 0) {
+                    int max = DEFAULT_RANGE[1] > items.size() ? items.size() : DEFAULT_RANGE[1];
                     items = items.subList(DEFAULT_RANGE[0], max);
                     showEmployeesTable = true;
                     currentTabIndex = 2;
-                }else{
+                } else {
                     RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
                     addErrorMessage("No results found");
                     currentTabIndex = 2;
@@ -319,26 +336,34 @@ public class EmployeeController implements Serializable {
         }
         searchText = tempString;
     }
-    
-    
+
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
-    
+
     public Collection<Earning> getEarningDistinctCollection() {
-        Collection<Earning> earnings = null;
-        if(selected != null){
-            earnings = getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
+
+        if (selected != null && earningDistinctCollection == null) {
+            earningDistinctCollection = getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
         }
-        return (earnings);
+        return earningDistinctCollection;
 
     }
 
+    public ArrayList<Payroll> getPayrollList() {
+
+        if (selected != null && payrollList == null) {
+            payrollList = new ArrayList<>(selected.getPayrollCollection());
+            Comparator<Payroll> dateComparator = (Payroll p1, Payroll p2) -> p2.getPayrollPK().getEffectiveDate().compareTo(p1.getPayrollPK().getEffectiveDate());
+            Collections.sort(payrollList, dateComparator);
+        }
+        return payrollList;
+    }
+
     public ArrayList<EarningSummary> getEarningSummaryList() {
-        ArrayList<EarningSummary> earningSummaryList;
-        
-        earningSummaryList = new ArrayList<>(selected.getEarningSummaryCollection());
-        if (selected != null) {
+
+        if (selected != null && earningSummaryList == null) {
+            earningSummaryList = new ArrayList<>(selected.getEarningSummaryCollection());
             Comparator<EarningSummary> dateComparator = (EarningSummary p1, EarningSummary p2) -> p2.getEarningSummaryPK().getPaidUpToDate().compareTo(p1.getEarningSummaryPK().getPaidUpToDate());
             Collections.sort(earningSummaryList, dateComparator);
         }
@@ -346,8 +371,8 @@ public class EmployeeController implements Serializable {
     }
 
     public ArrayList<PoliceCheck> getPoliceCheckList() {
-        ArrayList<PoliceCheck> policeCheckList = null;
-        if (selected != null) {
+
+        if (selected != null && policeCheckList == null) {
             policeCheckList = new ArrayList<>(selected.getPoliceCheckCollection());
 
             Comparator<PoliceCheck> dateComparator = (PoliceCheck p1, PoliceCheck p2) -> p2.getExpiryDate().compareTo(p1.getExpiryDate());
@@ -355,7 +380,46 @@ public class EmployeeController implements Serializable {
         }
         return policeCheckList;
     }
-    
+
+    public ArrayList<Visa> getVisaList() {
+
+        if (selected != null && visaList == null) {
+            visaList = new ArrayList<>(selected.getVisaCollection());
+
+            Comparator<Visa> dateComparator = (Visa p1, Visa p2) -> p2.getVisaExpiryDate().compareTo(p1.getVisaExpiryDate());
+            Collections.sort(visaList, dateComparator);
+        }
+        return visaList;
+    }
+
+    public ArrayList<EarningLeave> getLeaveList() {
+
+        if (selected != null && leaveList == null) {
+            leaveList = new ArrayList<>(selected.getEarningLeaveCollection());
+
+            Comparator<EarningLeave> dateComparator = (EarningLeave p1, EarningLeave p2) -> p2.getEarningLeavePK().getDateAccruedTo().compareTo(p1.getEarningLeavePK().getDateAccruedTo());
+            Collections.sort(leaveList, dateComparator);
+
+            Date day = leaveList.get(0).getEarningLeavePK().getDateAccruedTo();
+            leaveList = leaveList.stream().filter(p -> p.getEarningLeavePK().getDateAccruedTo().compareTo(day) == 0).collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        return leaveList;
+    }
+
+    public ArrayList<Employee> getReportsToList() {
+
+        if (selected != null && reportsToList == null) {
+            if (!selected.getReportsToPositionId().getEmployeeCollection().isEmpty()) {
+                reportsToList = new ArrayList<>(selected.getReportsToPositionId().getEmployeeCollection());
+
+                reportsToList = reportsToList.stream().filter(p -> p.getEmployeePK().getStatus().equals("A")).collect(Collectors.toCollection(ArrayList::new));
+                
+            }
+        }
+        return reportsToList;
+    }
+
     public Collection<Plaxa> getPlaxaSortedCollection() {
         Collection<Plaxa> plaxas = null;
         if (selected != null) {
@@ -364,16 +428,33 @@ public class EmployeeController implements Serializable {
         return plaxas;
         //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
     }
-    
+
     public Collection<Uniform> getUniformSortedCollection() {
-        Collection<Uniform> uniforms = null;
-        if (selected != null) {
-            uniforms = selected.getUniformCollection();
+
+        if (selected != null && uniformSortedCollection == null) {
+            uniformSortedCollection = selected.getUniformCollection();
         }
-        return uniforms;
+        return uniformSortedCollection;
         //return getFacade().getEarningDistinctCollection(selected.getEmployeePK().getIdNumber());
     }
+
+    public void linkToAnotherEmployee() {
+
+//        selected = selected.getReportsToPositionId().getEmployeeCollection().stream().findFirst().get();
+        if (selected.getReportsToPositionId().getEmployeeCollection().iterator().hasNext()) {
+            selected = selected.getReportsToPositionId().getEmployeeCollection().iterator().next();
+            clearCollections();
+        }
+    }
+
+    private void clearCollections() {
+        uniformSortedCollection = null;
+        earningDistinctCollection = null;
+        payrollList = null;
+        earningSummaryList = null;
+        leaveList = null;
+        policeCheckList = null;
+        visaList = null;
+        reportsToList = null;
+    }
 }
-
-
-                        

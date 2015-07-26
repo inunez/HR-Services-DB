@@ -41,6 +41,7 @@ public class PoliceCheckFacade extends AbstractFacade<PoliceCheck> {
         if(!"".equals(searchType[2])){
             namedQuery.setParameter(searchType[2], searchType[3]);
         }
+        //TO DO put 2 months in a parameter
         LocalDate twoMonths = LocalDate.now().plusMonths(2);
         
         namedQuery.setParameter("expiryDate", new SimpleDateFormat("yyyy-MM-dd").parse(twoMonths.toString()));

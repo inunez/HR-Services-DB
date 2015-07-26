@@ -125,7 +125,7 @@
                 <!--</div>-->
 
                 <h:panelGroup style="display:block; text-align:center">
-                    <p:commandButton value="Back" id="backButton" icon="i-icon-arrowreturnthick-1-w" 
+                    <p:commandButton value="Back" id="backButton" icon="ui-icon-arrowreturnthick-1-w" 
                                      oncomplete="handleSaveRequest(args)"
                                      actionListener="#{policeCheckController.cancel()}"
                                      update="tabViewMain:tablePoliceCheckForm">
@@ -209,7 +209,7 @@
                     </div>
                     <div class="optionValue4Cols">
                         <p:inputSwitch offLabel="No" onLabel="Yes" value="#{policeCheck.ynProcessed}">
-                            <p:ajax listener="#{policeCheckController.onProcessedOptionChange}" update="processedCalendar saveButton labelProcessed"/> 
+                            <p:ajax listener="#{policeCheckController.onProcessedOptionChange}" update="processedCalendar prmButton  saveButton labelProcessed"/> 
                         </p:inputSwitch>
                     </div>
                     <div class="inputFieldValue4Cols">
@@ -307,32 +307,37 @@
                         <h:outputText value="#{policeCheckComments.user}"/>
                     </p:column>
                     <p:column headerText="Infra ticket" width="25%">
-                        <h:inputText value="#{policeCheckComments.infraTicket}" maxlength="10"/>
+                        <p:inputMask id="infraTicket" value="#{policeCheckComments.infraTicket}" mask="999999"/>
                     </p:column>
                 </p:dataTable>  
                 <br/>
 
                 <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="PRM Form" id="prmButton" icon="ui-icon-note" 
+                                     oncomplete="PF('prmDataDialog').show()"
+                                     process="@this @form"
+                                     disabled="#{policeCheck.ynProcessed ne true}"
+                                     update=":tabViewMain:tablePoliceCheckForm:prmDataDlg">
+                    </p:commandButton>
                     <p:commandButton value="Delete Comment" id="deleteCommentButton" icon="ui-icon-trash" 
                                      update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:editPoliceCheckDetail" 
                                      process="@this @form"
                                      actionListener="#{policeCheckController.deleteComments()}"
                                      disabled="#{policeCheckController.selectedComments.size() eq 0}">
                     </p:commandButton>
-                    <p:commandButton value="Add Comment" id="addCommentButton" icon="ui-icon-add" 
+                    <p:commandButton value="Add Comment" id="addCommentButton" icon="ui-icon-comment" 
                                      oncomplete="PF('commentPoliceChecksDialog').show()"
                                      update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckCommentDialog"
                                      process="@this @form"
                                      disabled="#{policeCheckController.tempSelected eq null}">
                     </p:commandButton>
-                    <p:commandButton value="Cancel" id="cancelButton" icon="i-icon-arrowreturnthick-1-w" 
+                    <p:commandButton value="Cancel" id="cancelButton" icon="ui-icon-arrowreturnthick-1-w" 
                                      oncomplete="handleSaveRequest(args)"
                                      process="@this @form">
                     </p:commandButton>
                     <p:commandButton value="Save" id="saveButton" icon="ui-icon-disk" 
                                      process="@this @form"
                                      update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog"
-                                     rendered="#{policeCheckController.selectedPoliceChecks.size() eq 1}"
                                      disabled="#{policeCheckController.tempSelected eq null}"
                                      actionListener="#{policeCheckController.save()}"
                                      oncomplete="handleSaveRequest(args)">
@@ -566,5 +571,103 @@
             </h:panelGroup>
         </h:form>   
     </p:dialog>
+    
+    <!--***************** I N F O   F O R   P R M *********************-->
 
+    <p:dialog header="PRM Data" widgetVar="prmDataDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="prmDataDlg">
+        <p:ajax event="close"/>        
+        <h:form id="formPRMDataDialog">
+            <p:panel class="prmDetails">
+                <c:set var="policeCheckPRM" value="#{policeCheckController.selectedPoliceChecks[0]}"/>
+                
+                <div class="fieldName2Cols"> 
+                    <h:inputText value="Employee ID" readonly="true"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.policeCheckPK.idNumber}" readonly="true" style="border: 0"/>
+                </div>
+
+                <div class="fieldName2Cols"> 
+                    <h:outputText value="Position Title"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.positionId.positionTitle}" readonly="true"/>
+                </div>
+
+                <div class="fieldName2Cols"> 
+                    <h:outputText value="Account Code"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.payrollCollection[0].accountNumber.accountNumber}" readonly="true"/>
+                </div>
+                
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Last Name"/>
+                </div>       
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.surname}" readonly="true"/>
+                </div>
+                
+                <div class="fieldName2Cols">             
+                    <h:outputText value="First Name"/>
+                </div>       
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.firstName}" readonly="true"/>
+                </div>
+                
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Middle Name"/>
+                </div>       
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.middleName eq null ? '-' : policeCheckPRM.employee.middleName}" readonly="true"/>
+                </div>
+
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Date of Birth"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.dateofBirth}" readonly="true">
+                         <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:inputText>
+                </div>
+
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Gender"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.gender}" readonly="true"/>
+                </div>
+
+                <div class="fieldName2Cols">
+                    <h:outputText value="Home Address:" />
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.homeAddress}" readonly="true"/>
+                </div>
+                <div class="fieldName2Cols">
+                    <h:outputText value="Suburb" />
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.suburb}" readonly="true"/>
+                </div>
+                <div class="fieldName2Cols">
+                    <h:inputText value="Post Code / State" />
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:inputText value="#{policeCheckPRM.employee.postcode} / #{policeCheckPRM.employee.stateCode.stateCode}" readonly="true"/>
+                </div>
+
+            </p:panel>
+            <br/>
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Cancel" id="cancelPRMButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('prmDataDialog').hide()"
+                                 process="@this"
+                                 update="@this">
+                </p:commandButton>
+            </h:panelGroup>
+        </h:form>   
+    </p:dialog>
+    
 </ui:composition>

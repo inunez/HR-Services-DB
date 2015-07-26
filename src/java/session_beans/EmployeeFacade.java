@@ -7,10 +7,7 @@ package session_beans;
 
 import entities.Earning;
 import entities.Employee;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -55,4 +52,29 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
 
         return namedQuery.getResultList();
     }
+    
+    public Employee findManager(Employee employee, boolean checkServiceManager){
+        Employee manager;
+        
+        if (employee.getReportsToPositionId().getEmployeeCollection().iterator().hasNext()){
+            //manager assigned
+            manager = employee.getReportsToPositionId().getEmployeeCollection().iterator().next();
+            //for police check and visa report check team leader or coordinator
+            if (checkServiceManager){
+                String positionTitle = manager.getPositionId().getPositionTitle().toUpperCase();
+                if(positionTitle.contains("COOR") || positionTitle.contains("LEADER") || positionTitle.contains("TL") ){
+                    manager = employee.getLocationCode().getEmployee();
+                }
+            }
+        }else{
+            //facility manager
+            manager = employee.getLocationCode().getEmployee();
+        }
+        //ROM or COM
+        if (manager == null){
+            
+        }
+        return manager;
+    }
+    
 }

@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -61,7 +59,7 @@ import javax.xml.bind.annotation.XmlTransient;
 })
 
 public class Employee implements Serializable {
-   
+    
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected EmployeePK employeePK;
@@ -139,6 +137,24 @@ public class Employee implements Serializable {
     @JoinColumn(name = "term_reason", referencedColumnName = "term_reason")
     @ManyToOne
     private TerminationReason termReason;
+    @JoinColumn(name = "level2_code", referencedColumnName = "state_code")
+    @ManyToOne
+    private State level2Code;
+    @JoinColumn(name = "level1_code", referencedColumnName = "level1_code")
+    @ManyToOne
+    private Level1 level1Code;
+    @JoinColumn(name = "level3_code", referencedColumnName = "level3_code")
+    @ManyToOne
+    private Level3 level3Code;
+    @JoinColumn(name = "level4_code", referencedColumnName = "level4_code")
+    @ManyToOne
+    private Level4 level4Code;
+    @JoinColumn(name = "level5_code", referencedColumnName = "level5_code")
+    @ManyToOne
+    private Level5 level5Code;
+    @JoinColumn(name = "location_code", referencedColumnName = "location_code")
+    @ManyToOne
+    private Location locationCode;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<EarningLeave> earningLeaveCollection;
@@ -160,6 +176,8 @@ public class Employee implements Serializable {
     private Collection<Uniform> uniformCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Plaxa> plaxaCollection;
+    @OneToMany(mappedBy = "employee")
+    private Collection<Location> locationCollection;
     
     public Employee() {
     }
@@ -427,6 +445,7 @@ public class Employee implements Serializable {
 
     @XmlTransient
     public Collection<Earning> getEarningCollection() {
+        
         return earningCollection;
     }
 
@@ -533,6 +552,63 @@ public class Employee implements Serializable {
     @Override
     public String toString() {
         return "entities.Employee[ employeePK=" + employeePK + " ]";
+    }
+
+    public State getLevel2Code() {
+        return level2Code;
+    }
+
+    public void setLevel2Code(State level2Code) {
+        this.level2Code = level2Code;
+    }
+
+    public Level1 getLevel1Code() {
+        return level1Code;
+    }
+
+    public void setLevel1Code(Level1 level1Code) {
+        this.level1Code = level1Code;
+    }
+
+    public Level3 getLevel3Code() {
+        return level3Code;
+    }
+
+    public void setLevel3Code(Level3 level3Code) {
+        this.level3Code = level3Code;
+    }
+
+    public Level4 getLevel4Code() {
+        return level4Code;
+    }
+
+    public void setLevel4Code(Level4 level4Code) {
+        this.level4Code = level4Code;
+    }
+
+    public Level5 getLevel5Code() {
+        return level5Code;
+    }
+
+    public void setLevel5Code(Level5 level5Code) {
+        this.level5Code = level5Code;
+    }
+
+    @XmlTransient
+    public Collection<Location> getLocationCollection() {
+        return locationCollection;
+    }
+
+    public void setLocationCollection(Collection<Location> locationCollection) {
+        this.locationCollection = locationCollection;
+    }
+
+    public Location getLocationCode() {
+        return locationCode;
+    }
+
+    public void setLocationCode(Location locationCode) {
+        this.locationCode = locationCode;
     }
 
     

@@ -81,53 +81,63 @@ tr.jsfcrud_even_row {
     top: 50%;
 }
 
-.fieldNameHigh2Cols{
+.fieldNameHigh3Cols{
     background-color: #99ff99;
     width: 21%;
     color: #000000;
     float: left;
-    margin-top: 5px;
+    margin: 2px;
+    padding: 2px;
     /*font-size: large;*/
 }
 
-.fieldValueHigh2Cols{
+.fieldValueHigh3Cols{
     background-color: #99ff99;
-    width: 50%;
+    width: 47%;
     color: #000000;
     float: right;
-    margin-top: 5px;
+    margin: 2px;
+    padding: 2px;
 }
 
 .fieldName2Cols{
     width: 30%;
     float: left;
     border: solid 1px;
+    margin: 2px;
+    padding: 2px
 }
 
 .fieldValue2Cols{
-    width: 68%;
+    width: 64%;
     float: right;
     border: solid 1px;
-    margin: 0px;
+    margin: 2px;
+    padding: 2px
 }
 
 .fieldName3Cols{
     width: 30%;
     float: left;
     border: solid 1px;
+    margin: 2px;
+    padding: 2px
 }
 
 .fieldOption3Cols{
-    width: 15%;
+    width: 12%;
     float: left;
     border: solid 1px;
+    margin: 2px 2px 2px 4px;
+    padding: 2px
 }
 
 .fieldValue3Cols{
-    width: 53%;
+    width: 51%;
     float: right;
     border: solid 1px;
-    margin: 0px;
+    margin: 2px;
+    padding: 2px
 }
 
 .inputTextAreaName2Cols{
@@ -136,7 +146,6 @@ tr.jsfcrud_even_row {
     float: left;
     padding-top: 12px
 }
-
 
 .inputFieldName2Cols{
     width: 30%;
@@ -198,28 +207,30 @@ tr.jsfcrud_even_row {
 
 
 .fieldValueRight2Cols{
-    width: 67%;
+    width: 64%;
     float: right;
     border: solid 1px;
-    margin: 0px;
-    padding-right: 1%;
+    margin: 2px;
+    padding: 2px;
     text-align: right;
 }
-.fieldNameHigh2Cols2{
+.fieldNameHigh2Cols{
     background-color: #99ff99;
-    width: 40%;
+    width: 30%;
     color: #000000;
     float: left;
-    margin-top: 5px;
+    margin: 2px;
+    padding: 2px;
     /*font-size: large;*/
 }
 
-.fieldValueHigh2Cols2{
+.fieldValueHigh2Cols{
     background-color: #99ff99;
-    width: 60%;
+    width: 66%;
     color: #000000;
     float: left;
-    margin-top: 5px;
+    margin: 2px;
+    padding: 2px;
 }
 
 .photoBox{
@@ -230,21 +241,25 @@ tr.jsfcrud_even_row {
     float: left;
 }
 
+#personalData{
+    /*width: 300px;*/
+}
+
 .panelPersonalData{
     width: 400px; 
-    height: 300px;
+    height: 370px;
     /*position: relative;*/
 }
 
 .panelPositionData{
     width: 400px; 
-    height: 150px;
+    height: 180px;
     /*position: relative;*/
 }
 
 .panelPayrollData{
     width: 400px; 
-    height: 120px;
+    height: 130px;
     /*position: relative;*/
 }
 
@@ -256,7 +271,7 @@ tr.jsfcrud_even_row {
 
 .panelPoliceCheckData{
     width: 400px; 
-    height: 200px;
+    height: 165px;
     /*position: relative;*/
 }
 
@@ -268,7 +283,7 @@ tr.jsfcrud_even_row {
 
 .policeCheckDetailView{
     width: 500px; 
-    height: 200px;
+    height: 275px;
     /*position: relative;*/
 }
 
@@ -303,30 +318,37 @@ tr.jsfcrud_even_row {
 
 .panelLeaveData{
     width: 400px; 
-    height: 130px;
-    /*position: relative;*/
-}
-
-.panelEarningSummaryData{
-    width: 350px; 
-    height: 260px;
-    /*position: relative;*/
-}
-
-.panelStructureData{
-    width: 350px; 
-    height: 120px;
-    /*position: relative;*/
-}
-
-.panelVisaData{
-    width: 350px; 
     height: 200px;
     /*position: relative;*/
 }
 
+.panelEarningSummaryData{
+    /* TO DO chage width to 400 depending on screen width > 1400 */
+    width: 400px; 
+    height: 335px;
+    /*position: relative;*/
+}
+
+.panelStructureData{
+    width: 400px; 
+    height: 130px;
+    /*position: relative;*/
+}
+
+.panelVisaData{
+    width: 400px; 
+    height: 200px;
+    /*position: relative;*/
+}
+
+.prmDetails{
+    width: 430px; 
+    height: 300px;
+    /*position: relative;*/
+}
+
 #board{
-    /*width: 200%;*/
+    /*width: 30%;*/
 }
 
 #Terminated{
@@ -356,4 +378,12 @@ tr.jsfcrud_even_row {
 
 #ui-datepicker-div {   
     z-index: 9999 !important;   
+}
+
+#tabViewMain{
+    height: 100%;
+}
+
+#mainBody{
+/*    width: 10%*/
 }

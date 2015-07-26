@@ -1,14 +1,14 @@
 <ui:composition 
     xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
     <h:form id="mainBody">
         <p:growl id="msgs" showDetail="true" />
-        <p:dashboard id="board" model="#{dashboardView.model}">
+        <p:dashboard id="board" model="#{dashboardView.model}" >
 
             <p:ajax event="reorder" listener="#{dashboardView.handleReorder}" update="msgs" />
 
@@ -18,37 +18,36 @@
                 <div class="panelPersonalData">
                     <div>
                         <div class="photoBox"/>
-                        <div class="fieldNameHigh2Cols">
+                        <div class="fieldNameHigh3Cols">
                             <h:outputText value="Status:"/>
                         </div>
-                        <div class="fieldValueHigh2Cols" id="#{employeeSelected.status1.description}">
+                        <div class="fieldValueHigh3Cols" id="#{employeeSelected.status1.description}">
                             <h:outputText value="#{employeeSelected.status1.description}"/>
                         </div>
-                        <div class="fieldNameHigh2Cols">
+                        <div class="fieldNameHigh3Cols">
                             <h:outputText value="ID Number:"/>
                         </div>
-                        <div class="fieldValueHigh2Cols">
+                        <div class="fieldValueHigh3Cols">
                             <h:outputText value="#{employeeSelected.employeePK.idNumber}"/>
                         </div>
-                        <div class="fieldNameHigh2Cols">
+                        <div class="fieldNameHigh3Cols">
                             <h:outputText value="Name:"/>
                         </div>
-                        <div class="fieldValueHigh2Cols">
+                        <div class="fieldValueHigh3Cols">
                             <h:outputText value="#{employeeSelected.firstName}"/>
                         </div>
-                        <div class="fieldNameHigh2Cols">
+                        <div class="fieldNameHigh3Cols">
                             <h:outputText value="Surname:"/>
                         </div>
-                        <div class="fieldValueHigh2Cols">
+                        <div class="fieldValueHigh3Cols">
                             <h:outputText value="#{employeeSelected.surname}" />
                         </div>
-                        <div class="fieldNameHigh2Cols">
+                        <div class="fieldNameHigh3Cols">
                             <h:outputText value="Account:"/>
                         </div>
-                        <div class="fieldValueHigh2Cols">
+                        <div class="fieldValueHigh3Cols">
                             <h:outputText value="#{employeeSelected.payrollCollection[0].accountNumber.accountNumber} - #{employeeSelected.payrollCollection[0].accountNumber.accountDescription}"/>
                         </div>
-
                     </div>
                     <div style="clear: both">
                         <div class="fieldName2Cols">
@@ -63,8 +62,9 @@
                             <h:outputText value="Reports to:" />
                         </div>
                         <div class="fieldValue2Cols">
-                            <h:outputText value= "#{employeeSelected.reportsToPositionId.employeeCollection[0].firstName} 
-                                          #{employeeSelected.reportsToPositionId.employeeCollection[0].surname}" />
+                            <p:commandLink value="#{employeeController.reportsToList.size() eq 0 ? '' : employeeController.reportsToList[0].employeePK.idNumber}-
+                                           #{employeeController.reportsToList[0].firstName} #{employeeController.reportsToList[0].surname}"
+                                           actionListener="#{employeeController.linkToAnotherEmployee()}" update="mainBody"/>
                         </div>
                         <div class="fieldName2Cols">
                             <h:outputText value="Home Address:" />
@@ -100,19 +100,19 @@
                             <h:outputText value="Police Check" />
                         </div>
                         <div class="fieldValue2Cols">
-                            <h:outputText value="#{employeeSelected.policeCheckCollection[0].expiryDate}">
+<!--                            <h:outputText value="#{employeeSelected.policeCheckCollection[0].expiryDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </h:outputText>
+                            </h:outputText>-->
                             <h:outputText value=" Ref.:#{employeeSelected.policeCheckCollection[0].precedaComment} "/>
                         </div>
                         <div class="fieldName2Cols">
                             <h:outputText value="Visa Details" />
                         </div>
                         <div class="fieldValue2Cols">
-                            <h:outputText value="#{employeeSelected.visaCollection[0].visaExpiryDate}">
+<!--                            <h:outputText value="#{employeeSelected.visaCollection[0].visaExpiryDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </h:outputText>
-                            <h:outputText value=" Ref.:#{employeeSelected.visaCollection[0].precedaComment1} "/>
+                            </h:outputText>-->
+                            <h:outputText value=" Type:#{employeeSelected.visaCollection[0].precedaComment1} "/>
                         </div>
                     </div>
                 </div>
@@ -142,73 +142,87 @@
                         <h:outputText value="Reports To:"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.reportsToPositionId.positionTitle}"/>
+                        <h:outputText value="#{employeeController.reportsToList.size() eq 0 ? 'N/A' : employeeSelected.reportsToPositionId.positionTitle}"/>
                     </div>
-                    <div class="fieldNameHigh2Cols2">
+                    <div class="fieldNameHigh2Cols">
                         <h:outputText value="Name:"/>
                     </div>
-                    <div class="fieldValueHigh2Cols2">
-                        <h:outputText value="#{employeeSelected.reportsToPositionId.employeeCollection[0].firstName} 
-                                      #{employeeSelected.reportsToPositionId.employeeCollection[0].surname}"/>
+                    <div class="fieldValueHigh2Cols">
+                        <h:outputText value="#{employeeController.reportsToList.size() eq 0 ? 'N/A' : employeeController.reportsToList[0].firstName} 
+                                      #{employeeController.reportsToList[0].surname}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Department:"/>
                     </div>
                     <div class="fieldValue2Cols">
                         <h:outputText value="#{employeeSelected.departmentId.departmentId} - 
-                                               #{employeeSelected.departmentId.departmentDescription}"/>
+                                      #{employeeSelected.departmentId.departmentDescription}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Award"/>
                     </div>
                     <div class="fieldValue2Cols">
                         <h:outputText value="#{employeeSelected.awardId.awardCode} - 
-                                               #{employeeSelected.awardId.awardDescription}"/>
+                                      #{employeeSelected.awardId.awardDescription}"/>
                     </div>
                 </div>
             </p:panel>
-            
-            <p:panel id="leave" header="Leaves">
-                <div class="panelLeaveData">
-                    <p:dataTable var="leave" value="#{employeeSelected.earningLeaveCollection}" 
-                                 scrollable="true" scrollHeight="100">
-                        <p:column headerText="Classification" width="30%" sortable="true">
-                            <h:outputText value="#{leave.classificationLeave.classificationDescription}"/>
-                        </p:column>
-                        <p:column headerText="Acc.Method" width="30%">
-                            <h:outputText value="#{leave.accrualMethod.accrualMethodDescription}"/>
-                        </p:column>
-                        <p:column headerText="Date" width="20%">
-                            <h:outputText value="#{leave.earningLeavePK.dateAccruedTo}">
-                                <f:convertDateTime pattern="dd/MM/yy"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Balance" width="20%">
-                            <h:outputText value="#{leave.totalEntitlement}"/>
-                        </p:column>
-                    </p:dataTable>
+
+            <p:panel id="structure" header="Uniforms information">
+                <div class="panelStructureData">
+                    <c:choose>
+                        <c:when test="#{not empty employeeController.uniformSortedCollection}">
+                            <c:set var="uniformSorted" value="#{employeeController.uniformSortedCollection[0]}"/>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Allowance"/>
+                            </div>
+                            <div class="fieldValue2Cols">
+                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.allowanceId.allowanceCode : 'N/A'}"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Location"/>
+                            </div>
+                            <div class="fieldValue2Cols">
+                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
+                                                       (uniformSorted.accountNumber ne null ?
+                                                       uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Sent on"/>
+                            </div>
+                            <div class="fieldValue2Cols">
+                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.uniformPK.dateSent : 'N/A'}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="No records found."/>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </p:panel>
 
             <p:panel id="payroll" header="Payroll Details">
                 <div class="panelPayrollData">
-                    <div class="fieldNameHigh2Cols2">
+                    <c:set var="payroll" value="#{employeeController.payrollList}"/>
+                    <div class="fieldNameHigh2Cols">
                         <h:outputText value="Position:"/>
                     </div>
-                    <div class="fieldValueHigh2Cols2">
+                    <div class="fieldValueHigh2Cols">
                         <h:outputText value="#{employeeSelected.positionId.positionTitle}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Employment Type"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.payrollCollection[0].employmentType.employmentTypeDescription}"/>
+                        <h:outputText value="#{payroll[0].employmentType.employmentTypeDescription}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Rate"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.payrollCollection[0].baseRate}">
+                        <h:outputText value="#{payroll[0].baseRate}">
                             <f:convertNumber currencySymbol="$" type="currency"/>
                         </h:outputText>
                     </div>                    
@@ -216,55 +230,203 @@
                         <h:outputText value="Base Hours"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.payrollCollection[0].baseHoursAmount}"/>
+                        <h:outputText value="#{payroll[0].baseHoursAmount}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Classification"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.payrollCollection[0].baseRateCode}"/>
+                        <h:outputText value="#{payroll[0].baseRateCode}"/>
                     </div>
                 </div>
             </p:panel>
-            
+
             <p:panel id="earning" header="Earnings">
                 <div class="panelEarningData">
-                    <c:if test="#{not empty employeeController.getEarningDistinctCollection()}">
-                        <p:dataTable var="employeeEarning" value="#{employeeController.getEarningDistinctCollection()}" 
-                                     scrollable="true" scrollHeight="190">
-                            <p:column headerText="Period Date">
-                                <h:outputText value="#{employeeEarning[0]}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Taxable Gross">
-                                <h:outputText value="#{employeeEarning[1]}">
-                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Tax Amount">
-                                <h:outputText value="#{employeeEarning[2]}">
-                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Net Pay">
-                                <h:outputText value="#{employeeEarning[3]}">
-                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                </h:outputText>
-                            </p:column>                              
+                    <c:choose>
+                        <c:when test="#{not empty employeeController.earningDistinctCollection}">
+                            <p:dataTable var="employeeEarning" value="#{employeeController.earningDistinctCollection}" 
+                                         scrollable="true" scrollHeight="190">
+                                <p:column headerText="Period Date">
+                                    <h:outputText value="#{employeeEarning[0]}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Taxable Gross" style="text-align: right">
+                                    <h:outputText value="#{employeeEarning[1]}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Tax Amount" style="text-align: right">
+                                    <h:outputText value="#{employeeEarning[2]}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Net Pay" style="text-align: right">
+                                    <h:outputText value="#{employeeEarning[3]}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
+                                </p:column>                              
 
-                            <f:facet name="footer">
-                                <h:outputText value="#{employeeEarnings.size()} items"/>
-                            </f:facet>
-                        </p:dataTable>
-                    </c:if>
+                                <f:facet name="footer">
+                                    <h:outputText value="#{employeeEarnings.size()} items"/>
+                                </f:facet>
+                            </p:dataTable>
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="No records found."/>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </p:panel>
 
-            <p:panel id="policeCheck" header="Police Check History and Comments">
+            <p:panel id="earningSummary" header="Earning Summary">
+                <div class="panelEarningSummaryData">
+                    <c:choose>
+                        <c:when test="#{not empty employeeController.earningSummaryList}">
+
+                            <c:set var="employeeEarningsSummary" value="#{employeeController.earningSummaryList[0]}"/>
+
+                            <div class="rowHeader">
+                                <h:outputText value="Last Pay Period: "/>
+                                <h:outputText value="#{employeeEarningsSummary.earningSummaryPK.paidUpToDate}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Total Earning"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ptdTotalEarnings}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Taxable Gross"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ptdTaxableGross}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Tax"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ptdTax}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Net Pay"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ptdNet}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+
+                            <div class="rowHeader">
+                                <h:outputText value="Year"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Total Earning"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ytdTotalEarnings}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Taxable Gross"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.taxableGross}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Tax"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ytdTax}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Net Pay"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.ytdNetPay}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="rowHeader">
+                                <h:outputText value="Hours Worked"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Last Period"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.hoursWorkedThisPay}"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Since Hired"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.sinceHired}"/>
+                            </div>
+                            <div class="fieldName2Cols">
+                                <h:outputText value="Last Position"/>
+                            </div>
+                            <div class="fieldValueRight2Cols">
+                                <h:outputText value="#{employeeEarningsSummary.serviceHourslastsalarycode}"/>
+                            </div>
+
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="No records found."/>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </p:panel>
+
+            <p:panel id="leave" header="Leaves">
+                <div class="panelLeaveData">
+                    <c:choose>
+                        <c:when test="#{not empty employeeController.leaveList}">
+                            <p:dataTable var="leave" value="#{employeeController.leaveList}" 
+                                         scrollable="true" scrollHeight="180">
+                                <p:column headerText="Classif." width="20%" sortable="true">
+                                    <h:outputText value="#{leave.classificationLeave.classificationDescription}"/>
+                                </p:column>
+                                <p:column headerText="Acc.Method" width="40%">
+                                    <h:outputText value="#{leave.accrualMethod.accrualMethodDescription}"/>
+                                </p:column>
+                                <p:column headerText="Date" width="20%">
+                                    <h:outputText value="#{leave.earningLeavePK.dateAccruedTo}">
+                                        <f:convertDateTime pattern="dd/MM/yy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Balance" width="20%" style="text-align: right">
+                                    <h:outputText value="#{leave.totalEntitlement}">
+                                        <f:convertNumber type="number" maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="No records found."/>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </p:panel>
+
+            <p:panel id="policeCheck" header="Police Check History - HR Comments">
                 <div class="panelPoliceCheckData">
-                    <p:dataTable var="policeCheckHistory" value="#{employeeController.getPoliceCheckList()}" 
-                                 scrollable="true" scrollHeight="60">
+                    
+                    <p:dataTable var="policeCheckHistory" value="#{employeeController.policeCheckList}" 
+                                 scrollable="true" scrollHeight="45">
                         <p:column headerText="Expiry Date" width="35%" sortBy="#{policeCheckHistory.expiryDate}">
                             <h:outputText value="#{policeCheckHistory.expiryDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
@@ -275,29 +437,29 @@
                         </p:column>
                     </p:dataTable>
                     <br/>
-                     <p:dataTable var="policeCheckComments" value="#{employeeSelected.policeCheckCommentCollection}" 
+                    <p:dataTable var="policeCheckComments" value="#{employeeSelected.policeCheckCommentCollection}" 
                                  scrollable="true" scrollHeight="60">
                         <p:column headerText="Date" width="20%" sortBy="#{policeCheckComments.policeCheckCommentPK.commentDate}">
                             <h:outputText value="#{policeCheckComments.policeCheckCommentPK.commentDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
-                         <p:column headerText="Comment" width="55%">
+                        <p:column headerText="Comment" width="55%">
                             <h:outputText value="#{policeCheckComments.comment}"/>
                         </p:column>
-<!--                        <p:column headerText="User">
-                            <h:outputText value="#{policeCheckComments.user}"/>
-                        </p:column>-->
+                        <!--                        <p:column headerText="User">
+                                                    <h:outputText value="#{policeCheckComments.user}"/>
+                                                </p:column>-->
                         <p:column headerText="Infra ticket" width="25%">
                             <h:outputText value="#{policeCheckComments.infraTicket}"/>
                         </p:column>
-                    </p:dataTable>                       
+                    </p:dataTable>                 
                 </div>
             </p:panel>
 
-            <p:panel id="visa" header="Visa Details">
+            <p:panel id="visa" header="Visa Details - HR Comments">
                 <div class="panelVisaData">
-                     <p:dataTable var="visa" value="#{employeeSelected.visaCollection}" 
+                    <p:dataTable var="visa" value="#{employeeController.visaList}" 
                                  scrollable="true" scrollHeight="60">
                         <p:column headerText="Expiry Date" width="35%" sortBy="#{visa.visaExpiryDate}">
                             <h:outputText value="#{visa.visaExpiryDate}">
@@ -309,19 +471,19 @@
                         </p:column>
                     </p:dataTable>
                     <br/>
-                     <p:dataTable var="visaComments" value="#{employeeSelected.visaCommentCollection}" 
+                    <p:dataTable var="visaComments" value="#{employeeSelected.visaCommentCollection}" 
                                  scrollable="true" scrollHeight="60">
                         <p:column headerText="Date" width="20%" sortBy="#{visaComments.visaCommentPK.commentDate}">
                             <h:outputText value="#{visaComments.visaCommentPK.commentDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
-                         <p:column headerText="Comment" width="55%">
+                        <p:column headerText="Comment" width="55%">
                             <h:outputText value="#{visaComments.comment}"/>
                         </p:column>
-<!--                        <p:column headerText="User">
-                            <h:outputText value="#{visaComments.user}"/>
-                        </p:column>-->
+                        <!--                        <p:column headerText="User">
+                                                    <h:outputText value="#{visaComments.user}"/>
+                                                </p:column>-->
                         <p:column headerText="Infra ticket" width="25%">
                             <h:outputText value="#{visaComments.infraTicket}"/>
                         </p:column>
@@ -329,169 +491,6 @@
                 </div>
             </p:panel>
 
-            <p:panel id="earningSummary" header="Earning Summary">
-                <div class="panelEarningSummaryData">
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Last pay Date"/>
-                    </div>
-                    <c:set var="employeeEarningsSummary" value="#{employeeController.getEarningSummaryList()[0]}"/>
-                    <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeEarningsSummary.earningSummaryPK.paidUpToDate}">
-                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </div>
-                    <div class="rowHeader">
-                        <h:outputText value="Year"/>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Total Earning"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ytdTotalEarnings}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Taxable Gross"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.taxableGross}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Tax"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ytdTax}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Net Pay"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ytdNetPay}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="rowHeader">
-                        <h:outputText value="Last Pay Period"/>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Total Earning"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ptdTotalEarnings}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Taxable Gross"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ptdTaxableGross}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Tax"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ptdTax}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Net Pay"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.ptdNet}">
-                                <f:convertNumber currencySymbol="$" type="currency"/>
-                            </h:outputText>
-                    </div>
-                    <div class="rowHeader">
-                        <h:outputText value="Hours Worked"/>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Last Period"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.hoursWorkedThisPay}"/>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Since Hired"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.sinceHired}"/>
-                    </div>
-                    <div class="fieldName2Cols">
-                        <h:outputText value="Last Position"/>
-                    </div>
-                    <div class="fieldValueRight2Cols">
-                            <h:outputText value="#{employeeEarningsSummary.serviceHourslastsalarycode}"/>
-                    </div>
-                </div>
-            </p:panel>
-
-            <p:panel id="structure" header="Plaxa - Uniforms information">
-                <div class="panelStructureData">
-                    <c:set var="plaxaSorted" value="#{employeeController.plaxaSortedCollection[0]}"/>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Account in Plaxa?"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-<!--                        <p:selectOneRadio id="onPlaxa" value="#{not empty employeeSelected.plaxaCollection or employeeSelected.plaxaCollection.size() gt 0 ? 'true' : 'false'}">
-                            <f:selectItem itemLabel="Yes" itemValue="true" />
-                            <f:selectItem itemLabel="No" itemValue="false" />
-                        </p:selectOneRadio>-->
-                        <h:outputText value="#{not empty employeeSelected.plaxaCollection or employeeSelected.plaxaCollection.size() gt 0 ? 'Yes' : 'No'}"/>
-                    </div>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Reviewer"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-                        <h:outputText value="#{employeeSelected.plaxaCollection.size() gt 0 ? plaxaSorted.reportsToFullName : 'N/A'}"/>
-                    </div>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Last Activity"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-                        <h:outputText value="#{employeeSelected.plaxaCollection.size() gt 0 ? plaxaSorted.dateLastActivity : 'N/A'}">
-                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </div>
-                    
-                    <div class="rowHeader">
-                        <h:outputText value="Uniform Details"/>
-                    </div>
-                    
-                    <c:set var="uniformSorted" value="#{employeeController.uniformSortedCollection[0]}"/>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Allowance"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.allowanceId.allowanceCode : 'N/A'}"/>
-                    </div>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Location"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
-                                               (uniformSorted.accountNumber ne null ?
-                                               uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
-                    </div>
-                    <div class="fieldName2Cols" style="width:38%">
-                        <h:outputText value="Sent on"/>
-                    </div>
-                    <div class="fieldValue2Cols" style="width:60%">
-                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.uniformPK.dateSent : 'N/A'}">
-                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </div>
-                </div>
-            </p:panel>
-            
         </p:dashboard>
     </h:form>
 </ui:composition>

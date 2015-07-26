@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Level1.findByLevel1Code", query = "SELECT l FROM Level1 l WHERE l.level1Code = :level1Code"),
     @NamedQuery(name = "Level1.findByLevel1CodeDescription", query = "SELECT l FROM Level1 l WHERE l.level1CodeDescription = :level1CodeDescription")})
 public class Level1 implements Serializable {
+    @OneToMany(mappedBy = "level1Code")
+    private Collection<Employee> employeeCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -101,6 +103,15 @@ public class Level1 implements Serializable {
     @Override
     public String toString() {
         return "entities.Level1[ level1Code=" + level1Code + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Employee> getEmployeeCollection() {
+        return employeeCollection;
+    }
+
+    public void setEmployeeCollection(Collection<Employee> employeeCollection) {
+        this.employeeCollection = employeeCollection;
     }
     
 }

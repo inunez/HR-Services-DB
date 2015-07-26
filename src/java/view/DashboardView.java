@@ -30,14 +30,14 @@ public class DashboardView implements Serializable {
          
         column1.addWidget("personalData");
         column1.addWidget("position");
-        column1.addWidget("leave");
+        column1.addWidget("structure");
         
         column2.addWidget("payroll");         
         column2.addWidget("earning");
-        column2.addWidget("policeCheck");
+        column2.addWidget("earningSummary");
 
-        column3.addWidget("structure");
-        column3.addWidget("earningSummary");
+        column3.addWidget("leave");
+        column3.addWidget("policeCheck");
         column3.addWidget("visa");
 
         model.addColumn(column1);

@@ -25,10 +25,11 @@
                         <f:selectItem itemLabel="Both" itemValue="B" />
                     </p:selectOneMenu>
                     <p:commandButton value="Search" id="searchButton" icon="ui-icon-search" 
-                                     ajax="true" action="#{employeeController.setCurrentTabIndex(3)}"
-                                     update=":tabViewMain:mainBody"
-                                     actionListener="#{policeCheckController.searchPoliceChecks}"
-                                     onclick="showTab(args, 3)"/>
+                                     action="#{employeeController.setCurrentTabIndex(3)}"
+                                     update=":tabViewMain:tablePoliceCheckForm"
+                                     process="@form"
+                                     actionListener="#{policeCheckController.searchPoliceChecks()}"
+                                     oncomplete="showTab(args, 3)"/>
                     
                     <h:outputScript target="head">
                         function showTab(args, index){
@@ -68,13 +69,28 @@
                                          disabled="#{policeCheckController.selectedPoliceChecks eq null or 
                                                  policeCheckController.selectedPoliceChecks.size() eq 0}">
                         </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" value="Remove" id="removeButton"
+                                         update="tabViewMain:tablePoliceCheckForm"
+                                         process="@form" 
+                                         actionListener="#{policeCheckController.removePoliceChecks()}"
+                                         disabled="#{policeCheckController.selectedPoliceChecks eq null or 
+                                                 policeCheckController.selectedPoliceChecks.size() eq 0}">
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-document-b" value="Weekly Report" id="reportButton"
+                                         action="#{policeCheckController.processPoliceCheckReport()}">
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-mail-closed" value="Letters" id="letterButton"
+                                         oncomplete="PF('letterDialog').show()"
+                                         action="#{policeCheckController.createPoliceCheckLetters()}"
+                                         process="@form">
+                        </p:commandButton>
                     </h:panelGroup>
                 </f:facet>
 
-                <p:ajax event="rowSelect" update="viewButton editButton" listener="#{policeCheckController.onRowSelect}" /> 
-                <p:ajax event="rowUnselect" update="viewButton editButton" listener="#{policeCheckController.onRowUnselect}"/> 
-                <p:ajax event="rowSelectCheckbox" update="viewButton editButton" listener="#{policeCheckController.onRowSelect}" /> 
-                <p:ajax event="rowUnselectCheckbox" update="viewButton editButton" listener="#{policeCheckController.onRowUnselect}"/> 
+                <p:ajax event="rowSelect" update="viewButton editButton removeButton" listener="#{policeCheckController.onRowSelect}" /> 
+                <p:ajax event="rowUnselect" update="viewButton editButton removeButton" listener="#{policeCheckController.onRowUnselect}"/> 
+                <p:ajax event="rowSelectCheckbox" update="viewButton editButton removeButton" listener="#{policeCheckController.onRowSelect}" /> 
+                <p:ajax event="rowUnselectCheckbox" update="viewButton editButton removeButton" listener="#{policeCheckController.onRowUnselect}"/> 
                 <p:ajax event="rowDblselect" update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg" 
                         global="false" oncomplete="PF('multiPoliceChecksDialog').show()" listener="#{policeCheckController.onRowDblClckSelect}"/>
 
@@ -125,12 +141,12 @@
                         <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
-                <p:column width="100" sortBy="#{policeCheck.firstLetterDate}" headerText="First Letter Sent">
+                <p:column width="100" sortBy="#{policeCheck.firstLetterDate}" headerText="First Letter">
                     <h:outputText value="#{policeCheck.firstLetterDate}">
                         <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
-                <p:column width="100" sortBy="#{policeCheck.secondLetterDate}" headerText="Second Letter Sent">
+                <p:column width="100" sortBy="#{policeCheck.secondLetterDate}" headerText="Second Letter">
                     <h:outputText value="#{policeCheck.secondLetterDate}">
                         <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>

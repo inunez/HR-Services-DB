@@ -27,11 +27,25 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
 import entities.Employee;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -48,7 +62,10 @@ public class PoliceCheckController implements Serializable {
     @EJB
     private session_beans.PoliceCheckFacade ejbFacade;
     @EJB
-    session_beans.PoliceCheckCommentFacade ejbCommentFacade;
+    private session_beans.PoliceCheckCommentFacade ejbCommentFacade;
+    @EJB
+    private session_beans.EmployeeFacade ejbEmployeeFacade;
+    
     private List<PoliceCheck> items = null;
     private List<PoliceCheck> selectedPoliceChecks = null;
     private PoliceCheck selected;
@@ -58,7 +75,7 @@ public class PoliceCheckController implements Serializable {
     private List<PoliceCheckComment> deletedComments = null;
     private String newCommentText;
     private ArrayList<Boolean> arrayChanges;
-    private boolean changeSelected; 
+    private boolean changeSelected;
 
     private EditType editType;
 
@@ -78,8 +95,8 @@ public class PoliceCheckController implements Serializable {
         editType = EditType.VIEW;
         arrayChanges = new ArrayList<>();
         resetArrayChanges();
-        selectedComments = new ArrayList<>();   
-        deletedComments = new ArrayList<>(); 
+        selectedComments = new ArrayList<>();
+        deletedComments = new ArrayList<>();
     }
 
     private void resetArrayChanges() {
@@ -131,7 +148,7 @@ public class PoliceCheckController implements Serializable {
 
     public PoliceCheck getTempSelected() {
         if (tempSelected == null && selectedPoliceChecks != null) {
-            if (selectedPoliceChecks.size() > 0){
+            if (selectedPoliceChecks.size() > 0) {
                 createTempPoliceCheck(selectedPoliceChecks.get(0));
             }
         }
@@ -152,7 +169,7 @@ public class PoliceCheckController implements Serializable {
 
     private PoliceCheckComment newComment(PoliceCheck basePoliceCheck) {
         PoliceCheckComment newCommentPoliceCheck;
-        
+
 //        Date commentDate = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date commentDate = new Date();
         newCommentPoliceCheck = new PoliceCheckComment(basePoliceCheck.getPoliceCheckPK().getIdNumber(), basePoliceCheck.getPoliceCheckPK().getStatus(),
@@ -405,12 +422,13 @@ public class PoliceCheckController implements Serializable {
             } else {
                 RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
                 addErrorMessage("No results found");
+                selectedPoliceChecks.clear();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
             addErrorMessage("No results found");
         }
-        searchText = tempString;
+        searchText = "";
     }
 
     public List<PoliceCheck> getSelectedPoliceChecks() {
@@ -429,9 +447,8 @@ public class PoliceCheckController implements Serializable {
         this.selectedComments = selectedComments;
     }
 
-    
     public void onRowSelect(SelectEvent event) {
-//        FacesMessage msg = new FacesMessage("PoliceCheck Selected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
+//        FaCcesMessage msg = new FacesMessage("PoliceCheck Selected", ((PoliceCheck) event.getObject()).getEmployee().getSurname());
 //        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -445,23 +462,23 @@ public class PoliceCheckController implements Serializable {
         onRowSelect(event);
     }
 
-    public void checkChangeStatus(){
+    public void checkChangeStatus() {
         changeSelected = false;
         for (boolean item : arrayChanges) {
-            if (item){
+            if (item) {
                 changeSelected = true;
                 break;
             }
         }
     }
-            
+
     public void onReceivedOptionChange() {
         if (tempSelected == null) {
             createTempPoliceCheck(selectedPoliceChecks.get(0));
         }
         //FacesContext.getCurrentInstance().addMessage("receivedMultiCalendar", new FacesMessage("*Changed"));
         //put comment besides date to let user know that changes will be applied
-         if (tempSelected.getYnReceived()) {
+        if (tempSelected.getYnReceived()) {
             if (tempSelected.getReceivedDate() == null) {
                 tempSelected.setReceivedDate(Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
             }
@@ -560,13 +577,22 @@ public class PoliceCheckController implements Serializable {
         }
     }
 
-    public void deleteComments(){
+    public void removePoliceChecks(){
+        for (PoliceCheck item : selectedPoliceChecks) {
+            getFacade().remove(item);
+//            selectedPoliceChecks.remove(item);
+            items.remove(item);
+        }
+        selectedPoliceChecks.clear();
+    }
+    
+    public void deleteComments() {
         for (PoliceCheckComment item : selectedComments) {
             deletedComments.add(item);
             tempSelected.getEmployee().getPoliceCheckCommentCollection().remove(item);
         }
     }
-    
+
     public void save() {
         if (selectedPoliceChecks.size() == 1) {
             selected = selectedPoliceChecks.get(0);
@@ -629,10 +655,10 @@ public class PoliceCheckController implements Serializable {
         if (selectedPoliceChecks.size() == 1) {
             tempSelected = new PoliceCheck(policeCheck.getPoliceCheckPK().getIdNumber(), policeCheck.getPoliceCheckPK().getStatus(),
                     policeCheck.getPoliceCheckPK().getUpdateDate());
-            try{
-                tempSelected.setEmployee((Employee)policeCheck.getEmployee().clone());
-            }catch(CloneNotSupportedException  e){
-                
+            try {
+                tempSelected.setEmployee((Employee) policeCheck.getEmployee().clone());
+            } catch (CloneNotSupportedException e) {
+
             }
             tempSelected.setExpiryDate(policeCheck.getExpiryDate());
             tempSelected.setFirstLetterDate(policeCheck.getFirstLetterDate());
@@ -660,6 +686,133 @@ public class PoliceCheckController implements Serializable {
             tempSelected.setYnSecondLetterSent(false);
 
         }
+    }
+
+    public void processPoliceCheckReport() {
+        //TO DO get path from properties
+        String path = "C:\\Users\\Ismael Nunez\\Downloads\\";
+        //TO DO get names from properties
+        String[] tabNames = {"CCHNE", "HO", "NTHC", "STH", "SYDC", "SYDN", "WMH MSIC", "WST", "Tables"};
+
+        Set<String> managerEmails = new HashSet();
+        Map tabCounter = new HashMap();
+        Map listDivision;
+        Employee manager;
+        Date now = new Date();
+        int row = 0;
+
+        for (String tabName : tabNames) {
+            tabCounter.put(tabName, 1);
+        }
+
+        try {
+            FileInputStream file = new FileInputStream(new File(path + "CRC Report Template.xls"));
+
+            HSSFWorkbook workbook = new HSSFWorkbook(file);
+            HSSFSheet sheet = workbook.getSheetAt(8); //tables
+            Cell cell;
+
+            listDivision = loadListDivision(sheet);
+            for (PoliceCheck policeCheck : items) {
+                String division = policeCheck.getEmployee().getLevel3Code().getLevel3CodeDescription();
+                String tab = (String) listDivision.get(division);
+                sheet = workbook.getSheet(tab);
+                row = (Integer) tabCounter.get(tab);
+
+                cell = sheet.getRow(row).getCell(0);
+                manager = ejbEmployeeFacade.findManager (policeCheck.getEmployee(), true);
+                cell.setCellValue(manager.getFirstName() + " " + manager.getSurname());
+               
+                cell = sheet.getRow(row).getCell(1);
+                cell.setCellValue(division);
+
+                String status = "";
+                if (policeCheck.getExpiryDate().compareTo(now) < 0) {
+                    status = "Expired";
+                } else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(now);
+                    cal.add(Calendar.DATE, 7); //minus number would decrement the days
+                    Date nextWeek = cal.getTime();
+                    if (policeCheck.getExpiryDate().before(nextWeek)) {
+                        status = "Due This Week";
+                    }
+                }
+
+                cell = sheet.getRow(row).getCell(2);
+                cell.setCellValue(status);
+
+                cell = sheet.getRow(row).getCell(3);
+                cell.setCellValue(Double.valueOf(policeCheck.getPoliceCheckPK().getIdNumber()));
+
+                cell = sheet.getRow(row).getCell(4);
+                cell.setCellValue(policeCheck.getEmployee().getSurname());
+
+                cell = sheet.getRow(row).getCell(5);
+                cell.setCellValue(policeCheck.getEmployee().getFirstName());
+
+                cell = sheet.getRow(row).getCell(6);
+                cell.setCellValue(policeCheck.getEmployee().getPayrollCollection().iterator().next().getAccountNumber().getAccountDescription());
+
+                cell = sheet.getRow(row).getCell(7);
+                cell.setCellValue("Expires on");
+
+                cell = sheet.getRow(row).getCell(8);
+                cell.setCellValue(policeCheck.getExpiryDate());
+
+                String comment = "";
+                cell = sheet.getRow(row).getCell(9);
+                if (policeCheck.getEmployee().getPoliceCheckCommentCollection().isEmpty()) {
+                    if (policeCheck.getYnReceived()) {
+                        //TO DO get this string from properties
+                        comment = "Received. Check in Progress";
+                    }
+                } else {
+                    comment = policeCheck.getEmployee().getPoliceCheckCommentCollection().iterator().next().getComment();
+                }
+                cell.setCellValue(comment);
+
+                tabCounter.replace(tab, ++row);
+            }
+
+            file.close();
+
+            workbook.removeSheetAt(8);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(now);
+            String fileName = String.format("CHC Report %d %s %d.xls", cal.get(Calendar.DAY_OF_MONTH), 
+                    new SimpleDateFormat("MMMM").format(cal.getTime()), cal.get(Calendar.YEAR));
+            
+            FileOutputStream outFile = new FileOutputStream(new File(path + fileName));
+            workbook.write(outFile);
+            outFile.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Map loadListDivision(HSSFSheet sheet) {
+        Map list = new HashMap();
+        String division;
+        String tab;
+
+        Iterator<Row> iterator = sheet.rowIterator();
+
+        while (iterator.hasNext()) {
+            Row currentRow = iterator.next();
+            division = currentRow.getCell(0).getStringCellValue();
+            tab = currentRow.getCell(1).getStringCellValue();
+            list.put(division, tab);
+        }
+
+        return list;
+    }
+
+    public void createPoliceCheckLetters() {
+        System.out.println("letter");
     }
 
 }
