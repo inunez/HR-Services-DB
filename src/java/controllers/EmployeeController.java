@@ -58,6 +58,7 @@ public class EmployeeController implements Serializable {
     ArrayList<PoliceCheck> policeCheckList;
     ArrayList<Visa> visaList;
     ArrayList<Employee> reportsToList;
+    ArrayList<Employee> filteredEmployees;
 
     private final int[] DEFAULT_RANGE = {0, 99};
     private final int SEARCH_BY_NAME = 1;
@@ -123,6 +124,14 @@ public class EmployeeController implements Serializable {
 
     public void setShowEmployeesTable(boolean showEmployeesTable) {
         this.showEmployeesTable = showEmployeesTable;
+    }
+
+    public ArrayList<Employee> getFilteredEmployees() {
+        return filteredEmployees;
+    }
+
+    public void setFilteredEmployees(ArrayList<Employee> filteredEmployees) {
+        this.filteredEmployees = filteredEmployees;
     }
 
     protected void setEmbeddableKeys() {

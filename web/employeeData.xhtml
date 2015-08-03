@@ -170,36 +170,29 @@
 
             <p:panel id="structure" header="Uniforms information">
                 <div class="panelStructureData">
-                    <c:choose>
-                        <c:when test="#{not empty employeeController.uniformSortedCollection}">
-                            <c:set var="uniformSorted" value="#{employeeController.uniformSortedCollection[0]}"/>
-                            <div class="fieldName2Cols">
-                                <h:outputText value="Allowance"/>
-                            </div>
-                            <div class="fieldValue2Cols">
-                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.allowanceId.allowanceCode : 'N/A'}"/>
-                            </div>
-                            <div class="fieldName2Cols">
-                                <h:outputText value="Location"/>
-                            </div>
-                            <div class="fieldValue2Cols">
-                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
+                    <c:set var="uniformSorted" value="#{employeeController.uniformSortedCollection[0]}"/>
+                    <div class="fieldName2Cols">
+                        <h:outputText value="Allowance"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.allowanceId.allowanceCode : 'N/A'}"/>
+                    </div>
+                    <div class="fieldName2Cols">
+                        <h:outputText value="Location"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
                                                        (uniformSorted.accountNumber ne null ?
                                                        uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
-                            </div>
-                            <div class="fieldName2Cols">
-                                <h:outputText value="Sent on"/>
-                            </div>
-                            <div class="fieldValue2Cols">
-                                <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.uniformPK.dateSent : 'N/A'}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                </h:outputText>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <h:outputText value="No records found."/>
-                        </c:otherwise>
-                    </c:choose>
+                    </div>
+                    <div class="fieldName2Cols">
+                        <h:outputText value="Sent on"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? uniformSorted.uniformPK.dateSent : 'N/A'}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
                 </div>
             </p:panel>
 

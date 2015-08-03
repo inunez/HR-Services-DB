@@ -3,7 +3,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:p="http://primefaces.org/ui"
-    xmlns:f="http://xmlns.jcp.org/jsf/core">
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
 
     <h:form id="tablePoliceCheckForm">
         <div>
@@ -30,7 +31,7 @@
                                      process="@form"
                                      actionListener="#{policeCheckController.searchPoliceChecks()}"
                                      oncomplete="showTab(args, 3)"/>
-                    
+
                     <h:outputScript target="head">
                         function showTab(args, index){
                         if(args.notValid){
@@ -51,7 +52,7 @@
             <p:dataTable var="policeCheck" value="#{policeCheckController.items}" 
                          id="policeChecksTable" rowKey="#{policeCheck.policeCheckPK.idNumber}"
                          selection="#{policeCheckController.selectedPoliceChecks}"
-                         scrollable="true" scrollHeight="450" scrollWidth="98%">
+                         scrollable="true" scrollHeight="700" scrollWidth="98%">
                 <f:facet name="header">
                     <h:panelGroup style="display:block; text-align:left">
                         <p:commandButton icon="ui-icon-search" value="View" id="viewButton"
@@ -59,7 +60,7 @@
                                          action="#{policeCheckController.setEditType('VIEW')}"
                                          update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg"
                                          disabled="#{(policeCheckController.selectedPoliceChecks eq null) or 
-                                                 (policeCheckController.selectedPoliceChecks.size() eq 0)}">
+                                                     (policeCheckController.selectedPoliceChecks.size() eq 0)}">
                         </p:commandButton>
                         <p:commandButton icon="ui-icon-document" value="Edit" id="editButton"
                                          oncomplete="PF('multiPoliceChecksDialog').show()"
@@ -67,23 +68,41 @@
                                          process="@form" 
                                          update="tabViewMain:tablePoliceCheckForm:multiPoliceChecksDlg"
                                          disabled="#{policeCheckController.selectedPoliceChecks eq null or 
-                                                 policeCheckController.selectedPoliceChecks.size() eq 0}">
+                                                     policeCheckController.selectedPoliceChecks.size() eq 0}">
                         </p:commandButton>
                         <p:commandButton icon="ui-icon-trash" value="Remove" id="removeButton"
                                          update="tabViewMain:tablePoliceCheckForm"
                                          process="@form" 
                                          actionListener="#{policeCheckController.removePoliceChecks()}"
                                          disabled="#{policeCheckController.selectedPoliceChecks eq null or 
-                                                 policeCheckController.selectedPoliceChecks.size() eq 0}">
+                                                     policeCheckController.selectedPoliceChecks.size() eq 0}">
+                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
                         </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <div>
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                            </div>
+                        </p:confirmDialog>
+
                         <p:commandButton icon="ui-icon-document-b" value="Weekly Report" id="reportButton"
-                                         action="#{policeCheckController.processPoliceCheckReport()}">
+                                         action="#{policeCheckController.processPoliceCheckReport()}"
+                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequest(args)">
+                            <p:confirm header="Confirmation" message="The report will be created. Are you sure to continue?" icon="ui-icon-alert" />
                         </p:commandButton>
                         <p:commandButton icon="ui-icon-mail-closed" value="Letters" id="letterButton"
                                          oncomplete="PF('letterDialog').show()"
                                          action="#{policeCheckController.createPoliceCheckLetters()}"
                                          process="@form">
                         </p:commandButton>
+                        <pe:blockUI widgetVar="blockUIWidget">  
+                            <h:panelGrid columns="2">  
+                                <h:outputText value="Please wait..." style="white-space: nowrap;"/> 
+                                <p:graphicImage  value="#{resource['images/ajax-loader.gif']}" 
+                                                 style="margin-right: 12px; vertical-align: central;"/>  
+
+                            </h:panelGrid>  
+                        </pe:blockUI> 
                     </h:panelGroup>
                 </f:facet>
 
@@ -104,19 +123,24 @@
                 <p:column width="100" sortBy="#{policeCheck.employee.firstName}" headerText="Name">
                     <h:outputText value="#{policeCheck.employee.firstName}" />
                 </p:column>
-                <p:column width="160" sortBy="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" headerText="Location">
+                <p:column width="160" sortBy="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" headerText="Location"
+                          filterBy="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" filterMatchMode="contains">
                     <h:outputText value="#{policeCheck.employee.payrollCollection[0].accountNumber.accountDescription}" />
                 </p:column>
-                <p:column width="100" sortBy="#{policeCheck.expiryDate}" headerText="Expiry Date" style="text-align: center">
+                <p:column width="100" sortBy="#{policeCheck.expiryDate}" headerText="Expiry Date" style="text-align: center" 
+                          class="#{policeCheckController.getExpiryDateClass(policeCheck.expiryDate)}">
                     <h:outputText value="#{policeCheck.expiryDate}">
                         <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
-                <p:column width="200" sortBy="#{policeCheckPoliceCheck.precedaComment}" headerText="Preceda Comments">
+                <p:column width="200" sortBy="#{policeCheck.precedaComment}" headerText="Preceda Comments"
+                          filterBy="#{policeCheck.precedaComment}" filterMatchMode="contains">
                     <h:outputText value="#{policeCheck.precedaComment}" />
                 </p:column>
                 <p:column width="150" sortBy="#{policeCheck.employee.reportsToPositionId.employeeCollection[0].firstName} 
-                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" headerText="Reports To">
+                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" headerText="Reports To"
+                          filterBy="#{policeCheck.employee.reportsToPositionId.employeeCollection[0].firstName} 
+                          #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" filterMatchMode="contains">
                     <h:outputText value="#{policeCheck.employee.reportsToPositionId. employeeCollection[0].firstName} 
                                   #{policeCheck.employee.reportsToPositionId.employeeCollection[0].surname}" />
                 </p:column>
@@ -133,7 +157,7 @@
                         <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
                     </h:outputText>
                 </p:column>
-                <p:column width="200" sortBy="#{policeCheck.prmStatus}" headerText="PRM Status">
+                <p:column width="200" sortBy="#{policeCheck.prmStatus}" headerText="PRM Status" filterBy="#{policeCheck.prmStatus}" filterMatchMode="contains">
                     <h:outputText value="#{policeCheck.prmStatus}" />
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.firstReportDate}" headerText="First Report Sent">
@@ -156,6 +180,62 @@
 
         </h:panelGrid>
         <ui:include src="/editPoliceChecks.xhtml"/>
+
+        <h:outputScript target="head">
+            function handleEmailRequest(args) { 
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                    <!--PF('multiPoliceChecksDialog').show();-->
+                    return false;
+                }else{
+                    PF('blockUIWidget').unblock();
+                    PF('emailPoliceChecksDialog').show();
+                }
+            }  
+        </h:outputScript>
     </h:form>
+
+    <p:dialog header="Police Check Weekly Report" widgetVar="emailPoliceChecksDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="emailPoliceChecksDlg">
+
+        <h:form id="formEmailPoliceCheckDialog">
+            <p:panel class="policeCheckEmail">
+                <p:outputLabel value="Check the report and send the email."/>
+            </p:panel>
+            <br/>
+            <h:panelGroup style="display:block; text-align:center">
+<!--                <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false" resizable="false">
+                    <p:graphicImage value="#{resource['images/ajax-loader.gif']}" />
+                </p:dialog>-->
+
+                <p:commandButton value="Download Report" ajax="false" icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{policeCheckController.reportFile}" />
+                </p:commandButton>
+
+                <p:commandButton value="Cancel" id="cancelEmailButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('emailPoliceChecksDialog').hide()">
+                </p:commandButton>
+                <p:commandButton value="Send Email" id="sendEmailButton" icon="ui-icon-disk" 
+                                 update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog" 
+                                 actionListener="#{policeCheckController.sendReportByEmail()}"
+                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessed(args)">
+                </p:commandButton>
+            </h:panelGroup>
+            
+        <h:outputScript target="head">
+            function handleEmailProcessed(args) { 
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                    <!--PF('multiPoliceChecksDialog').show();-->
+                    return false;
+                }else{
+                    PF('blockUIWidget').unblock();
+                    PF('emailPoliceChecksDialog').hide();
+                }
+            }  
+        </h:outputScript>
+
+        </h:form>   
+    </p:dialog>
 
 </ui:composition>

@@ -44,8 +44,7 @@
 
         <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="tablePanel">
             <p:dataTable var="employee" value="#{employeeController.items}" 
-                         id="employeesTable"
-                         rows="10"
+                         id="employeesTable" rows="20" filteredValue="#{employeeController.filteredEmployees}"
                          paginator="true">
                 <p:column width="8%">
                     <p:commandButton value="Select" id="selectEmployee" 
@@ -63,19 +62,20 @@
                     </f:facet>
                     <h:outputText value="#{employee.employeePK.idNumber}" />
                 </p:column>
-                <p:column width="%10" sortBy="#{employee.surname}">
+                <p:column width="%10" sortBy="#{employee.surname}" filterBy="#{employee.surname}" filterMatchMode="contains">
                     <f:facet name="header">
                         <h:outputText value="Employee Surname" />
                     </f:facet>
                     <h:outputText value="#{employee.surname}" />
                 </p:column>
-                <p:column width="10%" sortBy="#{employee.firstName}">
+                <p:column width="10%" sortBy="#{employee.firstName}" filterBy="#{employee.firstName}" filterMatchMode="contains">
                     <f:facet name="header">
                         <h:outputText value="Employee Name" />
                     </f:facet>
                     <h:outputText value="#{employee.firstName}" />
                 </p:column>
-                <p:column width="16%" sortBy="#{employee.payrollCollection[0].accountNumber.accountDescription}">
+                <p:column width="16%" sortBy="#{employee.payrollCollection[0].accountNumber.accountDescription}"
+                           filterBy="#{employee.payrollCollection[0].accountNumber.accountDescription}" filterMatchMode="contains">
                     <f:facet name="header">
                         <h:outputText value="Location" />
                     </f:facet>
@@ -87,14 +87,17 @@
                     </f:facet>
                     <h:outputText value="#{employee.payrollCollection[0].employmentType.employmentTypeDescription}" />
                 </p:column>
-                <p:column width="20%" sortBy="#{employee.positionId.positionTitle}">
+                <p:column width="20%" sortBy="#{employee.positionId.positionTitle}" filterBy="#{employee.positionId.positionTitle}"
+                          filterMatchMode="contains">
                     <f:facet name="header">
                         <h:outputText value="Position" />
                     </f:facet>
                     <h:outputText value="#{employee.positionId.positionTitle}" />
                 </p:column>
                 <p:column width="15%" sortBy="#{employee.reportsToPositionId.employeeCollection[0].firstName} 
-                                          #{employee.reportsToPositionId.employeeCollection[0].surname}">
+                                          #{employee.reportsToPositionId.employeeCollection[0].surname}"
+                                           filterBy="#{employee.reportsToPositionId.employeeCollection[0].firstName} 
+                                          #{employee.reportsToPositionId.employeeCollection[0].surname}" filterMatchMode="contains">
                     <f:facet name="header">
                         <h:outputText value="Reports To" />
                     </f:facet>

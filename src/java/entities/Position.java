@@ -8,6 +8,7 @@ package entities;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Position.findByPositionId", query = "SELECT p FROM Position p WHERE p.positionId = :positionId"),
     @NamedQuery(name = "Position.findByPositionTitle", query = "SELECT p FROM Position p WHERE p.positionTitle = :positionTitle")})
 public class Position implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -48,6 +50,8 @@ public class Position implements Serializable {
     private Collection<Employee> employeeCollection1;
     @OneToMany(mappedBy = "positionId")
     private Collection<Earning> earningCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "position")
+    private Collection<ManagerPosition> managerPositionCollection;
 
     public Position() {
     }
@@ -125,6 +129,15 @@ public class Position implements Serializable {
     @Override
     public String toString() {
         return "entities.Position[ positionId=" + positionId + " ]";
+    }
+
+    @XmlTransient
+    public Collection<ManagerPosition> getManagerPositionCollection() {
+        return managerPositionCollection;
+    }
+
+    public void setManagerPositionCollection(Collection<ManagerPosition> managerPositionCollection) {
+        this.managerPositionCollection = managerPositionCollection;
     }
     
 }

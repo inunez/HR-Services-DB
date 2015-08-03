@@ -277,7 +277,7 @@ tr.jsfcrud_even_row {
 
 .policeCheckDetailComment{
     width: 400px; 
-    height: 150px;
+    height: 180px;
     /*position: relative;*/
 }
 
@@ -386,4 +386,14 @@ tr.jsfcrud_even_row {
 
 #mainBody{
 /*    width: 10%*/
+}
+
+.Expired{
+    background-color: red;
+    color: white;
+}
+
+.Due{
+    background-color: gold;
+    color: black;
 }

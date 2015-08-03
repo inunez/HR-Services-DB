@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -152,9 +153,6 @@ public class Employee implements Serializable {
     @JoinColumn(name = "level5_code", referencedColumnName = "level5_code")
     @ManyToOne
     private Level5 level5Code;
-    @JoinColumn(name = "location_code", referencedColumnName = "location_code")
-    @ManyToOne
-    private Location locationCode;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<EarningLeave> earningLeaveCollection;
@@ -176,8 +174,8 @@ public class Employee implements Serializable {
     private Collection<Uniform> uniformCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Collection<Plaxa> plaxaCollection;
-    @OneToMany(mappedBy = "employee")
-    private Collection<Location> locationCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "employee")
+    private Email email;
     
     public Employee() {
     }
@@ -594,22 +592,12 @@ public class Employee implements Serializable {
         this.level5Code = level5Code;
     }
 
-    @XmlTransient
-    public Collection<Location> getLocationCollection() {
-        return locationCollection;
+    public Email getEmail() {
+        return email;
     }
 
-    public void setLocationCollection(Collection<Location> locationCollection) {
-        this.locationCollection = locationCollection;
+    public void setEmail(Email email) {
+        this.email = email;
     }
 
-    public Location getLocationCode() {
-        return locationCode;
-    }
-
-    public void setLocationCode(Location locationCode) {
-        this.locationCode = locationCode;
-    }
-
-    
 }

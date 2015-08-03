@@ -7,8 +7,12 @@ package session_beans;
 
 import entities.Earning;
 import entities.Employee;
+import entities.ManagerPosition;
+import entities.Payroll;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -54,7 +58,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
     }
     
     public Employee findManager(Employee employee, boolean checkServiceManager){
-        Employee manager;
+        Employee manager=null;
         
         if (employee.getReportsToPositionId().getEmployeeCollection().iterator().hasNext()){
             //manager assigned
@@ -63,18 +67,61 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
             if (checkServiceManager){
                 String positionTitle = manager.getPositionId().getPositionTitle().toUpperCase();
                 if(positionTitle.contains("COOR") || positionTitle.contains("LEADER") || positionTitle.contains("TL") ){
-                    manager = employee.getLocationCode().getEmployee();
+                    manager = findManager(manager, checkServiceManager);
                 }
             }
-        }else{
-            //facility manager
-            manager = employee.getLocationCode().getEmployee();
         }
-        //ROM or COM
+        
         if (manager == null){
-            
+            //facility manager
+            Payroll payroll = employee.getPayrollCollection().iterator().next();
+            Collection<ManagerPosition> managers = payroll.getAccountNumber().getManagerPositionCollection();
+            if (managers.size() == 1){
+                manager = managers.iterator().next().getPosition().getEmployeeCollection().iterator().next();
+            }
+            if (manager == null){
+                String position = employee.getPositionId().getPositionId();
+                if (!position.substring(0, 1).matches("[0-9]")){
+                    String search = position.substring(0, 9).concat("0001");
+                    ArrayList<ManagerPosition> managerFacility = managers.stream().filter(p -> p.getPosition().getPositionId().equals(search))
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    if (!managerFacility.isEmpty())
+                        manager = managerFacility.iterator().next().getPosition().getEmployeeCollection().iterator().next();
+                    
+                    managers = getManagerPositionCollection();
+                            
+                    if (manager == null){
+                        String search2 = position.substring(0, 6).concat("00-0001");
+                        ArrayList<ManagerPosition> managerDivision = managers.stream().filter(p -> p.getPosition().getPositionId().equals(search2))
+                                .collect(Collectors.toCollection(ArrayList::new));
+                        if (!managerDivision.isEmpty()) {
+                            manager = managerDivision.iterator().next().getPosition().getEmployeeCollection().iterator().next();
+                        }
+                    }
+                    if (manager == null){
+                        String search2 = position.substring(0, 4).concat("1000-0001");
+                        ArrayList<ManagerPosition> director = managers.stream().filter(p -> p.getPosition().getPositionId().equals(search2))
+                                .collect(Collectors.toCollection(ArrayList::new));
+                        if (!director.isEmpty()) {
+                            manager = director.iterator().next().getPosition().getEmployeeCollection().iterator().next();
+                        }
+                    }
+                }else{
+                    manager = managers.iterator().next().getPosition().getEmployeeCollection().iterator().next();
+                }
+            }
+        }
+        
+        //No manager found. if manager = employee -> error
+        if (manager == null){
+            manager = employee;
         }
         return manager;
     }
     
+    public Collection<ManagerPosition> getManagerPositionCollection() {
+        Query namedQuery;
+        namedQuery = em.createNamedQuery("ManagerPosition.findAll", ManagerPosition.class);
+        return namedQuery.getResultList();
+    }
 }

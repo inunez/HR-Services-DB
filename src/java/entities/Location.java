@@ -8,6 +8,7 @@ package entities;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -35,6 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findByLocationCode", query = "SELECT l FROM Location l WHERE l.locationCode = :locationCode"),
     @NamedQuery(name = "Location.findByLocationDescription", query = "SELECT l FROM Location l WHERE l.locationDescription = :locationDescription")})
 public class Location implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "location")
+    private Collection<ManagerPosition> managerPositionCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -45,14 +48,7 @@ public class Location implements Serializable {
     @Size(max = 255)
     @Column(name = "location_description")
     private String locationDescription;
-    @JoinColumns({
-        @JoinColumn(name = "manager_id_number", referencedColumnName = "id_number"),
-        @JoinColumn(name = "manager_status", referencedColumnName = "status")})
-    @ManyToOne
-    private Employee employee;
-    @OneToMany(mappedBy = "locationCode")
-    private Collection<Employee> employeeCollection;
-
+    
     public Location() {
     }
 
@@ -74,23 +70,6 @@ public class Location implements Serializable {
 
     public void setLocationDescription(String locationDescription) {
         this.locationDescription = locationDescription;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
-    @XmlTransient
-    public Collection<Employee> getEmployeeCollection() {
-        return employeeCollection;
-    }
-
-    public void setEmployeeCollection(Collection<Employee> employeeCollection) {
-        this.employeeCollection = employeeCollection;
     }
 
     @Override
@@ -116,6 +95,15 @@ public class Location implements Serializable {
     @Override
     public String toString() {
         return "entities.Location[ locationCode=" + locationCode + " ]";
+    }
+
+    @XmlTransient
+    public Collection<ManagerPosition> getManagerPositionCollection() {
+        return managerPositionCollection;
+    }
+
+    public void setManagerPositionCollection(Collection<ManagerPosition> managerPositionCollection) {
+        this.managerPositionCollection = managerPositionCollection;
     }
     
 }

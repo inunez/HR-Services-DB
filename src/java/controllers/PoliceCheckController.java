@@ -26,12 +26,14 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
+import controllers.util.ReplaceTextWord;
 import entities.Employee;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,15 +42,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.mail.MessagingException;
 import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 @Named("policeCheckController")
 @SessionScoped
@@ -65,9 +72,10 @@ public class PoliceCheckController implements Serializable {
     private session_beans.PoliceCheckCommentFacade ejbCommentFacade;
     @EJB
     private session_beans.EmployeeFacade ejbEmployeeFacade;
-    
+
     private List<PoliceCheck> items = null;
     private List<PoliceCheck> selectedPoliceChecks = null;
+    private List<PoliceCheck> filteredPoliceChecks = null;
     private PoliceCheck selected;
     private PoliceCheck tempSelected;
     private PoliceCheckComment selectedComment;
@@ -83,7 +91,11 @@ public class PoliceCheckController implements Serializable {
     private String searchType;
     private boolean policeCheckSelected = false;
     private String status = "";
-
+    private String fileNameReport = "";
+    private Set<String> managerEmails;
+    private StreamedContent reportFile;
+    private String path;
+    
     private final int SEARCH_BY_NAME = 1;
     private final int SEARCH_BY_ID = 2;
     private final int SEARCH_BY_SERVICE = 3;
@@ -97,6 +109,9 @@ public class PoliceCheckController implements Serializable {
         resetArrayChanges();
         selectedComments = new ArrayList<>();
         deletedComments = new ArrayList<>();
+        //TO DO get path from properties
+        path = ResourceBundle.getBundle("/Parameters").getString("Path");
+        managerEmails = new HashSet();
     }
 
     private void resetArrayChanges() {
@@ -128,6 +143,14 @@ public class PoliceCheckController implements Serializable {
 
     public void setPoliceCheckSelected(boolean policeCheckSelected) {
         this.policeCheckSelected = policeCheckSelected;
+    }
+
+    public List<PoliceCheck> getFilteredPoliceChecks() {
+        return filteredPoliceChecks;
+    }
+
+    public void setFilteredPoliceChecks(List<PoliceCheck> filteredPoliceChecks) {
+        this.filteredPoliceChecks = filteredPoliceChecks;
     }
 
     public String getStatus() {
@@ -165,6 +188,40 @@ public class PoliceCheckController implements Serializable {
 
     public void setEditType(EditType editType) {
         this.editType = editType;
+    }
+
+    public StreamedContent getReportFile() {
+
+        String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(path + fileNameReport);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(path + fileNameReport);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PoliceCheckController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        reportFile = new DefaultStreamedContent(stream, contentType, fileNameReport);
+
+        return reportFile;
+    }
+
+    public String getFileNameReport() {
+        return fileNameReport;
+    }
+
+    public void setFileNameReport(String fileNameReport) {
+        this.fileNameReport = fileNameReport;
+    }
+
+    public String getExpiryDateClass(Date expiryDate) {
+        String expiryDateClass = "";
+        
+        if (expiryDate != null) {
+            expiryDateClass = getExpiryDateStatus(expiryDate);
+            if (expiryDateClass.equals(ResourceBundle.getBundle("/Bundle").getString("CHCDue"))){
+                expiryDateClass = "Due";
+            }
+        }
+        return expiryDateClass;
     }
 
     private PoliceCheckComment newComment(PoliceCheck basePoliceCheck) {
@@ -577,15 +634,18 @@ public class PoliceCheckController implements Serializable {
         }
     }
 
-    public void removePoliceChecks(){
+    public void removePoliceChecks() {
         for (PoliceCheck item : selectedPoliceChecks) {
+            for (PoliceCheckComment comment : item.getEmployee().getPoliceCheckCommentCollection()) {
+                ejbCommentFacade.remove(comment);
+            }
             getFacade().remove(item);
 //            selectedPoliceChecks.remove(item);
             items.remove(item);
         }
         selectedPoliceChecks.clear();
     }
-    
+
     public void deleteComments() {
         for (PoliceCheckComment item : selectedComments) {
             deletedComments.add(item);
@@ -689,30 +749,40 @@ public class PoliceCheckController implements Serializable {
     }
 
     public void processPoliceCheckReport() {
-        //TO DO get path from properties
-        String path = "C:\\Users\\Ismael Nunez\\Downloads\\";
+
         //TO DO get names from properties
         String[] tabNames = {"CCHNE", "HO", "NTHC", "STH", "SYDC", "SYDN", "WMH MSIC", "WST", "Tables"};
 
-        Set<String> managerEmails = new HashSet();
+        managerEmails.clear();
         Map tabCounter = new HashMap();
         Map listDivision;
         Employee manager;
         Date now = new Date();
-        int row = 0;
+        int row;
 
         for (String tabName : tabNames) {
             tabCounter.put(tabName, 1);
         }
 
+        fileNameReport = ResourceBundle.getBundle("/Parameters").getString("fileNameTemplateCasualPartTime");
+        String fileNameReportOutput = "Nunez, Ismael - Casual to Part Time.doc";
+        HashMap<String, String> keys = new HashMap();
+        keys.put("$Employee.firstName", "Ismael");
+        ReplaceTextWord contractTemplate = new ReplaceTextWord(path + fileNameReport, keys, path + fileNameReportOutput);
+        contractTemplate.processFile();
+
+        //Reset name as flag
+        fileNameReport = "";
+
         try {
-            FileInputStream file = new FileInputStream(new File(path + "CRC Report Template.xls"));
+            FileInputStream file = new FileInputStream(new File(path + ResourceBundle.getBundle("/Parameters").getString("fileNameTemplateCHC")));
 
             HSSFWorkbook workbook = new HSSFWorkbook(file);
             HSSFSheet sheet = workbook.getSheetAt(8); //tables
             Cell cell;
 
             listDivision = loadListDivision(sheet);
+            //TO DO sort collection by Division - Manager Full name and Expiry Date
             for (PoliceCheck policeCheck : items) {
                 String division = policeCheck.getEmployee().getLevel3Code().getLevel3CodeDescription();
                 String tab = (String) listDivision.get(division);
@@ -720,25 +790,18 @@ public class PoliceCheckController implements Serializable {
                 row = (Integer) tabCounter.get(tab);
 
                 cell = sheet.getRow(row).getCell(0);
-                manager = ejbEmployeeFacade.findManager (policeCheck.getEmployee(), true);
-                cell.setCellValue(manager.getFirstName() + " " + manager.getSurname());
-               
+                manager = ejbEmployeeFacade.findManager(policeCheck.getEmployee(), true);
+                if (manager == policeCheck.getEmployee()) {
+                    cell.setCellValue("Manager Not Found");
+                } else {
+                    cell.setCellValue(manager.getFirstName() + " " + manager.getSurname());
+                    managerEmails.add(manager.getEmail().getEmail());
+                }
+
                 cell = sheet.getRow(row).getCell(1);
                 cell.setCellValue(division);
 
-                String status = "";
-                if (policeCheck.getExpiryDate().compareTo(now) < 0) {
-                    status = "Expired";
-                } else {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(now);
-                    cal.add(Calendar.DATE, 7); //minus number would decrement the days
-                    Date nextWeek = cal.getTime();
-                    if (policeCheck.getExpiryDate().before(nextWeek)) {
-                        status = "Due This Week";
-                    }
-                }
-
+                String status = getExpiryDateStatus(policeCheck.getExpiryDate());
                 cell = sheet.getRow(row).getCell(2);
                 cell.setCellValue(status);
 
@@ -775,22 +838,108 @@ public class PoliceCheckController implements Serializable {
                 tabCounter.replace(tab, ++row);
             }
 
+            //Delete empty rows
+            Row currentRow;
+            for (int f = 0; f < workbook.getNumberOfSheets(); f++) {
+                sheet = workbook.getSheetAt(f);
+                int lastRow = (Integer) tabCounter.get(workbook.getSheetName(f));
+                for (int i = lastRow; i < sheet.getLastRowNum(); i++) {
+                    currentRow = sheet.getRow(i);
+                    if (currentRow != null) {
+                        sheet.removeRow(currentRow);
+                    }
+                }
+            }
             file.close();
 
             workbook.removeSheetAt(8);
             Calendar cal = Calendar.getInstance();
             cal.setTime(now);
-            String fileName = String.format("CHC Report %d %s %d.xls", cal.get(Calendar.DAY_OF_MONTH), 
+            fileNameReport = String.format("CHC Report %d %s %d.xls", cal.get(Calendar.DAY_OF_MONTH),
                     new SimpleDateFormat("MMMM").format(cal.getTime()), cal.get(Calendar.YEAR));
-            
-            FileOutputStream outFile = new FileOutputStream(new File(path + fileName));
+
+            FileOutputStream outFile = new FileOutputStream(new File(path + fileNameReport));
             workbook.write(outFile);
             outFile.close();
 
+            String successMessage = ResourceBundle.getBundle("/Bundle").getString("reportCreate");
+            JsfUtil.addSuccessMessage(successMessage);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            String successMessage = ResourceBundle.getBundle("/Bundle").getString("fileNotFound");
+            JsfUtil.addSuccessMessage(successMessage);
         } catch (IOException e) {
-            e.printStackTrace();
+            String successMessage = ResourceBundle.getBundle("/Bundle").getString("errorCreatingReport");
+            JsfUtil.addSuccessMessage(successMessage);
+        }
+    }
+
+    private String getExpiryDateStatus(Date expiryDate) {
+        Date now = new Date();
+        String chcStatus = "";
+        
+        if (expiryDate.compareTo(now) < 0) {
+            chcStatus = ResourceBundle.getBundle("/Bundle").getString("CHCExpired");
+        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(now);
+            cal.add(Calendar.DATE, 7); //minus number would decrement the days
+            Date nextWeek = cal.getTime();
+            if (expiryDate.before(nextWeek)) {
+                chcStatus = ResourceBundle.getBundle("/Bundle").getString("CHCDue");
+            }
+        }
+        return chcStatus;
+    }
+
+    public void sendReportByEmail() throws IOException {
+
+        if (!"".equals(this.fileNameReport)) {
+            List<String> cc = new ArrayList<>();
+            List<String> attachments = new ArrayList<>();
+
+            //TO DO remove these line in production
+            managerEmails.clear();
+            managerEmails.add("ismael.nunez@me.com");
+            cc.add("inunez@unitingcarenswact.org.au");
+            cc.add("annzaragoza@unitingcarenswact.org.au");
+            cc.add("andresavellaneda@unitingcarenswact.org.au");
+
+            attachments.add(path + fileNameReport);
+            String formCHC = ResourceBundle.getBundle("/Parameters").getString("formCHC");
+            String attachmentCHC = ResourceBundle.getBundle("/Parameters").getString("attachmentCHC");
+            if (!"".equals(formCHC)) {
+                attachments.add(path + formCHC);
+            }
+            if (!"".equals(attachmentCHC)) {
+                attachments.add(path + attachmentCHC);
+            }
+
+            //TO DO activate this in UCA
+            String user = System.getProperty("user.name");
+
+            XWPFDocument docx = new XWPFDocument(
+                    new FileInputStream(path + "body.docx"));
+            //using XWPFWordExtractor Class
+            XWPFWordExtractor we = new XWPFWordExtractor(docx);
+            String body = we.getText();
+
+            try {
+                //Get host and port from properties
+                //Subject and message from a word file
+                //user and password from User object
+                JsfUtil.sendEmail("ismael.nunez@me.com", "Columbia01", managerEmails, cc,
+                        ResourceBundle.getBundle("/Parameters").getString("emailSubjectCHC"), body, attachments);
+
+                String successMessage = ResourceBundle.getBundle("/Bundle").getString("emailSent");
+                JsfUtil.addSuccessMessage(successMessage);
+            } catch (MessagingException ex) {
+                String successMessage = ResourceBundle.getBundle("/Bundle").getString("emailNotSent");
+                JsfUtil.addSuccessMessage(successMessage);
+//            Logger.getLogger(PoliceCheckController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            String successMessage = ResourceBundle.getBundle("/Bundle").getString("reportNotGenerated");
+            JsfUtil.addSuccessMessage(successMessage);
         }
     }
 
