@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "position")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Position.findAll", query = "SELECT p FROM Position p"),
+    @NamedQuery(name = "Position.findAll", query = "SELECT p FROM Position p ORDER BY p.positionTitle"),
     @NamedQuery(name = "Position.findByPositionId", query = "SELECT p FROM Position p WHERE p.positionId = :positionId"),
     @NamedQuery(name = "Position.findByPositionTitle", query = "SELECT p FROM Position p WHERE p.positionTitle = :positionTitle")})
 public class Position implements Serializable {

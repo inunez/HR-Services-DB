@@ -140,6 +140,43 @@ tr.jsfcrud_even_row {
     padding: 2px
 }
 
+/*COEC styles*/
+
+.firstColumnCoec{
+    width: 20%;
+    float: left;
+    padding: 10px 2px 2px 2px;
+    height: 25px;
+}
+
+.secondColumnCoec{
+    width: 35%;
+    float: left;
+    padding: 10px 2px 2px 2px;
+    height: 25px;
+}
+
+.thirdColumnCoec{
+    width: 42%;
+    float: right;
+    padding: 10px 2px 2px 2px;
+    height: 25px;
+}
+
+.employeeDetailsCOEC{
+    width: 650px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.positionDetailsCOEC{
+    width: 650px; 
+    height: 340px;
+    /*position: relative;*/
+}
+
+/*********************/
+
 .inputTextAreaName2Cols{
     width: 30%;
     height: 30px;

@@ -5,10 +5,13 @@
  */
 package session_beans;
 
+import entities.Account;
 import entities.Earning;
 import entities.Employee;
+import entities.JobTitle;
 import entities.ManagerPosition;
 import entities.Payroll;
+import entities.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -124,4 +127,22 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         namedQuery = em.createNamedQuery("ManagerPosition.findAll", ManagerPosition.class);
         return namedQuery.getResultList();
     }
+
+    public List<Position> getListPosition() {
+        Query namedQuery;
+        namedQuery = em.createNamedQuery("Position.findAll", Position.class);
+        return namedQuery.getResultList();
+    }
+    
+    public List<Account> getListAccount() {
+        Query namedQuery;
+        namedQuery = em.createNamedQuery("Account.findAll", Account.class);
+        return namedQuery.getResultList();
+    }
+    
+    public List<JobTitle> getListJobTitles() {
+        Query namedQuery;
+        namedQuery = em.createNamedQuery("JobTitle.findAll", JobTitle.class);
+        return namedQuery.getResultList();
+    }        
 }

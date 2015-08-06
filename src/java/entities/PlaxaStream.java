@@ -30,11 +30,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "PlaxaStream.findAll", query = "SELECT p FROM PlaxaStream p"),
     @NamedQuery(name = "PlaxaStream.findByStreamId", query = "SELECT p FROM PlaxaStream p WHERE p.streamId = :streamId"),
-    @NamedQuery(name = "PlaxaStream.findByStramDescription", query = "SELECT p FROM PlaxaStream p WHERE p.stramDescription = :stramDescription")})
+    @NamedQuery(name = "PlaxaStream.findByStreamDescription", query = "SELECT p FROM PlaxaStream p WHERE p.streamDescription = :streamDescription")})
 public class PlaxaStream implements Serializable {
-    @Size(max = 45)
-    @Column(name = "stream_description")
-    private String streamDescription;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -42,8 +39,8 @@ public class PlaxaStream implements Serializable {
     @Column(name = "stream_id")
     private Short streamId;
     @Size(max = 45)
-    @Column(name = "stram_description")
-    private String stramDescription;
+    @Column(name = "stream_description")
+    private String streamDescription;
     @OneToMany(mappedBy = "streamId")
     private Collection<PlaxaAccount> plaxaAccountCollection;
 
@@ -62,12 +59,12 @@ public class PlaxaStream implements Serializable {
         this.streamId = streamId;
     }
 
-    public String getStramDescription() {
-        return stramDescription;
+    public String getStreamDescription() {
+        return streamDescription;
     }
 
-    public void setStramDescription(String stramDescription) {
-        this.stramDescription = stramDescription;
+    public void setStreamDescription(String streamDescription) {
+        this.streamDescription = streamDescription;
     }
 
     @XmlTransient
@@ -102,14 +99,6 @@ public class PlaxaStream implements Serializable {
     @Override
     public String toString() {
         return "entities.PlaxaStream[ streamId=" + streamId + " ]";
-    }
-
-    public String getStreamDescription() {
-        return streamDescription;
-    }
-
-    public void setStreamDescription(String streamDescription) {
-        this.streamDescription = streamDescription;
     }
     
 }

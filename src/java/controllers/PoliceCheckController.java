@@ -62,7 +62,6 @@ import org.primefaces.model.StreamedContent;
 public class PoliceCheckController implements Serializable {
 
     public enum EditType {
-
         VIEW, EDIT, COMMENT, BULK_COMMENT
     }
 

@@ -36,6 +36,7 @@ public class DashboardView implements Serializable {
         column2.addWidget("earning");
         column2.addWidget("earningSummary");
 
+        column3.addWidget("actions");
         column3.addWidget("leave");
         column3.addWidget("policeCheck");
         column3.addWidget("visa");

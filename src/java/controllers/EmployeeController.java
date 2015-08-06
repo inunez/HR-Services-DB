@@ -28,8 +28,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
+import entities.Account;
+import entities.ChangeCondition;
 import entities.EarningLeave;
+import entities.JobTitle;
+import entities.ManagerPosition;
 import entities.Payroll;
+import entities.Position;
 import entities.Visa;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -49,27 +54,44 @@ public class EmployeeController implements Serializable {
     private boolean employeeSelected = false;
     private int currentTabIndex = 0;
     private String status = "";
+    private ChangeCondition changeEmploymentCondition;
 
-    Collection<Uniform> uniformSortedCollection;
-    Collection<Earning> earningDistinctCollection;
-    ArrayList<EarningSummary> earningSummaryList;
-    ArrayList<Payroll> payrollList;
-    ArrayList<EarningLeave> leaveList;
-    ArrayList<PoliceCheck> policeCheckList;
-    ArrayList<Visa> visaList;
-    ArrayList<Employee> reportsToList;
-    ArrayList<Employee> filteredEmployees;
-
+    private Collection<Uniform> uniformSortedCollection;
+    private Collection<Earning> earningDistinctCollection;
+    private ArrayList<EarningSummary> earningSummaryList;
+    private ArrayList<Payroll> payrollList;
+    private ArrayList<EarningLeave> leaveList;
+    private ArrayList<PoliceCheck> policeCheckList;
+    private ArrayList<Visa> visaList;
+    private ArrayList<Employee> reportsToList;
+    private ArrayList<Employee> filteredEmployees;
+    private List<Position> listOfPositions;
+    private List<Account> listOfAccounts;
+    private Collection<ManagerPosition> employeesByService;
+    private List<JobTitle> listOfClassifications;
+    
+    
     private final int[] DEFAULT_RANGE = {0, 99};
     private final int SEARCH_BY_NAME = 1;
     private final int SEARCH_BY_ID = 2;
     private final int SEARCH_BY_SERVICE = 3;
     private final int SEARCH_BY_POSITION = 4;
-
+    
     public EmployeeController() {
         searchType = Integer.toString(SEARCH_BY_NAME);
         status = "A";
         clearCollections();
+    }
+
+    public ChangeCondition getChangeEmploymentCondition() {
+        if (changeEmploymentCondition == null){
+            changeEmploymentCondition = new ChangeCondition(selected);
+        }
+        return changeEmploymentCondition;
+    }
+
+    public void setChangeEmploymentCondition(ChangeCondition changeEmploymentCondition) {
+        this.changeEmploymentCondition = changeEmploymentCondition;
     }
 
     public boolean isEmployeeSelected() {
@@ -90,6 +112,51 @@ public class EmployeeController implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<Position> getListOfPositions() {
+        /*Load only active positions*/
+        if(listOfPositions == null){
+            listOfPositions = ejbFacade.getListPosition();
+        }
+        return listOfPositions;
+    }
+
+    public void setListOfPositions(List<Position> listOfPositions) {
+        this.listOfPositions = listOfPositions;
+    }
+
+    public List<Account> getListOfAccounts() {
+        if(listOfAccounts == null){
+            listOfAccounts = ejbFacade.getListAccount();
+        }
+        return listOfAccounts;
+    }
+
+    public void setListOfAccounts(List<Account> listOfAccounts) {
+        this.listOfAccounts = listOfAccounts;
+    }
+
+    public List<JobTitle> getListOfClassifications() {
+        if(listOfClassifications == null){
+            listOfClassifications = ejbFacade.getListJobTitles();
+        }
+        return listOfClassifications;
+    }
+
+    public void setListOfClassifications(List<JobTitle> listOfClassifications) {
+        this.listOfClassifications = listOfClassifications;
+    }
+
+    public Collection<ManagerPosition> getEmployeesByService() {
+        if(employeesByService == null){
+            employeesByService = changeEmploymentCondition.getNewAccount().getManagerPositionCollection();
+        }
+        return employeesByService;
+    }
+
+    public void setEmployeesByService(List<ManagerPosition> employeesByService) {
+        this.employeesByService = employeesByService;
     }
 
     public void setSelected(Employee selected) {
@@ -395,7 +462,7 @@ public class EmployeeController implements Serializable {
         if (selected != null && visaList == null) {
             visaList = new ArrayList<>(selected.getVisaCollection());
 
-            Comparator<Visa> dateComparator = (Visa p1, Visa p2) -> p2.getVisaExpiryDate().compareTo(p1.getVisaExpiryDate());
+            Comparator<Visa> dateComparator = (Visa p1, Visa p2) -> p2.getVisaIssuedDate().compareTo(p1.getVisaIssuedDate());
             Collections.sort(visaList, dateComparator);
         }
         return visaList;
@@ -465,5 +532,25 @@ public class EmployeeController implements Serializable {
         policeCheckList = null;
         visaList = null;
         reportsToList = null;
+        changeEmploymentCondition = null;
+        listOfAccounts = null;
+        listOfPositions = null;
+        employeesByService = null;
+        listOfClassifications = null;
+    }
+    
+    /* COEC */
+    
+    public void cancelCOEC(){
+        changeEmploymentCondition = null;
+    }
+ 
+    public void accountChange(){
+        changeEmploymentCondition.setNewManager(null);
+        employeesByService = null;
+    }
+    
+    public void openCoec(){
+        changeEmploymentCondition = null;
     }
 }

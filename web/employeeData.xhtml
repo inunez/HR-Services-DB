@@ -182,8 +182,8 @@
                     </div>
                     <div class="fieldValue2Cols">
                         <h:outputText value="#{employeeSelected.uniformCollection.size() gt 0 ? 
-                                                       (uniformSorted.accountNumber ne null ?
-                                                       uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
+                                               (uniformSorted.accountNumber ne null ?
+                                               uniformSorted.accountNumber.uniformDeaneLocation.facility : 'N/A') : 'N/A'}"/>
                     </div>
                     <div class="fieldName2Cols">
                         <h:outputText value="Sent on"/>
@@ -384,6 +384,17 @@
                 </div>
             </p:panel>
 
+            <p:panel id="actions" header="Actions">
+                <div class="panelActions">
+                    <p:commandButton value="COEC" id="coecButton" icon="ui-icon-comment" 
+                                     oncomplete="PF('coecDialog').show()"
+                                     update="tabViewMain:mainBody:formCOECDialog"
+                                     disabled="#{employeeSelected.employeePK.status ne 'A'}"
+                                     actionListener="#{employeeController.openCoec()}" >
+                    </p:commandButton>
+                </div>
+            </p:panel>
+
             <p:panel id="leave" header="Leaves">
                 <div class="panelLeaveData">
                     <c:choose>
@@ -417,7 +428,7 @@
 
             <p:panel id="policeCheck" header="Police Check History - HR Comments">
                 <div class="panelPoliceCheckData">
-                    
+
                     <p:dataTable var="policeCheckHistory" value="#{employeeController.policeCheckList}" 
                                  scrollable="true" scrollHeight="45">
                         <p:column headerText="Expiry Date" width="35%" sortBy="#{policeCheckHistory.expiryDate}">
@@ -485,5 +496,7 @@
             </p:panel>
 
         </p:dashboard>
+        <ui:include src="/coecForm.xhtml"/>      
     </h:form>
+
 </ui:composition>
