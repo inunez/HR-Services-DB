@@ -51,7 +51,13 @@ public class VisaPK implements Serializable {
         this.updateDate = updateDate;
         this.status = status;
     }
-
+    
+    public VisaPK(String idNumber, String status, Date updateDate) {
+        this.idNumber = idNumber;
+        this.status = status;
+        this.updateDate = updateDate;
+    }
+    
     public String getIdNumber() {
         return idNumber;
     }

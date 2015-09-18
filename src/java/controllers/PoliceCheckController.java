@@ -26,7 +26,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
-import controllers.util.ReplaceTextWord;
 import entities.Employee;
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,18 +219,20 @@ public class PoliceCheckController implements Serializable {
                 expiryDateClass = "Due";
             }
         }
+        
         return expiryDateClass;
     }
 
     private PoliceCheckComment newComment(PoliceCheck basePoliceCheck) {
-        PoliceCheckComment newCommentPoliceCheck;
+        PoliceCheckComment newCommentPoliceCheck = null;
 
 //        Date commentDate = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date commentDate = new Date();
-        newCommentPoliceCheck = new PoliceCheckComment(basePoliceCheck.getPoliceCheckPK().getIdNumber(), basePoliceCheck.getPoliceCheckPK().getStatus(),
-                commentDate);
-        newCommentPoliceCheck.setEmployee(basePoliceCheck.getEmployee());
-
+        if(basePoliceCheck.getPoliceCheckPK() != null){
+            newCommentPoliceCheck = new PoliceCheckComment(basePoliceCheck.getPoliceCheckPK().getIdNumber(), basePoliceCheck.getPoliceCheckPK().getStatus(),
+                    commentDate);
+            newCommentPoliceCheck.setEmployee(basePoliceCheck.getEmployee());
+        }
         return newCommentPoliceCheck;
     }
 
@@ -762,13 +763,6 @@ public class PoliceCheckController implements Serializable {
         for (String tabName : tabNames) {
             tabCounter.put(tabName, 1);
         }
-
-        fileNameReport = ResourceBundle.getBundle("/Parameters").getString("fileNameTemplateCasualPartTime");
-        String fileNameReportOutput = "Nunez, Ismael - Casual to Part Time.doc";
-        HashMap<String, String> keys = new HashMap();
-        keys.put("$Employee.firstName", "Ismael");
-        ReplaceTextWord contractTemplate = new ReplaceTextWord(path + fileNameReport, keys, path + fileNameReportOutput);
-        contractTemplate.processFile();
 
         //Reset name as flag
         fileNameReport = "";

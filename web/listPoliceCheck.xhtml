@@ -130,7 +130,7 @@
                 <p:column width="100" sortBy="#{policeCheck.expiryDate}" headerText="Expiry Date" style="text-align: center" 
                           class="#{policeCheckController.getExpiryDateClass(policeCheck.expiryDate)}">
                     <h:outputText value="#{policeCheck.expiryDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="200" sortBy="#{policeCheck.precedaComment}" headerText="Preceda Comments"
@@ -149,12 +149,12 @@
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.receivedDate}" headerText="Received on">
                     <h:outputText value="#{policeCheck.receivedDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.processedDate}" headerText="Processed on">
                     <h:outputText value="#{policeCheck.processedDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="200" sortBy="#{policeCheck.prmStatus}" headerText="PRM Status" filterBy="#{policeCheck.prmStatus}" filterMatchMode="contains">
@@ -162,17 +162,17 @@
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.firstReportDate}" headerText="First Report Sent">
                     <h:outputText value="#{policeCheck.firstReportDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.firstLetterDate}" headerText="First Letter">
                     <h:outputText value="#{policeCheck.firstLetterDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
                 <p:column width="100" sortBy="#{policeCheck.secondLetterDate}" headerText="Second Letter">
                     <h:outputText value="#{policeCheck.secondLetterDate}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT+10"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:outputText>
                 </p:column>
 

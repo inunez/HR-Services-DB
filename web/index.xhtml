@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -9,6 +10,7 @@
         <title>"#{bundle.AppName}"</title>
         <h:outputStylesheet name="css/jsfcrud.css"/>
         <h:outputStylesheet library="css" name="jsfcrud.css"/>
+
     </h:head>
 
     <h:body>
@@ -21,7 +23,7 @@
 
                 <p:tabView dynamic="true" cache="true" id="tabViewMain" activeIndex="#{employeeController.currentTabIndex}">
                     <p:tab title="#{bundle.Home}">
-
+                        
                     </p:tab>
                     <p:tab id="menuEmployeeData" title="#{bundle.Employee}" disabled="#{!employeeController.employeeSelected}" >
                         <ui:include src="/employeeData.xhtml" />
@@ -32,8 +34,11 @@
                     <p:tab title="#{bundle.PoliceCheck}">
                         <ui:include src="/listPoliceCheck.xhtml" />
                     </p:tab>
+                    <p:tab title="#{bundle.Visas}">
+                        <ui:include src="/listVisas.xhtml" />
+                    </p:tab>
                 </p:tabView>
-                
+
             </p:layoutUnit>
 
             <p:layoutUnit position="south" size="20">

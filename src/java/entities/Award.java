@@ -42,7 +42,10 @@ public class Award implements Serializable {
     @Size(max = 255)
     @Column(name = "award_description")
     private String awardDescription;
-    @OneToMany(mappedBy = "awardId")
+    @Size(max = 255)
+    @Column(name = "award_title")
+    private String awardTitle;
+    @OneToMany(mappedBy = "awardCode")
     private Collection<Employee> employeeCollection;
     @OneToMany(mappedBy = "awardCode")
     private Collection<Earning> earningCollection;
@@ -70,6 +73,14 @@ public class Award implements Serializable {
 
     public void setAwardDescription(String awardDescription) {
         this.awardDescription = awardDescription;
+    }
+
+    public String getAwardTitle() {
+        return awardTitle;
+    }
+
+    public void setAwardTitle(String awardTitle) {
+        this.awardTitle = awardTitle;
     }
 
     @XmlTransient
@@ -121,7 +132,10 @@ public class Award implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.Award[ awardCode=" + awardCode + " ]";
+        return awardTitle;
     }
     
+    public String toString(boolean onlyCode) {
+        return "entities.Award[ awardCode=" + awardCode + " ]";
+    }
 }

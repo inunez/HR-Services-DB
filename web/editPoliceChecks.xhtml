@@ -332,7 +332,7 @@
                                      disabled="#{policeCheckController.tempSelected eq null}">
                     </p:commandButton>
                     <p:commandButton value="Cancel" id="cancelButton" icon="ui-icon-arrowreturnthick-1-w" 
-                                     oncomplete="handleSaveRequest(args)"
+                                     oncomplete="PF('multiPoliceChecksDialog').hide()"
                                      process="@this @form">
                     </p:commandButton>
                     <p:commandButton value="Save" id="saveButton" icon="ui-icon-disk" 
@@ -472,7 +472,7 @@
                 </p:panel>
                 <h:panelGroup style="display:block; text-align:center">
                     <p:commandButton value="Cancel" id="cancelMultiButton" icon="i-icon-arrowreturnthick-1-w" 
-                                     oncomplete="handleSaveRequest(args)"
+                                     oncomplete="PF('multiPoliceChecksDialog').hide()"
                                      actionListener="#{policeCheckController.cancel()}">
                     </p:commandButton>
                     <p:commandButton value="Save" id="saveMultiButton" icon="ui-icon-disk" 

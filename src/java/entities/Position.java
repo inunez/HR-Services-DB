@@ -6,7 +6,9 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,7 +47,7 @@ public class Position implements Serializable {
     @Column(name = "position_title")
     private String positionTitle;
     @OneToMany(mappedBy = "positionId")
-     Collection<Employee> employeeCollection;
+    private Collection<Employee> employeeCollection;
     @OneToMany(mappedBy = "reportsToPositionId")
     private Collection<Employee> employeeCollection1;
     @OneToMany(mappedBy = "positionId")
@@ -78,9 +80,6 @@ public class Position implements Serializable {
 
     @XmlTransient
     public Collection<Employee> getEmployeeCollection() {
-//        if("70760001".equals(positionId) ){
-//            System.out.println("aca");
-//        }
         return employeeCollection;
     }
 
@@ -128,9 +127,12 @@ public class Position implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.Position[ positionId=" + positionId + " ]";
+        return positionTitle;
     }
 
+    public String toString(boolean onlyCode) {
+        return "entities.Position[ positionId=" + positionId + " ]";
+    }
     @XmlTransient
     public Collection<ManagerPosition> getManagerPositionCollection() {
         return managerPositionCollection;

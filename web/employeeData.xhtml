@@ -162,8 +162,8 @@
                         <h:outputText value="Award"/>
                     </div>
                     <div class="fieldValue2Cols">
-                        <h:outputText value="#{employeeSelected.awardId.awardCode} - 
-                                      #{employeeSelected.awardId.awardDescription}"/>
+                        <h:outputText value="#{employeeSelected.awardCode.awardCode} - 
+                                      #{employeeSelected.awardCode.awardDescription}"/>
                     </div>
                 </div>
             </p:panel>
@@ -388,9 +388,8 @@
                 <div class="panelActions">
                     <p:commandButton value="COEC" id="coecButton" icon="ui-icon-comment" 
                                      oncomplete="PF('coecDialog').show()"
-                                     update="tabViewMain:mainBody:formCOECDialog"
-                                     disabled="#{employeeSelected.employeePK.status ne 'A'}"
-                                     actionListener="#{employeeController.openCoec()}" >
+                                     update="tabViewMain:formCOECDialog" 
+                                     disabled="#{employeeSelected.employeePK.status ne 'A'}">
                     </p:commandButton>
                 </div>
             </p:panel>
@@ -496,7 +495,9 @@
             </p:panel>
 
         </p:dashboard>
-        <ui:include src="/coecForm.xhtml"/>      
+    
     </h:form>
-
+    
+    <ui:include src="/coecForm.xhtml"/>  
+        
 </ui:composition>

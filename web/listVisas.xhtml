@@ -1,0 +1,244 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:form id="tableVisaForm">
+        <div>
+            <div>
+                <h:panelGrid columns="8" style="margin-bottom:10px" cellpadding="5">
+
+                    <h:outputText value="Search for" />
+                    <p:inputText value="#{visaController.searchText}"/>
+                    <p:selectOneMenu id="searchOption" value="#{visaController.searchType}" style="width:125px">
+                        <f:selectItem itemLabel="Employee Name" itemValue="1" />
+                        <f:selectItem itemLabel="Employee ID" itemValue="2" />
+                        <f:selectItem itemLabel="Service" itemValue="3" />
+                        <f:selectItem itemLabel="Position" itemValue="4" />
+                    </p:selectOneMenu>
+                    <h:outputText value="Status" />
+                    <p:selectOneMenu id="statusOption" value="#{visaController.status}" style="width:125px">
+                        <f:selectItem itemLabel="Active" itemValue="A" />
+                        <f:selectItem itemLabel="Terminated" itemValue="T" />
+                        <f:selectItem itemLabel="Both" itemValue="B" />
+                    </p:selectOneMenu>
+                    <p:commandButton value="Search" id="searchButton" icon="ui-icon-search" 
+                                     action="#{employeeController.setCurrentTabIndex(4)}"
+                                     update=":tabViewMain:tableVisaForm"
+                                     process="@form"
+                                     actionListener="#{visaController.searchVisas()}"
+                                     oncomplete="showTab(args, 4)"/>
+
+                    <h:outputScript target="head">
+                        function showTab(args, index){
+                        if(args.notValid){
+                        return;
+                        }
+                        PF('tabViewMain').select(index);
+
+                        }
+                    </h:outputScript>
+
+                </h:panelGrid>
+            </div>
+            <!--<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>-->
+            <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+        </div>
+
+        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="tablePanel">
+            <p:dataTable var="visa" value="#{visaController.items}" 
+                         id="visasTable" rowKey="#{visa.visaPK.idNumber}"
+                         selection="#{visaController.selectedVisas}"
+                         scrollable="true" scrollHeight="700" scrollWidth="98%">
+                <f:facet name="header">
+                    <h:panelGroup style="display:block; text-align:left">
+                        <p:commandButton icon="ui-icon-search" value="View" id="viewButton"
+                                         process="@form" oncomplete="PF('multiVisasDialog').show()"
+                                         action="#{visaController.setEditType('VIEW')}"
+                                         update="tabViewMain:tableVisaForm:multiVisasDlg"
+                                         disabled="#{(visaController.selectedVisas eq null) or 
+                                                     (visaController.selectedVisas.size() eq 0)}">
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-document" value="Edit" id="editButton"
+                                         oncomplete="PF('multiVisasDialog').show()"
+                                         action="#{visaController.setEditType('EDIT')}"
+                                         process="@form" 
+                                         update="tabViewMain:tableVisaForm:multiVisasDlg"
+                                         disabled="#{visaController.selectedVisas eq null or 
+                                                     visaController.selectedVisas.size() eq 0}">
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-trash" value="Remove" id="removeButton"
+                                         update="tabViewMain:tableVisaForm"
+                                         process="@form" 
+                                         actionListener="#{visaController.removeVisas()}"
+                                         disabled="#{visaController.selectedVisas eq null or 
+                                                     visaController.selectedVisas.size() eq 0}">
+                            <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <div>
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                            </div>
+                        </p:confirmDialog>
+
+                        <p:commandButton icon="ui-icon-document-b" value="Weekly Report" id="reportButton"
+                                         action="#{visaController.processVisaReport()}"
+                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequest(args)">
+                            <p:confirm header="Confirmation" message="The report will be created. Are you sure to continue?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:commandButton icon="ui-icon-mail-closed" value="Letters" id="letterButton"
+                                         oncomplete="PF('letterDialog').show()"
+                                         action="#{visaController.createVisaLetters()}"
+                                         process="@form">
+                        </p:commandButton>
+                        <pe:blockUI widgetVar="blockUIWidget">  
+                            <h:panelGrid columns="2">  
+                                <h:outputText value="Please wait..." style="white-space: nowrap;"/> 
+                                <p:graphicImage  value="#{resource['images/ajax-loader.gif']}" 
+                                                 style="margin-right: 12px; vertical-align: central;"/>  
+
+                            </h:panelGrid>  
+                        </pe:blockUI> 
+                    </h:panelGroup>
+                </f:facet>
+
+                <p:ajax event="rowSelect" update="viewButton editButton removeButton" listener="#{visaController.onRowSelect}" /> 
+                <p:ajax event="rowUnselect" update="viewButton editButton removeButton" listener="#{visaController.onRowUnselect}"/> 
+                <p:ajax event="rowSelectCheckbox" update="viewButton editButton removeButton" listener="#{visaController.onRowSelect}" /> 
+                <p:ajax event="rowUnselectCheckbox" update="viewButton editButton removeButton" listener="#{visaController.onRowUnselect}"/> 
+                <p:ajax event="rowDblselect" update="tabViewMain:tableVisaForm:multiVisasDlg" 
+                        global="false" oncomplete="PF('multiVisasDialog').show()" listener="#{visaController.onRowDblClckSelect}"/>
+
+                <p:column width="20" selectionMode="multiple"/>
+                <p:column width="45" sortBy="#{visa.visaPK.idNumber}" headerText="ID">
+                    <h:outputText value="#{visa.visaPK.idNumber}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.employee.surname}" headerText="Surname">
+                    <h:outputText value="#{visa.employee.surname}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.employee.firstName}" headerText="Name">
+                    <h:outputText value="#{visa.employee.firstName}" />
+                </p:column>
+                <p:column width="160" sortBy="#{visa.employee.payrollCollection[0].accountNumber.accountDescription}" headerText="Location"
+                          filterBy="#{visa.employee.payrollCollection[0].accountNumber.accountDescription}" filterMatchMode="contains">
+                    <h:outputText value="#{visa.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.visaPK.passportNumber}" headerText="Passport Number">
+                    <h:outputText value="#{visa.visaPK.passportNumber}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.visaCountry.countryName}" headerText="Country">
+                    <h:outputText value="#{visa.visaCountry.countryName}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.visaIssuedDate}" headerText="Issued Date" style="text-align: center">
+                    <h:outputText value="#{visa.visaIssuedDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="100" sortBy="#{visa.visaExpiryDate}" headerText="Expiry Date" style="text-align: center" 
+                          class="#{visaController.getExpiryDateClass(visa.visaExpiryDate)}">
+                    <h:outputText value="#{visa.visaExpiryDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="300" sortBy="#{visa.precedaComment1}" headerText="Preceda Comment 1"
+                          filterBy="#{visa.precedaComment1}" filterMatchMode="contains">
+                    <h:outputText value="#{visa.precedaComment1}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.precedaComment2}" headerText="Comment 2"
+                          filterBy="#{visa.precedaComment2}" filterMatchMode="contains">
+                    <h:outputText value="#{visa.precedaComment2}" />
+                </p:column>
+                <p:column width="300" sortBy="#{visa.precedaComment3}" headerText="Comment 3"
+                          filterBy="#{visa.precedaComment3}" filterMatchMode="contains">
+                    <h:outputText value="#{visa.precedaComment3}" />
+                </p:column>
+                <p:column width="150" sortBy="#{visa.employee.reportsToPositionId.employeeCollection[0].firstName} 
+                          #{visa.employee.reportsToPositionId.employeeCollection[0].surname}" headerText="Reports To"
+                          filterBy="#{visa.employee.reportsToPositionId.employeeCollection[0].firstName} 
+                          #{visa.employee.reportsToPositionId.employeeCollection[0].surname}" filterMatchMode="contains">
+                    <h:outputText value="#{visa.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                                  #{visa.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                </p:column>
+                <p:column width="200" sortBy="#{visa.employee.visaCommentCollection[0].comment}" headerText="HR Services Comments">
+                    <h:outputText value="#{visa.employee.visaCommentCollection[0].comment}" />
+                </p:column>
+                <p:column width="100" sortBy="#{visa.firstReportDate}" headerText="First Report Sent">
+                    <h:outputText value="#{visa.firstReportDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="100" sortBy="#{visa.firstLetterDate}" headerText="First Letter">
+                    <h:outputText value="#{visa.firstLetterDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column width="100" sortBy="#{visa.secondLetterDate}" headerText="Second Letter">
+                    <h:outputText value="#{visa.secondLetterDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+
+            </p:dataTable>
+
+        </h:panelGrid>
+        <ui:include src="/editVisas.xhtml"/>
+
+        <h:outputScript target="head">
+            function handleEmailRequest(args) { 
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                    <!--PF('multiVisasDialog').show();-->
+                    return false;
+                }else{
+                    PF('blockUIWidget').unblock();
+                    PF('emailVisasDialog').show();
+                }
+            }  
+        </h:outputScript>
+    </h:form>
+
+    <p:dialog header="Visa Weekly Report" widgetVar="emailVisasDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="emailVisasDlg">
+
+        <h:form id="formEmailVisaDialog">
+            <p:panel class="visaEmail">
+                <p:outputLabel value="Check the report and send the email."/>
+            </p:panel>
+            <br/>
+            <h:panelGroup style="display:block; text-align:center">
+
+                <p:commandButton value="Download Report" ajax="false" icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{visaController.reportFile}" />
+                </p:commandButton>
+
+                <p:commandButton value="Cancel" id="cancelEmailButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('emailVisasDialog').hide()">
+                </p:commandButton>
+                <p:commandButton value="Send Email" id="sendEmailButton" icon="ui-icon-disk" 
+                                 update=":tabViewMain:tableVisaForm:formVisaDialog" 
+                                 actionListener="#{visaController.sendReportByEmail()}"
+                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessed(args)">
+                </p:commandButton>
+            </h:panelGroup>
+            
+        <h:outputScript target="head">
+            function handleEmailProcessed(args) { 
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                    <!--PF('multiVisasDialog').show();-->
+                    return false;
+                }else{
+                    PF('blockUIWidget').unblock();
+                    PF('emailVisasDialog').hide();
+                }
+            }  
+        </h:outputScript>
+
+        </h:form>   
+    </p:dialog>
+
+</ui:composition>

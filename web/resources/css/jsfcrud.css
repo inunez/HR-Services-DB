@@ -145,36 +145,41 @@ tr.jsfcrud_even_row {
 .firstColumnCoec{
     width: 20%;
     float: left;
-    padding: 10px 2px 2px 2px;
-    height: 25px;
+    padding: 2px 2px 2px 2px;
+    height: 20px;
 }
 
 .secondColumnCoec{
     width: 35%;
     float: left;
-    padding: 10px 2px 2px 2px;
-    height: 25px;
+    padding: 2px 2px 2px 2px;
+    height: 20px;
 }
 
 .thirdColumnCoec{
     width: 42%;
     float: right;
-    padding: 10px 2px 2px 2px;
-    height: 25px;
+    padding: 2px 2px 2px 2px;
+    height: 20px;
 }
 
 .employeeDetailsCOEC{
     width: 650px; 
-    height: 150px;
+    height: 130px;
     /*position: relative;*/
 }
 
 .positionDetailsCOEC{
     width: 650px; 
-    height: 340px;
+    height: 360px;
     /*position: relative;*/
 }
 
+.contractTypeCOEC{
+    width: 650px; 
+    height: 35px;
+    /*position: relative;*/
+}
 /*********************/
 
 .inputTextAreaName2Cols{
@@ -307,7 +312,7 @@ tr.jsfcrud_even_row {
 }
 
 .panelPoliceCheckData{
-    width: 400px; 
+    width: 350px; 
     height: 165px;
     /*position: relative;*/
 }
@@ -353,8 +358,58 @@ tr.jsfcrud_even_row {
     /*position: relative;*/
 }
 
-.panelLeaveData{
+/*************V I S A**************/
+
+.panelVisaData{
+    width: 350px; 
+    height: 165px;
+    /*position: relative;*/
+}
+
+.visaDetailComment{
     width: 400px; 
+    height: 180px;
+    /*position: relative;*/
+}
+
+.visaDetailView{
+    width: 500px; 
+    height: 390px;
+    /*position: relative;*/
+}
+
+.visaDetailEdit{
+    width: 500px; 
+    height: 335px;
+    /*position: relative;*/
+}
+
+.viewPoliceCheckDetail{
+    width: 500px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.editVisaDetail{
+    width: 500px; 
+    height: 150px;
+    /*position: relative;*/
+}
+
+.visaDetailEditMulti{
+    width: 500px; 
+    height: 180px;
+    /*position: relative;*/
+}
+.multiVisaComments{
+    width: 500px; 
+    height: 100px;
+    /*position: relative;*/
+}
+/**************/
+
+.panelLeaveData{
+    width: 350px; 
     height: 200px;
     /*position: relative;*/
 }
@@ -373,7 +428,7 @@ tr.jsfcrud_even_row {
 }
 
 .panelVisaData{
-    width: 400px; 
+    width: 350px; 
     height: 200px;
     /*position: relative;*/
 }

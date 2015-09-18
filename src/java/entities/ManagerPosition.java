@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ManagerPosition.findAll", query = "SELECT m FROM ManagerPosition m"),
-    @NamedQuery(name = "ManagerPosition.findByLocationCode", query = "SELECT m FROM ManagerPosition m WHERE m.managerPositionPK.locationCode = :locationCode"),
+    @NamedQuery(name = "ManagerPosition.findByLocationCode", query = "SELECT m FROM ManagerPosition m WHERE m.managerPositionPK .locationCode = :locationCode"),
     @NamedQuery(name = "ManagerPosition.findByAccountNumber", query = "SELECT m FROM ManagerPosition m WHERE m.managerPositionPK.accountNumber = :accountNumber"),
     @NamedQuery(name = "ManagerPosition.findByPositionId", query = "SELECT m FROM ManagerPosition m WHERE m.managerPositionPK.positionId = :positionId")})
 public class ManagerPosition implements Serializable {

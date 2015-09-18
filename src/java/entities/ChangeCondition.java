@@ -13,36 +13,83 @@ public class ChangeCondition {
         PERMANENT, SECONDMENT, HGD
     }
     
+   
     private VariationType coecVariationType;
     private Date effectiveDate;
     private Date secondmentDate;
     private Employee employee;
     private Position newPosition;
+    private String newPositionName;
     private Account newAccount;
-    private ManagerPosition newManager;
-    private JobTitle newClassification;
+    private Employee newManager;
+    private String newClassification;
     private Double newSalary;
-    private EmploymentType newEmploymentType;
+    private String newEmploymentType;
     private String newAward;
+    private ContractType newContract;
+    private Date currentDate;
+    private Double newHours;
 
     public ChangeCondition() {
         this.coecVariationType = VariationType.PERMANENT;
     }
 
     public ChangeCondition(Employee employee) {
+        this.currentDate = new Date();
         this.coecVariationType = VariationType.PERMANENT;
+        this.effectiveDate = new Date();
         this.employee = employee;
         this.newPosition = employee.getPositionId();
+        this.newPositionName = employee.getPositionId().getPositionTitle();
         List<Payroll> payrollList = new ArrayList<>(employee.getPayrollCollection());
         Comparator<Payroll> dateComparator = (Payroll p1, Payroll p2) -> p2.getPayrollPK().getEffectiveDate().compareTo(p1.getPayrollPK().getEffectiveDate());
         Collections.sort(payrollList, dateComparator);
         Payroll payroll = payrollList.iterator().next();
         this.newAccount = payroll.getAccountNumber();
-        this.newManager = this.newAccount.getManagerPositionCollection().iterator().next();
-        this.newClassification = payroll.getJobTitle();
+        for (Employee manager : employee.getReportsToPositionId().getEmployeeCollection()) {
+            if(manager.getEmployeePK().getStatus().equals("A")){
+                this.newManager = manager;
+                break;
+            }
+        }
+        //Collection<Employee> managers = employee.getReportsToPositionId().getEmployeeCollection();//.stream().filter(e -> e.getEmployeePK().getStatus().equals("A"))
+//                .collect(Collectors.toCollection(ArrayList::new));
+        //if (!managers.isEmpty()){
+            //this.newManager = managers.get(0);
+        //}
+        this.newClassification = payroll.getJobTitle().getJobTitle().concat(" - ").concat(payroll.getJobTitle().getJobTitleDescription());
         this.newSalary = payroll.getBaseRate();
-        this.newEmploymentType = payroll.getEmploymentType();
+        this.newEmploymentType = payroll.getEmploymentType().getEmploymentType();
         this.newAward = payroll.getAwardCode().getAwardCode();
+        this.newHours = Double.parseDouble(payroll.getBaseHoursCode());
+    }
+
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public Date getCurrentDate() {
+        return currentDate;
+    }
+
+    public Double getNewHours() {
+        return newHours;
+    }
+
+    public void setNewHours(Double newHours) {
+        this.newHours = newHours;
+    }
+
+    public ContractType getNewContract() {
+        return newContract;
+    }
+
+    public void setNewContract(ContractType newContract) {
+        this.newContract = newContract;
     }
 
     public String getNewAward() {
@@ -56,11 +103,11 @@ public class ChangeCondition {
         this.newAward = newAward;
     }
 
-    public EmploymentType getNewEmploymentType() {
+    public String getNewEmploymentType() {
         return newEmploymentType;
     }
 
-    public void setNewEmploymentType(EmploymentType newEmploymentType) {
+    public void setNewEmploymentType(String newEmploymentType) {
         this.newEmploymentType = newEmploymentType;
     }
 
@@ -72,19 +119,19 @@ public class ChangeCondition {
         this.newSalary = newSalary;
     }
 
-    public JobTitle getNewClassification() {
+    public String getNewClassification() {
         return newClassification;
     }
 
-    public void setNewClassification(JobTitle newClassification) {
+    public void setNewClassification(String newClassification) {
         this.newClassification = newClassification;
     }
 
-    public ManagerPosition getNewManager() {
+    public Employee getNewManager() {
         return newManager;
     }
 
-    public void setNewManager(ManagerPosition newManager) {
+    public void setNewManager(Employee newManager) {
         this.newManager = newManager;
     }
 
@@ -135,6 +182,5 @@ public class ChangeCondition {
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
-    
     
 }

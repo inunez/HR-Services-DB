@@ -10,54 +10,66 @@
     <p:dialog header="Change of Employment Conditions" widgetVar="coecDialog" modal="true" appendTo="@(body)"
               closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="coecDlg">
         <p:ajax event="close" listener="#{employeeController.cancelCOEC()}"/>
-        
+
         <h:form id="formCOECDialog">
-            <f:facet name="header">
-                <p:messages id="messagesCOEC" showDetail="true" autoUpdate="true" />
-            </f:facet>
-            
+
             <c:set var="coec" value="#{employeeController.changeEmploymentCondition}"/>
-            
+
             <!--EMPLOYEE DETAILS-->
-            
-            <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="viewCOEC">
+
+            <h:panelGrid id="viewCOEC">
+                <f:facet name="header">
+                    <p:messages id="messagesCOEC" showDetail="false" autoUpdate="true" />
+                </f:facet>
+                
                 <p:panel class="employeeDetailsCOEC" header="Employee Details" >
-
-                    <div class="firstColumnCoec">             
-                        <h:outputText value="Employee Name:"/>
-                    </div>
-                    <div class="secondColumnCoec">
-                        <h:outputText value="#{coec.employee.firstName} #{coec.employee.surname}" />
-                    </div>
-                    <div class="thirdColumnCoec">             
-                        <h:outputText value="Employee ID: #{coec.employee.employeePK.idNumber}"/>
-                    </div>
-
-                    <div class="firstColumnCoec" style="border-bottom: none">             
-                        <h:outputText value="Vaiation Type:"/>
-                    </div>
-                    <div class="secondColumnCoec" style="width: 78%; height: 33px; padding: 2px">
-                        <p:selectOneRadio  id="coecVariationType" value="#{coec.coecVariationType}">
-                            <f:selectItem itemLabel="Permanent" itemValue="PERMANENT"/>
-                            <f:selectItem itemLabel="Secondment" itemValue="SECONDMENT" />
-                            <f:selectItem itemLabel="HGD" itemValue="HGD" />
-                        </p:selectOneRadio>
-                    </div>
-
-                    <div class="firstColumnCoec">             
-                        <h:outputText value="Effective Date:"/>
-                    </div>
-                    <div class="secondColumnCoec" style="height: 25px; padding: 6px 2px">
-                        <p:calendar id="effectiveDateCalendar" value="#{coec.effectiveDate}" showOn="button" required="true" 
-                                    requiredMessage="Effective Date is mandatory" mode="popup" showButtonPanel="true" 
-                                    size="12"/>
-                    </div>
-                    <div class="thirdColumnCoec" style="height: 25px; padding: 6px 2px">             
-                        <h:outputText value="Secondment: "/> 
-                        <p:calendar id="secondmentDateCalendar" value="#{coec.secondmentDate}" showOn="button" required="true" 
-                                    requiredMessage="Secondment Date is mandatory" mode="popup" showButtonPanel="true" 
-                                    size="12"/>
-                    </div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="width: 20%; height: 25px">
+                                    <h:outputText value="Employee Name:"/>
+                                </td>
+                                <td style="width: 40%; height: 25px">
+                                    <h:outputText value="#{coec.employee.fullName}" />
+                                </td>
+                                <td style="width: 40%; height: 25px">
+                                    <h:outputText value="Employee ID: #{coec.employee.employeePK.idNumber}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 20%">
+                                    <h:outputText value="Variation Type:"/>
+                                </td>
+                                <td style="width: 40%">
+                                    <p:selectOneRadio  id="coecVariationType" value="#{coec.coecVariationType}">
+                                        <f:selectItem itemLabel="Permanent" itemValue="PERMANENT"/>
+                                        <f:selectItem itemLabel="Secondment" itemValue="SECONDMENT" />
+                                        <f:selectItem itemLabel="HGD" itemValue="HGD" />
+                                        <p:ajax event="change" listener="#{employeeController.changeVariationType}" 
+                                                update="comboContractTypes createContractButton endLabel"/>
+                                    </p:selectOneRadio>
+                                </td>
+                                <td/>
+                            </tr>
+                            <tr>
+                                <td style="width: 20%">             
+                                    <h:outputText value="Effective Date:"/>
+                                </td>
+                                <td style="width: 40%">
+                                    <p:calendar id="effectiveDateCalendar" value="#{coec.effectiveDate}" showOn="button" required="true" 
+                                                requiredMessage="Effective Date is mandatory" mode="popup" showButtonPanel="true" 
+                                                size="12" onfocus="this.select();" onmouseup="return false;"/>
+                                </td>
+                                <td style="width: 40%">           
+                                    <h:outputText value="#{coec.coecVariationType eq 'SECONDMENT' ? 'Secondment: ' : 'End Date: '}" id="endLabel"/> 
+                                    <p:calendar id="secondmentDateCalendar" value="#{coec.secondmentDate}" showOn="button" 
+                                                required="#{coec.coecVariationType eq 'SECONDMENT'}" 
+                                                requiredMessage="Secondment end date is mandatory" mode="popup" showButtonPanel="true" 
+                                                size="12" onfocus="this.select();" onmouseup="return false;"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </p:panel>
                 <!--POSITION INFORMATION-->
                 <p:panel class="positionDetailsCOEC" header="Position - Payroll and Costing Details" >
@@ -77,13 +89,17 @@
                                 <td style="width: 35%">
                                     <h:outputText value="#{coec.employee.positionId.positionId}"/>
                                 </td>
-                                <td style="width: 35%">
-                                    <p:selectOneMenu value="#{employeeController.changeEmploymentCondition.newPosition}" filter="true" filterMatchMode="contains"
-                                                     height="100" style="width: 95%;">
-                                        <f:selectItem itemLabel="Select..." itemValue=""/>
-                                        <f:selectItems value="#{employeeController.listOfPositions}" var="position"
-                                                       itemLabel="#{position.positionId} - #{position.positionTitle}" itemValue="#{position}"/>
-                                    </p:selectOneMenu>
+                                <td style="width: 45%">
+                                    <p:autoComplete value="#{coec.newPosition}" converter="positionConverter"
+                                                    completeMethod="#{employeeController.completePosition}"
+                                                    var="position" id="comboPositions"
+                                                    itemValue="#{position}" itemLabel="#{position.positionId} - #{position.positionTitle}"
+                                                    forceSelection="true" minQueryLength="3" emptyMessage="No position found." size="30"
+                                                    required="true" requiredMessage="Position is mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;">
+                                        <p:ajax event="change" listener="#{employeeController.checkContractType}" 
+                                                update="comboContractTypes createContractButton textPositionTitle"/>
+                                    </p:autoComplete> 
                                 </td>
                             </tr>
                             <tr>
@@ -94,7 +110,9 @@
                                     <h:outputText value="#{coec.employee.positionId.positionTitle}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <h:outputText value="#{employeeController.changeEmploymentCondition.newPosition.positionTitle}"/>
+                                    <p:inputText value="#{coec.newPositionName}" id="textPositionTitle"
+                                                 required="true" requiredMessage="Position Title is mandatory"
+                                                 onfocus="this.select();" onmouseup="return false;"/>
                                 </td>
                             </tr>
                             <tr>
@@ -105,13 +123,16 @@
                                     <h:outputText value="#{coec.employee.payrollCollection[0].accountNumber.accountDescription}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <p:selectOneMenu value="#{coec.newAccount}" filter="true" filterMatchMode="contains"
-                                                     height="100" style="width: 95%;">
-                                        <f:selectItem itemLabel="Select..." itemValue=""/>
-                                        <f:selectItems value="#{employeeController.listOfAccounts}" var="account"
-                                                       itemLabel="#{account.accountDescription}" itemValue="#{account}"/>
-                                        <p:ajax event="change" listener="#{employeeController.accountChange()}" update="managerMenu"/>
-                                    </p:selectOneMenu>
+                                    <p:autoComplete value="#{coec.newAccount}" converter="accountConverter"
+                                                    completeMethod="#{employeeController.completeAccount}"
+                                                    var="account" id="comboAccounts"
+                                                    itemValue="#{account}" itemLabel="#{account.accountDescription}"
+                                                    forceSelection="true" minQueryLength="3" emptyMessage="No account found." size="30"
+                                                    required="true" requiredMessage="Facility/Service is mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;">
+                                        <p:ajax event="change" listener="#{employeeController.accountChange}" 
+                                                update="comboContractTypes createContractButton comboManagers"/>
+                                    </p:autoComplete> 
                                 </td>
                             </tr>
                             <tr>
@@ -120,15 +141,19 @@
                                 </td>
                                 <td style="width: 35%">
                                     <h:outputText value="#{employeeController.reportsToList.size() eq 0 ? '' : 
-                                           employeeController.reportsToList[0].firstName} #{employeeController.reportsToList[0].surname}"/>
+                                                           employeeController.reportsToList[0].fullName}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <p:selectOneMenu value="#{coec.newManager}" filter="true" filterMatchMode="contains"
-                                                     height="100" style="width: 95%;" id="managerMenu">
-                                        <f:selectItem itemLabel="Select..." itemValue=""/>
-                                        <f:selectItems value="#{employeeController.employeesByService}" var="manager"
-                                                       itemLabel="#{manager.position.employeeCollection[0].firstName} #{manager.position.employeeCollection[0].surname}" itemValue="#{manager}"/>
-                                    </p:selectOneMenu>
+                                    <p:autoComplete value="#{coec.newManager}" converter="managerConverter"
+                                                    completeMethod="#{employeeController.completeManager}"
+                                                    var="manager" id="comboManagers"
+                                                    itemValue="#{manager}" itemLabel="#{manager.fullName}"
+                                                    forceSelection="true" minQueryLength="3" emptyMessage="No manager found." size="30"
+                                                    required="true" requiredMessage="Reports To/Manager is mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;">
+                                        <p:ajax event="change" listener="#{employeeController.checkContractType}" 
+                                                update="comboContractTypes createContractButton"/>
+                                    </p:autoComplete> 
                                 </td>
                             </tr>
                             <tr>
@@ -140,12 +165,16 @@
                                                   #{employeeController.payrollList[0].jobTitle.jobTitleDescription}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <p:selectOneMenu value="#{coec.newClassification}" filter="true" filterMatchMode="contains"
-                                                     height="100" style="width: 95%;">
-                                        <f:selectItem itemLabel="Select..." itemValue=""/>
-                                        <f:selectItems value="#{employeeController.listOfClassifications}" var="classification"
-                                                       itemLabel="#{classification.jobTitle} - #{classification.jobTitleDescription}" itemValue="#{classification}"/>
-                                    </p:selectOneMenu>
+                                    <p:autoComplete value="#{coec.newClassification}" 
+                                                    completeMethod="#{employeeController.completeClassification}"
+                                                    var="classification" id="comboClassifications"
+                                                    itemValue="#{classification}" itemLabel="#{classification}"
+                                                    forceSelection="true" minQueryLength="3" emptyMessage="No manager found." size="30"
+                                                    required="true" requiredMessage="Pay Classification is mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;">
+                                        <p:ajax event="change" listener="#{employeeController.checkContractType}" 
+                                                update="comboContractTypes createContractButton"/>
+                                    </p:autoComplete>
                                 </td>
                             </tr>
                             <tr>
@@ -153,10 +182,30 @@
                                     <h:outputText value="Salary/Hourly Rate:"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <h:outputText value="#{employeeController.payrollList[0].baseRate}"/>
+                                    <h:outputText value="#{employeeController.payrollList[0].baseRate}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
                                 </td>
                                 <td style="width: 35%">
-                                    <pe:inputNumber id="Input2" value="#{coec.newSalary}" symbol="$"/>
+                                    <pe:inputNumber id="textSalary" value="#{coec.newSalary}" symbol="$"
+                                                    required="true" requiredMessage="Salary/Hourly Rate is mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 20%">
+                                    <h:outputText value="Hours per Fortnight:"/>
+                                </td>
+                                <td style="width: 35%">
+                                    <h:outputText value="#{employeeController.payrollList[0].baseHoursCode}">
+                                        <f:convertNumber/>
+                                    </h:outputText>
+                                </td>
+                                <td style="width: 35%">
+                                    <pe:inputNumber id="textHours" value="#{coec.newHours}" minValue="1.00" maxValue="80.00"
+                                                    disabled="#{coec.newEmploymentType ne 'P'}"
+                                                    required="true" requiredMessage="Contracted Hours are mandatory"
+                                                    onfocus="this.select();" onmouseup="return false;"/>
                                 </td>
                             </tr>
                             <tr>
@@ -167,40 +216,90 @@
                                     <h:outputText value="#{employeeController.payrollList[0].employmentType.employmentTypeDescription}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <p:selectOneRadio  id="coecEmploymentType" value="#{coec.newEmploymentType.employmentType}">
+                                    <p:selectOneRadio  id="comboEmploymentTypes" value="#{coec.newEmploymentType}">
                                         <f:selectItem itemLabel="Casual" itemValue="C"/>
                                         <f:selectItem itemLabel="Part Time" itemValue="P" />
                                         <f:selectItem itemLabel="Full Time" itemValue="F" />
+                                        <p:ajax event="change" listener="#{employeeController.checkContractType}" 
+                                                update="comboContractTypes createContractButton textHours"/>
                                     </p:selectOneRadio>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 20%">
-                                    <h:outputText value="Employment Type:"/>
+                                    <h:outputText value="Award / Agreement:"/>
                                 </td>
                                 <td style="width: 35%">
                                     <h:outputText value="#{coec.employee.payrollCollection[0].awardCode.awardCode eq '1' ? 'Salaried' : 'EA Award'}"/>
                                 </td>
                                 <td style="width: 35%">
-                                    <p:selectOneRadio  id="coecAwardType" value="#{coec.newAward}">
+                                    <p:selectOneRadio  id="comboAwardTypes" value="#{coec.newAward}">
                                         <f:selectItem itemLabel="EA Award" itemValue="0"/>
                                         <f:selectItem itemLabel="Salaried" itemValue="1" />
+                                        <p:ajax event="change" listener="#{employeeController.checkContractType}" update="comboContractTypes createContractButton"/>
                                     </p:selectOneRadio>
                                 </td>
                             </tr>
+
                         </tbody>
                     </table>
                 </p:panel>
-                
-                <h:panelGroup style="display:block; text-align:center">
-                    <p:commandButton value="Back" id="backButton" icon="ui-icon-arrowreturnthick-1-w" 
-                                     oncomplete="PF('coecDialog').hide()"
-                                     process="@this @form"
-                                     update="tabViewMain"
-                                     actionListener="#{employeeController.cancelCOEC()}">
-                    </p:commandButton>
-                </h:panelGroup>
+
+
+                <p:panel class="contractTypeCOEC" >
+                    <div style="width: 30%; float: left">  
+                        <p:outputLabel value="Contract Type"/>
+                    </div>
+                    <div style="width: 65%; float: right">  
+                        <p:selectOneMenu value="#{coec.newContract}" height="100" id="comboContractTypes" converter="contractTypeConverter">
+                            <f:selectItem itemLabel="Confirmation Letter is not Required" itemValue=""/>
+                            <f:selectItems value="#{employeeController.contractTypes}" var="contract"
+                                           itemLabel="#{contract.contractTypeDescription}" itemValue="#{contract}" />
+                            <p:ajax event="change" update="createContractButton"/>
+                        </p:selectOneMenu>
+                    </div>
+                </p:panel>
             </h:panelGrid>
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Back" id="backButton" icon="ui-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('coecDialog').hide()"
+                                 actionListener="#{employeeController.cancelCOEC()}">
+                </p:commandButton>
+                <p:commandButton value="Create Contract" id="createContractButton" icon="ui-icon-save" 
+                                 disabled="#{coec.newContract eq null}"
+                                 oncomplete="handleSaveCOECRequest(args)"
+                                 process="@this @form" actionListener="#{employeeController.createContractCOEC()}">
+                </p:commandButton>
+            </h:panelGroup>
+
+            <!--***************** J A V A   S C R I P T *********************-->
+
+            <h:outputScript target="head">
+                function handleSaveCOECRequest(args) { 
+                    if(  args.validationFailed | args.notValid | args.tableShown ){
+                        return false;
+                    }else{
+                        PF('coecLetterDialog').show();
+                    }
+                }
+            </h:outputScript>
+
+        </h:form>   
+    </p:dialog>
+
+    <p:dialog header="Confirmation Letter" widgetVar="coecLetterDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="coecLetterDlg">
+
+        <h:form id="formCoecLetterDialog">
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Download letter" ajax="false" icon="ui-icon-arrowthick-1-s" oncomplete="PF('coecLetterDialog').hide();">
+                    <p:fileDownload value="#{employeeController.confirmationLetterFile}"/>
+                </p:commandButton>
+
+                <p:commandButton value="Back" id="backLetterButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('coecLetterDialog').hide();">
+                </p:commandButton>
+            </h:panelGroup>
         </h:form>   
     </p:dialog>
 

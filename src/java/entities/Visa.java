@@ -47,7 +47,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Visa.findBySecondLetterDate", query = "SELECT v FROM Visa v WHERE v.secondLetterDate = :secondLetterDate"),
     @NamedQuery(name = "Visa.findByYnSecondLetterSent", query = "SELECT v FROM Visa v WHERE v.ynSecondLetterSent = :ynSecondLetterSent"),
     @NamedQuery(name = "Visa.findByManagerPhoneCallDate", query = "SELECT v FROM Visa v WHERE v.managerPhoneCallDate = :managerPhoneCallDate"),
-    @NamedQuery(name = "Visa.findByYnPhoneCallDone", query = "SELECT v FROM Visa v WHERE v.ynPhoneCallDone = :ynPhoneCallDone")})
+    @NamedQuery(name = "Visa.findByYnPhoneCallDone", query = "SELECT v FROM Visa v WHERE v.ynPhoneCallDone = :ynPhoneCallDone"),
+    @NamedQuery(name = "Visa.findVisaByFullName", query = "SELECT v FROM Visa v JOIN v.employee e WHERE CONCAT(e.firstName, ' ', e.surname) LIKE :fullName AND e.employeePK.status = :status and v.visaExpiryDate <= :visaExpiryDate and v.visaExpiryDate > {d '1900-01-01'}"),
+    @NamedQuery(name = "Visa.findVisaByIdNumber", query = "SELECT v FROM Visa v WHERE v.visaPK.idNumber = :idNumber AND v.visaPK.status = :status and v.visaExpiryDate <= :visaExpiryDate and v.visaExpiryDate > {d '1900-01-01'}"),
+    @NamedQuery(name = "Visa.findVisaByAccount", query = "SELECT v FROM Visa v JOIN v.employee e JOIN e.payrollCollection p JOIN p.accountNumber a WHERE UPPER(a.accountDescription) LIKE :accountDesc AND e.employeePK.status = :status and v.visaExpiryDate <= :visaExpiryDate and v.visaExpiryDate > {d '1900-01-01'}"),
+    @NamedQuery(name = "Visa.findVisaByPosition", query = "SELECT v FROM Visa v JOIN v.employee e JOIN e.positionId p WHERE UPPER(p.positionTitle) LIKE :position AND e.employeePK.status = :status and v.visaExpiryDate <= :visaExpiryDate and v.visaExpiryDate > {d '1900-01-01'}")
+    })
 public class Visa implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -128,6 +133,10 @@ public class Visa implements Serializable {
         return visaPK;
     }
 
+    public Visa(String idNumber, String status, Date updateDate) {
+        this.visaPK = new VisaPK(idNumber, status, updateDate);
+    }
+        
     public void setVisaPK(VisaPK visaPK) {
         this.visaPK = visaPK;
     }
@@ -149,6 +158,9 @@ public class Visa implements Serializable {
     }
 
     public String getPrecedaComment1() {
+        if(precedaComment1 == null || precedaComment1.isEmpty()){
+            precedaComment1 = "N/A";
+        }
         return precedaComment1;
     }
 
@@ -157,6 +169,9 @@ public class Visa implements Serializable {
     }
 
     public String getPrecedaComment2() {
+        if(precedaComment2 == null || precedaComment2.isEmpty()){
+            precedaComment2 = "";
+        }
         return precedaComment2;
     }
 
@@ -165,6 +180,9 @@ public class Visa implements Serializable {
     }
 
     public String getPrecedaComment3() {
+        if(precedaComment3 == null || precedaComment3.isEmpty()){
+            precedaComment3 = "N/A";
+        }
         return precedaComment3;
     }
 

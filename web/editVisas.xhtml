@@ -1,0 +1,558 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog header="Edit Visas" widgetVar="multiVisasDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="multiVisasDlg">
+        <p:ajax event="close" listener="#{visaController.cancel()}" update="tabViewMain:tableVisaForm"/>
+        <h:form id="formVisaDialog">
+            <f:facet name="footer">
+                <p:messages id="messagesMulti" showDetail="true" autoUpdate="true" />
+            </f:facet>
+
+            <!--***************** V I E W *********************-->
+
+            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="viewVisaDetail" 
+                         rendered="#{visaController.editType eq 'VIEW'}">
+                <p:panel class="visaDetailView" header="Visa Details" >
+                    <c:set var="visa" value="#{visaController.selectedVisas[0]}"/>
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Employee ID"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaPK.idNumber}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Full Name"/>
+                    </div>       
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.surname} #{visa.employee.firstName}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Location"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Passport Number"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaPK.passportNumber}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Country"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaCountry.countryName}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Issued Date"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaIssuedDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Expiry Date"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaExpiryDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 1"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment1 eq '' ? '-' : visa.precedaComment1}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 2"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment2 eq '' ? '-' : visa.precedaComment2}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 3"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment3 eq '' ? '-' : visa.precedaComment3}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Reports To"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.reportsToPositionId.employeeCollection.size() eq 0 ? 'N/A' :
+                                               visa.employee.reportsToPositionId.employeeCollection[0].firstName} 
+                                      #{visa.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="Report Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{visa.ynFirstReportSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{visa.firstReportDate eq null ? '-' : visa.firstReportDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="First Letter Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{visa.ynFirstLetterSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{visa.firstLetterDate eq null ? '-' : visa.firstLetterDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+
+                    <div class="fieldName3Cols">             
+                        <h:outputText value="Seconde Letter Sent"/>
+                    </div>
+                    <div class="fieldOption3Cols">
+                        <h:outputText value="#{visa.ynSecondLetterSent ? 'Yes' : 'No'}"/>
+                    </div>                     
+                    <div class="fieldValue3Cols">
+                        <h:outputText value="#{visa.secondLetterDate eq null ? '-' : visa.secondLetterDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </div>
+                </p:panel>
+                <br/>
+                <h:outputText value="HR Services Comments" style="width: 500px; text-align: center"/>
+                <br/>
+                <p:dataTable var="visaComments" value="#{visa.employee.visaCommentCollection}" 
+                             scrollable="true" scrollHeight="50" class="multiVisaComments" style="height: 80px">
+                    <p:column headerText="Date" width="20%" sortBy="#{visaComments.visaCommentPK.commentDate}">
+                        <h:outputText value="#{visaComments.visaCommentPK.commentDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Comment" width="40%">
+                        <h:outputText value="#{visaComments.comment}"/>
+                    </p:column>
+                    <p:column headerText="User" width="20%">
+                        <h:outputText value="#{visaComments.user}"/>
+                    </p:column>
+                    <p:column headerText="Infra ticket" width="20%">
+                        <h:outputText value="#{visaComments.infraTicket}"/>
+                    </p:column>
+                </p:dataTable>  
+                <!--</div>-->
+
+                <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="Back" id="backButton" icon="ui-icon-arrowreturnthick-1-w" 
+                                     oncomplete="handleSaveRequest(args)"
+                                     actionListener="#{visaController.cancel()}"
+                                     update="tabViewMain:tableVisaForm">
+                    </p:commandButton>
+                </h:panelGroup>
+            </h:panelGrid>
+
+            <!--***************** E D I T *********************-->
+
+            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5" id="editVisaDetail" 
+                         rendered="#{visaController.editType eq 'EDIT' and visaController.selectedVisas.size() eq 1}">
+                <p:panel class="visaDetailEdit" header="Edit Visa Details" >
+                    <c:set var="visa" value="#{visaController.tempSelected}"/>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Employee ID"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaPK.idNumber}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Full Name"/>
+                    </div>       
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.surname} #{visa.employee.firstName}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Location"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.payrollCollection[0].accountNumber.accountDescription}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Passport Number"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaPK.passportNumber}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Country"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.visaCountry.countryName}" />
+                    </div>
+
+                    <div class="inputFieldName3Cols" style="height: 30px">             
+                        <p:outputLabel value="Issued Date" for="issuedCalendar"/>
+                    </div>
+                    <div class="inputFieldValue3Cols" style="height: 30px">
+                        <p:calendar id="issuedCalendar" value="#{visa.visaIssuedDate}" showOn="button" required="true" 
+                                    requiredMessage="Issued Date is mandatory" mode="popup" showButtonPanel="true" 
+                                    size="12"/>
+                    </div>
+                    <div class="inputFieldMessage3Cols" style="height: 30px"><p:message for="issuedCalendar"/></div>
+
+                    <div class="inputFieldName3Cols" style="height: 30px">             
+                        <p:outputLabel value="Expiry Date" for="expiryCalendar"/>
+                    </div>
+                    <div class="inputFieldValue3Cols" style="height: 30px">
+                        <p:calendar id="expiryCalendar" value="#{visa.visaExpiryDate}" showOn="button" mode="popup" showButtonPanel="true" 
+                                    size="12"/>
+                    </div>
+                    <div class="inputFieldMessage3Cols" style="height: 30px"><p:message for="expiryCalendar"/></div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 1"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment1 eq '' ? '-' : visa.precedaComment1}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 2"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment2 eq '' ? '-' : visa.precedaComment2}" />
+                    </div>
+
+                    <div class="fieldName2Cols"> 
+                        <h:outputText value="Preceda Comment 3"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.precedaComment3 eq '' ? '-' : visa.precedaComment3}" />
+                    </div>
+
+                    <div class="fieldName2Cols">             
+                        <h:outputText value="Reports To"/>
+                    </div>
+                    <div class="fieldValue2Cols">
+                        <h:outputText value="#{visa.employee.reportsToPositionId. employeeCollection.size() eq 0 ? 'N/A' : 
+                                               visa.employee.reportsToPositionId. employeeCollection[0].firstName} 
+                                      #{visa.employee.reportsToPositionId.employeeCollection[0].surname}" />
+                    </div>
+
+                    <div class="inputFieldName4Cols">           
+                        <p:outputLabel value="First Report Sent" for="reportCalendar" id="labelReport"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visa.ynFirstReportSent}">
+                            <p:ajax listener="#{visaController.onReportedOptionChange}" update="reportCalendar saveButton labelReport"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="reportCalendar" value="#{visa.firstReportDate}" showOn="button" disabled="#{visa.ynFirstReportSent ne true}"
+                                    requiredMessage="Report Date is mandatory" showButtonPanel="true" 
+                                    required="#{visa.ynFirstReportSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="reportCalendar"/>
+                    </div>
+
+                    <div class="inputFieldName4Cols">
+                        <p:outputLabel value="First Letter Sent" for="firstLetterCalendar" id="labelFirstLetter"/>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="firstLetterCalendar" value="#{visa.firstLetterDate}" showOn="button" 
+                                    disabled="#{visa.ynFirstLetterSent ne true}"
+                                    requiredMessage="First Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{visa.ynFirstLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visa.ynFirstLetterSent}">
+                            <p:ajax listener="#{visaController.onFirstLetterOptionChange}" update="firstLetterCalendar saveButton labelFirstLetter"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="firstLetterCalendar"/>
+                    </div>
+
+                    <div class="inputFieldName4Cols">       
+                        <p:outputLabel value="Second Letter Sent" for="firstLetterCalendar" id="labelSecondLetter"/>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="secondLetterCalendar" value="#{visa.secondLetterDate}" showOn="button" 
+                                    disabled="#{visa.ynSecondLetterSent ne true}"
+                                    requiredMessage="Second Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{visa.ynSecondLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visa.ynSecondLetterSent}">
+                            <p:ajax listener="#{visaController.onSecondLetterOptionChange}" update="secondLetterCalendar saveButton labelSecondLetter"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="secondLetterCalendar"/>
+                    </div>
+                </p:panel>
+
+                <br/>
+                <h:outputText value="HR Services Comments"/>
+                <br/>
+                <p:dataTable var="visaComments" value="#{visa.employee.visaCommentCollection}" 
+                             scrollable="true" scrollHeight="70" class="multiVisaComments"
+                             selection="#{visaController.selectedComments}" rowKey="#{visaComments.visaCommentPK.commentDate}">
+                    
+                    <p:ajax event="rowSelect" update="tabViewMain:tableVisaForm:formVisaDialog:deleteCommentButton" /> 
+                    <p:ajax event="rowUnselect" update="tabViewMain:tableVisaForm:formVisaDialog:deleteCommentButton"/> 
+                    <p:ajax event="rowSelectCheckbox" update="tabViewMain:tableVisaForm:formVisaDialog:deleteCommentButton"/> 
+                    <p:ajax event="rowUnselectCheckbox" update="tabViewMain:tableVisaForm:formVisaDialog:deleteCommentButton"/> 
+
+                    <p:column width="7%" selectionMode="multiple"/>
+                    <p:column headerText="Date" width="17%" sortBy="#{visaComments.visaCommentPK.commentDate}">
+                        <h:outputText value="#{visaComments.visaCommentPK.commentDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Comment" width="36%" >
+                        <h:inputText value="#{visaComments.comment}" maxlength="255"/>
+                    </p:column>
+                    <p:column headerText="User" width="15%">
+                        <h:outputText value="#{visaComments.user}"/>
+                    </p:column>
+                    <p:column headerText="Infra ticket" width="25%">
+                        <p:inputMask id="infraTicket" value="#{visaComments.infraTicket}" mask="999999"/>
+                    </p:column>
+                </p:dataTable>  
+                <br/>
+
+                <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="Delete Comment" id="deleteCommentButton" icon="ui-icon-trash" 
+                                     update=":tabViewMain:tableVisaForm:formVisaDialog:editVisaDetail" 
+                                     process="@this @form"
+                                     actionListener="#{visaController.deleteComments()}"
+                                     disabled="#{visaController.selectedComments.size() eq 0}">
+                    </p:commandButton>
+                    <p:commandButton value="Add Comment" id="addCommentButton" icon="ui-icon-comment" 
+                                     oncomplete="PF('commentVisasDialog').show()"
+                                     update=":tabViewMain:tableVisaForm:formVisaCommentDialog"
+                                     process="@this @form"
+                                     disabled="#{visaController.tempSelected eq null}">
+                    </p:commandButton>
+                    <p:commandButton value="Cancel" id="cancelButton" icon="ui-icon-arrowreturnthick-1-w" 
+                                     oncomplete="PF('multiVisasDialog').hide()"
+                                     process="@this @form">
+                    </p:commandButton>
+                    <p:commandButton value="Save" id="saveButton" icon="ui-icon-disk" 
+                                     process="@this @form"
+                                     update=":tabViewMain:tableVisaForm:formVisaDialog"
+                                     disabled="#{visaController.tempSelected eq null}"
+                                     actionListener="#{visaController.save()}"
+                                     oncomplete="handleSaveRequest(args)">
+                    </p:commandButton>
+                </h:panelGroup>
+            </h:panelGrid>
+
+            <!--***************** M U L T I   E D I T *********************-->
+
+            <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5" id="editMultiVisaDetail" 
+                         rendered="#{visaController.editType eq 'EDIT' and visaController.selectedVisas.size() gt 1}">
+                <p:panel class="visaDetailEditMulti" header="Edit Multiple Visa Details" id="panelMultiEdit">
+                    <c:set var="visaMulti" value="#{visaController.tempSelected}"/>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{visaController.arrayChanges[3]}">
+                            <p:ajax update="@form" event="change" listener="#{visaController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" First Report Sent" for="reportCalendar" id="labelReportMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visaMulti.ynFirstReportSent}"
+                                       disabled="#{visaController.arrayChanges[3] ne true}">
+                            <p:ajax listener="#{visaController.onReportedOptionChange}" update="reportMultiCalendar saveMultiButton labelReportMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="reportMultiCalendar" value="#{visaMulti.firstReportDate}" showOn="button" disabled="#{visaMulti.ynFirstReportSent ne true}"
+                                    requiredMessage="Report Date is mandatory" showButtonPanel="true" 
+                                    required="#{visaMulti.ynFirstReportSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="reportMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{visaController.arrayChanges[4]}">
+                            <p:ajax update="@form" event="change" listener="#{visaController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" First Letter Sent" for="firstLetterCalendar" id="labelFirstLetterMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visaMulti.ynFirstLetterSent}"
+                                       disabled="#{visaController.arrayChanges[4] ne true}">
+                            <p:ajax listener="#{visaController.onFirstLetterOptionChange}" update="firstLetterMultiCalendar saveMultiButton labelFirstLetterMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="firstLetterMultiCalendar" value="#{visaMulti.firstLetterDate}" showOn="button" 
+                                    disabled="#{visaMulti.ynFirstLetterSent ne true}"
+                                    requiredMessage="First Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{visaMulti.ynFirstLetterSent eq true}" size="12"/>  
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="firstLetterMultiCalendar"/>
+                    </div>
+
+                    <div class=" inputFieldName4Cols">
+                        <p:selectBooleanCheckbox value="#{visaController.arrayChanges[5]}">
+                            <p:ajax update="@form" event="change" listener="#{visaController.checkChangeStatus()}"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value=" Second Letter Sent" for="firstLetterCalendar" id="labelSecondLetterMulti"/>
+                    </div>
+                    <div class="optionValue4Cols">
+                        <p:inputSwitch offLabel="No" onLabel="Yes" value="#{visaMulti.ynSecondLetterSent}"
+                                       disabled="#{visaController.arrayChanges[5] ne true}">
+                            <p:ajax listener="#{visaController.onSecondLetterOptionChange}" update="secondLetterMultiCalendar saveMultiButton labelSecondLetterMulti"/> 
+                        </p:inputSwitch>
+                    </div>
+                    <div class="inputFieldValue4Cols">
+                        <p:calendar id="secondLetterMultiCalendar" value="#{visaMulti.secondLetterDate}" showOn="button" 
+                                    disabled="#{visaMulti.ynSecondLetterSent ne true}"
+                                    requiredMessage="Second Letter Date is mandatory" showButtonPanel="true" 
+                                    required="#{visaMulti.ynSecondLetterSent eq true}" size="12"/>
+                    </div>
+                    <div class="inputFieldMessage4Cols">
+                        <p:message for="secondLetterMultiCalendar"/>
+                    </div>
+
+                    <div class="inputTextAreaName2Cols">             
+                        <h:outputText value="New Comment"/>
+                    </div>
+                    <div class="inputTextValue2Cols">
+                        <p:inputTextarea autoResize="false" cols="38" maxlength="255" value="#{visaController.newCommentText}"
+                                         id="commentMultiText"/>
+                    </div>
+
+                </p:panel>
+                <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton value="Cancel" id="cancelMultiButton" icon="i-icon-arrowreturnthick-1-w" 
+                                     oncomplete="PF('multiVisasDialog').hide()"
+                                     actionListener="#{visaController.cancel()}">
+                    </p:commandButton>
+                    <p:commandButton value="Save" id="saveMultiButton" icon="ui-icon-disk" 
+                                     disabled="#{!visaController.changeSelected}"
+                                     process="editMultiVisaDetail"
+                                     update="tabViewMain:tableVisaForm"
+                                     actionListener="#{visaController.save()}"
+                                     oncomplete="handleSaveRequest(args)">
+                    </p:commandButton>
+                </h:panelGroup>
+            </h:panelGrid>
+
+
+            <!--***************** J A V A   S C R I P T *********************-->
+
+            <h:outputScript target="head">
+                function handleSaveRequest(args) { 
+
+                if(  args.validationFailed | args.notValid | args.tableShown ){
+                <!--PF('multiVisasDialog').show();-->
+                return false;
+                }else{
+                PF('multiVisasDialog').hide();
+                }
+                }  
+            </h:outputScript>
+
+        </h:form>
+    </p:dialog> 
+
+    <!--***************** C O M M E N T S *********************-->
+
+    <p:dialog header="Add Comments" widgetVar="commentVisasDialog" modal="true" appendTo="@(body)"
+              closeOnEscape="true" draggable="false" resizable="false" showEffect="fade" id="commentVisasDlg">
+        <p:ajax event="close" listener="#{visaController.cancelComment()}"/>        
+        <h:form id="formVisaCommentDialog">
+            <p:panel class="visaDetailComment">
+                <c:set var="selectedComment" value="#{visaController.selectedComment}"/>
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Employee ID"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:outputText value="#{visa.visaPK.idNumber}" />
+                </div>
+
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Full Name"/>
+                </div>       
+                <div class="fieldValue2Cols">
+                    <h:outputText value="#{visa.employee.surname} #{visa.employee.firstName}" />
+                </div>
+
+                <div class="fieldName2Cols">             
+                    <h:outputText value="Expiry Date"/>
+                </div>
+                <div class="fieldValue2Cols">
+                    <h:outputText value="#{visa.visaExpiryDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </div>
+
+                <div class="inputTextAreaName2Cols">             
+                    <h:outputText value="New Comment"/>
+                </div>
+                <div class="inputTextValue2Cols">
+                    <p:inputTextarea autoResize="false" cols="33" maxlength="255" value="#{selectedComment.comment}"
+                                     id="commentText"/>
+                </div>
+
+                <div class="inputFieldName3Cols">             
+                    <h:outputText value="Infra Ticket"/>
+                </div>
+                <div class="inputFieldValue3Cols">
+                    <p:inputMask id="infraTicket" value="#{selectedComment.infraTicket}" mask="999999"/>
+<!--                    <h:inputText value="#{selectedComment.infraTicket}">
+                        <f:convertNumber maxIntegerDigits="7"/>
+                    </h:inputText>-->
+                </div>
+                <div class="inputFieldMessage3Cols"></div>
+
+            </p:panel>
+            <br/>
+            <h:panelGroup style="display:block; text-align:center">
+                <p:commandButton value="Cancel" id="cancelCommentButton" icon="i-icon-arrowreturnthick-1-w" 
+                                 oncomplete="PF('commentVisasDialog').hide()"
+                                 process="@this"
+                                 update="@this"
+                                 actionListener="#{visaController.cancelComment()}">
+                </p:commandButton>
+                <p:commandButton value="Save" id="saveCommentButton" icon="ui-icon-disk" 
+                                 oncomplete="PF('commentVisasDialog').hide()"
+                                 update=":tabViewMain:tableVisaForm:formVisaDialog"
+                                 process="@this @form"
+                                 actionListener="#{visaController.saveComment()}">
+                </p:commandButton>
+            </h:panelGroup>
+        </h:form>   
+    </p:dialog>
+    
+</ui:composition>

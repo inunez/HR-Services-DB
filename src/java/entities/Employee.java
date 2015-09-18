@@ -22,6 +22,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -117,9 +118,9 @@ public class Employee implements Serializable {
     @JoinColumn(name = "department_id", referencedColumnName = "department_id")
     @ManyToOne
     private Department departmentId;
-    @JoinColumn(name = "award_id", referencedColumnName = "award_code")
+    @JoinColumn(name = "award_code", referencedColumnName = "award_code")
     @ManyToOne
-    private Award awardId;
+    private Award awardCode;
     @JoinColumn(name = "gender", referencedColumnName = "gender")
     @ManyToOne
     private Gender gender;
@@ -177,7 +178,11 @@ public class Employee implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "employee")
     private Email email;
     
+    @Transient
+    private String fullName;
+    
     public Employee() {
+        fullName = "";
     }
 
     public Employee(EmployeePK employeePK) {
@@ -363,12 +368,21 @@ public class Employee implements Serializable {
         this.departmentId = departmentId;
     }
 
-    public Award getAwardId() {
-        return awardId;
+    public Award getAwardCode() {
+        return awardCode;
     }
 
-    public void setAwardId(Award awardId) {
-        this.awardId = awardId;
+    public void setAwardCode(Award awardCode) {
+        this.awardCode = awardCode;
+    }
+
+    public String getFullName() {
+        fullName = firstName + " " + surname;
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public Gender getGender() {

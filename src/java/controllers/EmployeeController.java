@@ -28,24 +28,52 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import static controllers.util.JsfUtil.addErrorMessage;
+import controllers.util.ReplaceTextWord;
 import entities.Account;
 import entities.ChangeCondition;
+import entities.ContractType;
 import entities.EarningLeave;
 import entities.JobTitle;
 import entities.ManagerPosition;
 import entities.Payroll;
 import entities.Position;
 import entities.Visa;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.stream.Collectors;
+import javax.faces.component.UIOutput;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.inject.Inject;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
+import session_beans.AccountFacadeApplication;
+import session_beans.ContractTypeFacade;
+import session_beans.ManagerFacadeApplication;
+import session_beans.PositionFacadeApplication;
 
 @Named("employeeController")
 @SessionScoped
 public class EmployeeController implements Serializable {
 
     @EJB
-    private session_beans.EmployeeFacade ejbFacade;
+    private EmployeeFacade employeeFacade;
+    @Inject
+    private ContractTypeFacade contractTypeFacade;
+    @Inject
+    private PositionFacadeApplication positionFacadeApplication;
+    @Inject
+    private AccountFacadeApplication accountFacadeApplication;
+    @Inject
+    private ManagerFacadeApplication managerFacadeApplication;
+
     private List<Employee> items = null;
     private Employee selected;
     private String searchText;
@@ -54,6 +82,9 @@ public class EmployeeController implements Serializable {
     private boolean employeeSelected = false;
     private int currentTabIndex = 0;
     private String status = "";
+    private StreamedContent confirmationLetterFile;
+    private String fileNameLetter;
+    private String path;
     private ChangeCondition changeEmploymentCondition;
 
     private Collection<Uniform> uniformSortedCollection;
@@ -67,24 +98,25 @@ public class EmployeeController implements Serializable {
     private ArrayList<Employee> filteredEmployees;
     private List<Position> listOfPositions;
     private List<Account> listOfAccounts;
-    private Collection<ManagerPosition> employeesByService;
+    private List<Employee> employeesByService;
     private List<JobTitle> listOfClassifications;
-    
-    
+    private List<ContractType> contractTypes;
+
     private final int[] DEFAULT_RANGE = {0, 99};
     private final int SEARCH_BY_NAME = 1;
     private final int SEARCH_BY_ID = 2;
     private final int SEARCH_BY_SERVICE = 3;
     private final int SEARCH_BY_POSITION = 4;
-    
+
     public EmployeeController() {
         searchType = Integer.toString(SEARCH_BY_NAME);
         status = "A";
+        path = ResourceBundle.getBundle("/Parameters").getString("Path");
         clearCollections();
     }
 
     public ChangeCondition getChangeEmploymentCondition() {
-        if (changeEmploymentCondition == null){
+        if (changeEmploymentCondition == null) {
             changeEmploymentCondition = new ChangeCondition(selected);
         }
         return changeEmploymentCondition;
@@ -115,9 +147,9 @@ public class EmployeeController implements Serializable {
     }
 
     public List<Position> getListOfPositions() {
-        /*Load only active positions*/
-        if(listOfPositions == null){
-            listOfPositions = ejbFacade.getListPosition();
+        /*TO DO Load only active positions*/
+        if (listOfPositions == null) {
+            listOfPositions = positionFacadeApplication.findAll();
         }
         return listOfPositions;
     }
@@ -126,9 +158,52 @@ public class EmployeeController implements Serializable {
         this.listOfPositions = listOfPositions;
     }
 
+    public List<Position> completePosition(String filter) {
+        List<Position> filtered;
+        if (listOfPositions == null) {
+            getListOfPositions();
+        }
+        filtered = positionFacadeApplication.filterPosition(filter);
+        return filtered;
+    }
+
+    public List<Account> completeAccount(String filter) {
+        List<Account> filtered;
+        if (listOfAccounts == null) {
+            getListOfAccounts();
+        }
+        filtered = accountFacadeApplication.filterAccount(filter);
+        return filtered;
+    }
+
+    public List<Employee> completeManager(String filter) {
+        List<Employee> filtered;
+        if (employeesByService == null || employeesByService.isEmpty()) {
+            getEmployeesByService();
+        }
+        filtered = employeesByService.stream().filter(e -> e.getSurname().toLowerCase().contains(filter)
+                || e.getFirstName().toLowerCase().contains(filter))
+                .collect(Collectors.toCollection(ArrayList::new));
+        return filtered;
+    }
+
+    public List<String> completeClassification(String filter) {
+        List<String> filtered = new ArrayList<>();
+        if (listOfClassifications == null) {
+            getListOfClassifications();
+        }
+        listOfClassifications.stream().filter((classification) -> (classification.getJobTitle().concat(" - ").concat(classification.getJobTitleDescription())
+                .toLowerCase().contains(filter.toLowerCase()))).forEach((classification) -> {
+                    filtered.add(classification.getJobTitle().concat(" - ").concat(classification.getJobTitleDescription()));
+                });
+
+        return filtered;
+    }
+
     public List<Account> getListOfAccounts() {
-        if(listOfAccounts == null){
-            listOfAccounts = ejbFacade.getListAccount();
+        /*TO DO Load only active accounts*/
+        if (listOfAccounts == null) {
+            listOfAccounts = accountFacadeApplication.findAll();
         }
         return listOfAccounts;
     }
@@ -138,8 +213,8 @@ public class EmployeeController implements Serializable {
     }
 
     public List<JobTitle> getListOfClassifications() {
-        if(listOfClassifications == null){
-            listOfClassifications = ejbFacade.getListJobTitles();
+        if (listOfClassifications == null) {
+            listOfClassifications = employeeFacade.getListJobTitles();
         }
         return listOfClassifications;
     }
@@ -148,15 +223,55 @@ public class EmployeeController implements Serializable {
         this.listOfClassifications = listOfClassifications;
     }
 
-    public Collection<ManagerPosition> getEmployeesByService() {
-        if(employeesByService == null){
-            employeesByService = changeEmploymentCondition.getNewAccount().getManagerPositionCollection();
+    public List<Employee> getEmployeesByService() {
+        if (employeesByService == null) {
+            employeesByService = new ArrayList<>();
+            List<ManagerPosition> managers = managerFacadeApplication.findAll();
+            managers.stream().forEach((manager) -> {
+                for (Employee employee : manager.getPosition().getEmployeeCollection()) {
+                    if (employee.getEmployeePK().getStatus().equals("A")) {
+                        employeesByService.add(employee);
+                    }
+                }
+//                List<Employee> employees = manager.getPosition().getEmployeeCollection().stream().filter(e -> e.getEmployeePK().getStatus().equals("A"))
+//                         .collect(Collectors.toCollection(ArrayList::new)); 
+//                employeesByService.addAll(employees);
+            });
         }
         return employeesByService;
     }
 
-    public void setEmployeesByService(List<ManagerPosition> employeesByService) {
+    public void setEmployeesByService(List<Employee> employeesByService) {
         this.employeesByService = employeesByService;
+    }
+
+    public List<ContractType> getContractTypes() {
+        if (contractTypes == null) {
+            contractTypes = contractTypeFacade.getContractTypeList(changeEmploymentCondition.getCoecVariationType());
+            //contractTypes = employeeFacade.getContractTypeList(changeEmploymentCondition.getCoecVariationType());
+        }
+        return contractTypes;
+    }
+
+    public void setContractTypes(List<ContractType> contractTypes) {
+        this.contractTypes = contractTypes;
+    }
+
+    public StreamedContent getConfirmationLetterFile() {
+        String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(path + fileNameLetter);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(path + fileNameLetter);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PoliceCheckController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        confirmationLetterFile = new DefaultStreamedContent(stream, contentType, fileNameLetter);
+
+        return confirmationLetterFile;
+    }
+
+    public void setConfirmationLetterFile(StreamedContent confirmationLetterFile) {
+        this.confirmationLetterFile = confirmationLetterFile;
     }
 
     public void setSelected(Employee selected) {
@@ -210,7 +325,7 @@ public class EmployeeController implements Serializable {
     }
 
     private EmployeeFacade getFacade() {
-        return ejbFacade;
+        return employeeFacade;
     }
 
     public Employee prepareCreate() {
@@ -339,7 +454,7 @@ public class EmployeeController implements Serializable {
     }
 
     public void searchEmployee() {
-        String tempString = "";
+        String tempString;
         String[] search = new String[4];
         int type = Integer.parseInt(searchType);
 
@@ -377,7 +492,7 @@ public class EmployeeController implements Serializable {
         }
 
         try {
-            items = ejbFacade.getEmployeeByType(searchText, search);
+            items = employeeFacade.getEmployeeByType(searchText, search);
             if (items.size() == 1) {
                 clearCollections();
                 selected = items.get(0);
@@ -490,7 +605,7 @@ public class EmployeeController implements Serializable {
                 reportsToList = new ArrayList<>(selected.getReportsToPositionId().getEmployeeCollection());
 
                 reportsToList = reportsToList.stream().filter(p -> p.getEmployeePK().getStatus().equals("A")).collect(Collectors.toCollection(ArrayList::new));
-                
+
             }
         }
         return reportsToList;
@@ -537,20 +652,172 @@ public class EmployeeController implements Serializable {
         listOfPositions = null;
         employeesByService = null;
         listOfClassifications = null;
+        contractTypes = null;
     }
-    
+
     /* COEC */
-    
-    public void cancelCOEC(){
+    public void cancelCOEC() {
         changeEmploymentCondition = null;
     }
- 
-    public void accountChange(){
+
+    public void accountChange(AjaxBehaviorEvent event) {
         changeEmploymentCondition.setNewManager(null);
-        employeesByService = null;
+        
+//        List<Employee> managers = emp.stream().filter(e -> "A".equals(e.getEmployeePK().getStatus()))
+//                .collect(Collectors.toCollection(ArrayList::new));
+
+        for (Employee manager : changeEmploymentCondition.getNewAccount().getManagerPositionCollection().iterator().next()
+                .getPosition().getEmployeeCollection()) {
+            if("A".equals(manager.getEmployeePK().getStatus())){
+                changeEmploymentCondition.setNewManager(manager);
+                break;
+            }
+        }
+        checkContractType(event);
+    }
+
+    public void changeVariationType() {
+        contractTypes = null;
+        getContractTypes();
+    }
+
+    public void checkContractType(AjaxBehaviorEvent event) {
+        String nameCombo = ((UIOutput) event.getSource()).getId();
+        String varType = changeEmploymentCondition.getCoecVariationType().toString();
+
+        if ("comboContractTypes".equals(nameCombo)) {
+            return;
+        }
+
+        List<ContractType> contracts = contractTypes.stream().filter(c -> c.getNameCombo().equals(nameCombo))
+                .filter(c -> c.getGroupType().equals(varType)).collect(Collectors.toCollection(ArrayList::new));
+
+        if (contracts.size() > 0) {
+            ContractType newContract = contracts.iterator().next();
+            //If selected contract has more priority than the previous one -> change contract type
+            if (changeEmploymentCondition.getNewContract() == null) {
+                changeEmploymentCondition.setNewContract(newContract);
+            } else {
+                if (changeEmploymentCondition.getNewContract().getPriority() > newContract.getPriority()) {
+                    changeEmploymentCondition.setNewContract(newContract);
+                } else {
+                    if (!changeEmploymentCondition.getNewContract().equals(newContract)) {
+//                        changeEmploymentCondition.setNewContract(null);
+                    }
+                }
+            }
+        } else {
+            changeEmploymentCondition.setNewContract(null);
+        }
+    }
+
+    public void createContractCOEC() {
+        String award;
+        if (changeEmploymentCondition.getNewAward().equals("0")){
+            award = "EA Award";
+        }else{
+            award = "Salaried";
+        }
+                    
+        String fileNameReport = award + "_" + changeEmploymentCondition.getNewContract().getTemplateName();
+        String fileNameReportOutput = selected.getSurname() + ", " + selected.getFirstName() + " - "
+                + changeEmploymentCondition.getNewContract().getContractTypeDescription() + ".doc";
+        String name = changeEmploymentCondition.getNewManager().getFullName();
+
+        Class<?> coec = changeEmploymentCondition.getClass();
+        Class<?> manager = changeEmploymentCondition.getNewManager().getClass();        
+        Class<?> employee = changeEmploymentCondition.getEmployee().getClass();
+
+        Object object = null;
+
+        try {
+            Field field = coec.getDeclaredField("currentDate");
+            String value;
+            //ReplaceTextWord contractTemplate = new ReplaceTextWord(path + fileNameReport, keys, path + fileNameReportOutput);
+            fileNameLetter = fileNameReportOutput;
+            ReplaceTextWord contractTemplate = new ReplaceTextWord(path + fileNameReport, path + fileNameLetter);
+            contractTemplate.setSearching(true);
+            contractTemplate.processFile();
+
+            //replace key values
+            HashMap<String, String> keys = new HashMap<>();
+            for (String key : contractTemplate.getReplacementText().keySet()) {
+                int pos = key.indexOf(".");
+                String className = key.substring(0, pos);
+                String property = key.substring(pos + 1);
+                switch (className) {
+                    case "General":
+                        field = coec.getDeclaredField(property);
+                        object = changeEmploymentCondition;
+                        break;
+                    case "ChangeEmploymentCondition":
+                        field = coec.getDeclaredField(property);
+                        object = changeEmploymentCondition;
+                        break;
+                    case "Employee":
+                        field = employee.getDeclaredField(property);
+                        object = changeEmploymentCondition.getEmployee();
+                        break;
+                    case "Manager":
+                        field = manager.getDeclaredField(property);
+                        object = changeEmploymentCondition.getNewManager();
+                        break;
+                }
+                value = getFormatedField(field, object);
+                keys.put("##" + key + "##", value);
+            }
+
+            contractTemplate.setSearching(false);
+            contractTemplate.setReplacementText(keys);
+            contractTemplate.processFile();
+
+        } catch (NoSuchFieldException | SecurityException ex) {
+            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+            RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+            addErrorMessage("Error creating the contract: field not found.");
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+            RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+            addErrorMessage("Error creating the contract.");
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+            RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+            addErrorMessage("Error creating the contract: field not found.");
+        } catch (IOException ex) {
+            RequestContext.getCurrentInstance().addCallbackParam("notValid", true);
+            addErrorMessage("Error creating the contract: Template not found.");
+        }
+    }
+
+    private String getFormatedField(Field field, Object object) throws IllegalArgumentException, IllegalAccessException {
+        String value = "";
+        field.setAccessible(true);
+        switch (field.getType().getName()) {
+            case "java.lang.String":
+                value = field.get(object).toString();
+                break;
+            case "java.util.Date":
+                value = new SimpleDateFormat("dd MMMM yyyy").format(field.get(object));
+                break;
+            case "java.lang.Double":
+                value = String.format("%.2f", (Double) field.get(object));
+                break;
+            default:
+                value = field.get(object).toString();
+        }
+        return value;
+    }
+
+    private UploadedFile file;
+
+    public UploadedFile getFile() {
+        return file;
+    }
+
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
     
-    public void openCoec(){
-        changeEmploymentCondition = null;
-    }
+    
+
 }

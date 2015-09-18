@@ -45,6 +45,12 @@ public class VisaCommentPK implements Serializable {
         this.commentDate = commentDate;
     }
 
+    public VisaCommentPK(String idNumber, String status, Date commentDate) {
+        this.idNumber = idNumber;
+        this.status = status;
+        this.commentDate = commentDate;
+    }
+        
     public String getIdNumber() {
         return idNumber;
     }

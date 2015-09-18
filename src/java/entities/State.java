@@ -110,7 +110,9 @@ public class State implements Serializable {
 
     @Override
     public String toString() {
+        return stateCode; 
+    }
+    public String toString(boolean onlyCode) {
         return "entities.State[ stateCode=" + stateCode + " ]";
     }
-    
 }

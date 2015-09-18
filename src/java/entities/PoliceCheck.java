@@ -49,8 +49,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PoliceCheck.findByYnPhoneCallDone", query = "SELECT p FROM PoliceCheck p WHERE p.ynPhoneCallDone = :ynPhoneCallDone"),
     @NamedQuery(name = "PoliceCheck.findByPrmStatus", query = "SELECT p FROM PoliceCheck p WHERE p.prmStatus = :prmStatus"),
     @NamedQuery(name = "PoliceCheck.findPoliceCheckByFullName", query = "SELECT pc FROM PoliceCheck pc JOIN pc.employee e WHERE CONCAT(e.firstName, ' ', e.surname) LIKE :fullName AND e.employeePK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}"),
-    @NamedQuery(name = "PoliceCheck.findPoliceCheckByIdNumber", query = "SELECT pc FROM PoliceCheck pc WHERE pc.policeCheckPK.idNumber = :idNumber AND pc.policeCheckPK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}")
-})
+    @NamedQuery(name = "PoliceCheck.findPoliceCheckByIdNumber", query = "SELECT pc FROM PoliceCheck pc WHERE pc.policeCheckPK.idNumber = :idNumber AND pc.policeCheckPK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}"),
+    @NamedQuery(name = "PoliceCheck.findPoliceCheckByAccount", query = "SELECT pc FROM PoliceCheck pc JOIN pc.employee e JOIN e.payrollCollection p JOIN p.accountNumber a WHERE UPPER(a.accountDescription) LIKE :accountDesc AND e.employeePK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}"),
+    @NamedQuery(name = "PoliceCheck.findPoliceCheckByPosition", query = "SELECT pc FROM PoliceCheck pc JOIN pc.employee e JOIN e.positionId p WHERE UPPER(p.positionTitle) LIKE :position AND e.employeePK.status = :status and pc.expiryDate <= :expiryDate and pc.expiryDate > {d '1900-01-01'}")
+    })
  
 public class PoliceCheck implements Serializable {
     
