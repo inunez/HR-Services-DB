@@ -7,6 +7,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:form id="mainBody">
+       
         <p:growl id="msgs" showDetail="true" />
         <p:dashboard id="board" model="#{dashboardView.model}" >
 
@@ -391,6 +392,10 @@
                                      update="tabViewMain:formCOECDialog" 
                                      disabled="#{employeeSelected.employeePK.status ne 'A'}">
                     </p:commandButton>
+                    <p:commandButton value="SharePoint" id="sharePointButton" icon="ui-icon-comment" 
+                                     oncomplete="PF('sharePointDialog').show()"
+                                     update="tabViewMain:formSharePointDialog" >
+                    </p:commandButton>
                 </div>
             </p:panel>
 
@@ -500,4 +505,6 @@
     
     <ui:include src="/coecForm.xhtml"/>  
         
+    <ui:include src="/sharePointForm.xhtml"/>  
+    
 </ui:composition>

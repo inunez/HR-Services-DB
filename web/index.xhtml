@@ -8,7 +8,6 @@
 
     <h:head>
         <title>"#{bundle.AppName}"</title>
-        <h:outputStylesheet name="css/jsfcrud.css"/>
         <h:outputStylesheet library="css" name="jsfcrud.css"/>
 
     </h:head>
@@ -23,7 +22,7 @@
 
                 <p:tabView dynamic="true" cache="true" id="tabViewMain" activeIndex="#{employeeController.currentTabIndex}">
                     <p:tab title="#{bundle.Home}">
-                        
+
                     </p:tab>
                     <p:tab id="menuEmployeeData" title="#{bundle.Employee}" disabled="#{!employeeController.employeeSelected}" >
                         <ui:include src="/employeeData.xhtml" />

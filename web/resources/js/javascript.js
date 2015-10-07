@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+			alert("Entro");
 	// Makes sure the dataTransfer information is sent when we
 	// Drop the item in the drop box.
 	jQuery.event.props.push('dataTransfer');
@@ -14,7 +14,7 @@ $(document).ready(function() {
 	
 	// Bind the drop event to the dropzone.
 	$('#drop-files').bind('drop', function(e) {
-			
+
 		// Stop the default action, which is to redirect the page
 		// To the dropped file
 		

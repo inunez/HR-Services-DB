@@ -818,6 +818,13 @@ public class EmployeeController implements Serializable {
         this.file = file;
     }
     
-    
+    /* SharePoint */
+    public void cancelSharePoint() {
+        
+    }  
 
+    public void saveSharePoint() {
+        
+    }  
+        
 }
