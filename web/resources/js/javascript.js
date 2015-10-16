@@ -1,8 +1,11 @@
 $(document).ready(function() {
-			alert("Entro");
+//    alert($("#test").attr("value"));
+//    $("#test").attr("value", "New");
+//    alert($("#test").attr("value"));
+			
 	// Makes sure the dataTransfer information is sent when we
 	// Drop the item in the drop box.
-	jQuery.event.props.push('dataTransfer');
+	//jQuery.event.props.push('dataTransfer');
 	
 	var z = -40;
 	// The number of images to display
