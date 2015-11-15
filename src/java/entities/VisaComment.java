@@ -34,6 +34,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "VisaComment.findByUser", query = "SELECT v FROM VisaComment v WHERE v.user = :user"),
     @NamedQuery(name = "VisaComment.findByInfraTicket", query = "SELECT v FROM VisaComment v WHERE v.infraTicket = :infraTicket")})
 public class VisaComment implements Serializable {
+    @JoinColumn(name = "infra_ticket", referencedColumnName = "call_number")
+    @ManyToOne
+    private InfraTickets infraTicket;
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -44,8 +47,6 @@ public class VisaComment implements Serializable {
     @Size(max = 50)
     @Column(name = "user")
     private String user;
-    @Column(name = "infra_ticket")
-    private Integer infraTicket;
 //    @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)
     @JoinColumns({
     @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
@@ -92,14 +93,6 @@ public class VisaComment implements Serializable {
         this.user = user;
     }
 
-    public Integer getInfraTicket() {
-        return infraTicket;
-    }
-
-    public void setInfraTicket(Integer infraTicket) {
-        this.infraTicket = infraTicket;
-    }
-
     public Employee getEmployee() {
         return employee;
     }
@@ -131,6 +124,14 @@ public class VisaComment implements Serializable {
     @Override
     public String toString() {
         return "entities.VisaComment[ visaCommentPK=" + visaCommentPK + " ]";
+    }
+
+    public InfraTickets getInfraTicket() {
+        return infraTicket;
+    }
+
+    public void setInfraTicket(InfraTickets infraTicket) {
+        this.infraTicket = infraTicket;
     }
 
 }

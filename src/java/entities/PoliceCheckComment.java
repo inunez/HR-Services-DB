@@ -34,6 +34,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PoliceCheckComment.findByUser", query = "SELECT p FROM PoliceCheckComment p WHERE p.user = :user"),
     @NamedQuery(name = "PoliceCheckComment.findByInfraTicket", query = "SELECT p FROM PoliceCheckComment p WHERE p.infraTicket = :infraTicket")})
 public class PoliceCheckComment implements Serializable {
+    @JoinColumn(name = "infra_ticket", referencedColumnName = "call_number")
+    @ManyToOne
+    private InfraTickets infraTicket;
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PoliceCheckCommentPK policeCheckCommentPK;
@@ -43,8 +46,6 @@ public class PoliceCheckComment implements Serializable {
     @Size(max = 50)
     @Column(name = "user")
     private String user;
-    @Column(name = "infra_ticket")
-    private Integer infraTicket;
 //    @JoinColumn(name = "id_number", referencedColumnName = "id_number", insertable = false, updatable = false)
     @JoinColumns({
     @JoinColumn(name = "status", referencedColumnName = "status", insertable = false, updatable = false),
@@ -61,6 +62,8 @@ public class PoliceCheckComment implements Serializable {
 
     public PoliceCheckComment(String idNumber, String status, Date commentDate) {
         this.policeCheckCommentPK = new PoliceCheckCommentPK(idNumber, status, commentDate);
+        this.infraTicket = new InfraTickets();
+        infraTicket.setCallNumber(0);
     }
 
     public PoliceCheckCommentPK getPoliceCheckCommentPK() {
@@ -90,14 +93,6 @@ public class PoliceCheckComment implements Serializable {
 
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public Integer getInfraTicket() {
-        return infraTicket;
-    }
-
-    public void setInfraTicket(Integer infraTicket) {
-        this.infraTicket = infraTicket;
     }
 
     public Employee getEmployee() {
@@ -131,6 +126,14 @@ public class PoliceCheckComment implements Serializable {
     @Override
     public String toString() {
         return "entities.PoliceCheckComment[ policeCheckCommentPK=" + policeCheckCommentPK + " ]";
+    }
+
+    public InfraTickets getInfraTicket() {
+        return infraTicket;
+    }
+
+    public void setInfraTicket(InfraTickets infraTicket) {
+        this.infraTicket = infraTicket;
     }
 
 }

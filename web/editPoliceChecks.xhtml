@@ -119,7 +119,7 @@
                         <h:outputText value="#{policeCheckComments.user}"/>
                     </p:column>
                     <p:column headerText="Infra ticket" width="20%">
-                        <h:outputText value="#{policeCheckComments.infraTicket}"/>
+                        <h:outputText value="#{policeCheckComments.infraTicket.callNumber}"/>
                     </p:column>
                 </p:dataTable>  
                 <!--</div>-->
@@ -288,7 +288,7 @@
                 <p:dataTable var="policeCheckComments" value="#{policeCheck.employee.policeCheckCommentCollection}" 
                              scrollable="true" scrollHeight="70" class="multiPoliceCheckComments"
                              selection="#{policeCheckController.selectedComments}" rowKey="#{policeCheckComments.policeCheckCommentPK.commentDate}">
-                    
+
                     <p:ajax event="rowSelect" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton" /> 
                     <p:ajax event="rowUnselect" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton"/> 
                     <p:ajax event="rowSelectCheckbox" update="tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog:deleteCommentButton"/> 
@@ -307,7 +307,10 @@
                         <h:outputText value="#{policeCheckComments.user}"/>
                     </p:column>
                     <p:column headerText="Infra ticket" width="25%">
-                        <p:inputMask id="infraTicket" value="#{policeCheckComments.infraTicket}" mask="999999"/>
+                        <!--<p:inputMask id="infraTicket" value="#{policeCheckComments.infraTicket.callNumber}" mask="999999"/>-->
+                        <h:inputText value="#{selectedComment.infraTicket.callNumber}">
+                            <f:convertNumber maxIntegerDigits="6"/>
+                        </h:inputText>
                     </p:column>
                 </p:dataTable>  
                 <br/>
@@ -546,10 +549,10 @@
                     <h:outputText value="Infra Ticket"/>
                 </div>
                 <div class="inputFieldValue3Cols">
-                    <p:inputMask id="infraTicket" value="#{selectedComment.infraTicket}" mask="999999"/>
-<!--                    <h:inputText value="#{selectedComment.infraTicket}">
-                        <f:convertNumber maxIntegerDigits="7"/>
-                    </h:inputText>-->
+                    <!--<p:inputMask id="infraTicket" value="#{selectedComment.infraTicket.callNumber}" mask="999999"/>-->
+                    <h:inputText value="#{selectedComment.infraTicket.callNumber}">
+                        <f:convertNumber maxIntegerDigits="6"/>
+                    </h:inputText>
                 </div>
                 <div class="inputFieldMessage3Cols"></div>
 
@@ -571,7 +574,7 @@
             </h:panelGroup>
         </h:form>   
     </p:dialog>
-    
+
     <!--***************** I N F O   F O R   P R M *********************-->
 
     <p:dialog header="PRM Data" widgetVar="prmDataDialog" modal="true" appendTo="@(body)"
@@ -580,7 +583,7 @@
         <h:form id="formPRMDataDialog">
             <p:panel class="prmDetails">
                 <c:set var="policeCheckPRM" value="#{policeCheckController.selectedPoliceChecks[0]}"/>
-                
+
                 <div class="fieldName2Cols"> 
                     <h:inputText value="Employee ID" readonly="true"/>
                 </div>
@@ -601,21 +604,21 @@
                 <div class="fieldValue2Cols">
                     <h:inputText value="#{policeCheckPRM.employee.payrollCollection[0].accountNumber.accountNumber}" readonly="true"/>
                 </div>
-                
+
                 <div class="fieldName2Cols">             
                     <h:outputText value="Last Name"/>
                 </div>       
                 <div class="fieldValue2Cols">
                     <h:inputText value="#{policeCheckPRM.employee.surname}" readonly="true"/>
                 </div>
-                
+
                 <div class="fieldName2Cols">             
                     <h:outputText value="First Name"/>
                 </div>       
                 <div class="fieldValue2Cols">
                     <h:inputText value="#{policeCheckPRM.employee.firstName}" readonly="true"/>
                 </div>
-                
+
                 <div class="fieldName2Cols">             
                     <h:outputText value="Middle Name"/>
                 </div>       
@@ -628,7 +631,7 @@
                 </div>
                 <div class="fieldValue2Cols">
                     <h:inputText value="#{policeCheckPRM.employee.dateofBirth}" readonly="true">
-                         <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
                     </h:inputText>
                 </div>
 
@@ -669,5 +672,5 @@
             </h:panelGroup>
         </h:form>   
     </p:dialog>
-    
+
 </ui:composition>

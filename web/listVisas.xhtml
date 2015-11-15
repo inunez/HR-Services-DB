@@ -87,7 +87,7 @@
 
                         <p:commandButton icon="ui-icon-document-b" value="Weekly Report" id="reportButton"
                                          action="#{visaController.processVisaReport()}"
-                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequest(args)">
+                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequestVisa(args)">
                             <p:confirm header="Confirmation" message="The report will be created. Are you sure to continue?" icon="ui-icon-alert" />
                         </p:commandButton>
                         <p:commandButton icon="ui-icon-mail-closed" value="Letters" id="letterButton"
@@ -188,7 +188,7 @@
         <ui:include src="/editVisas.xhtml"/>
 
         <h:outputScript target="head">
-            function handleEmailRequest(args) { 
+            function handleEmailRequestVisa(args) { 
 
                 if(  args.validationFailed | args.notValid | args.tableShown ){
                     <!--PF('multiVisasDialog').show();-->
@@ -221,12 +221,12 @@
                 <p:commandButton value="Send Email" id="sendEmailButton" icon="ui-icon-disk" 
                                  update=":tabViewMain:tableVisaForm:formVisaDialog" 
                                  actionListener="#{visaController.sendReportByEmail()}"
-                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessed(args)">
+                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessedVisas(args)">
                 </p:commandButton>
             </h:panelGroup>
             
         <h:outputScript target="head">
-            function handleEmailProcessed(args) { 
+            function handleEmailProcessedVisas(args) { 
 
                 if(  args.validationFailed | args.notValid | args.tableShown ){
                     <!--PF('multiVisasDialog').show();-->

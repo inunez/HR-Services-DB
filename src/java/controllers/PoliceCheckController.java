@@ -783,6 +783,9 @@ public class PoliceCheckController implements Serializable {
                 sheet = workbook.getSheet(tab);
                 row = (Integer) tabCounter.get(tab);
 
+                Logger.getLogger(PoliceCheckController.class.getName()).log(Level.INFO, Integer.toString(row) + " " + 
+                        policeCheck.getPoliceCheckPK().getIdNumber());
+                
                 cell = sheet.getRow(row).getCell(0);
                 manager = ejbEmployeeFacade.findManager(policeCheck.getEmployee(), true);
                 if (manager == policeCheck.getEmployee()) {

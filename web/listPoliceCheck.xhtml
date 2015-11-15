@@ -87,7 +87,7 @@
 
                         <p:commandButton icon="ui-icon-document-b" value="Weekly Report" id="reportButton"
                                          action="#{policeCheckController.processPoliceCheckReport()}"
-                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequest(args)">
+                                         onstart="PF('blockUIWidget').block()" oncomplete="handleEmailRequestCRC(args)">
                             <p:confirm header="Confirmation" message="The report will be created. Are you sure to continue?" icon="ui-icon-alert" />
                         </p:commandButton>
                         <p:commandButton icon="ui-icon-mail-closed" value="Letters" id="letterButton"
@@ -182,7 +182,7 @@
         <ui:include src="/editPoliceChecks.xhtml"/>
 
         <h:outputScript target="head">
-            function handleEmailRequest(args) { 
+            function handleEmailRequestCRC(args) { 
 
                 if(  args.validationFailed | args.notValid | args.tableShown ){
                     <!--PF('multiPoliceChecksDialog').show();-->
@@ -218,12 +218,12 @@
                 <p:commandButton value="Send Email" id="sendEmailButton" icon="ui-icon-disk" 
                                  update=":tabViewMain:tablePoliceCheckForm:formPoliceCheckDialog" 
                                  actionListener="#{policeCheckController.sendReportByEmail()}"
-                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessed(args)">
+                                 onstart="PF('blockUIWidget').block()" oncomplete="handleEmailProcessedCRC(args)">
                 </p:commandButton>
             </h:panelGroup>
             
         <h:outputScript target="head">
-            function handleEmailProcessed(args) { 
+            function handleEmailProcessedCRC(args) { 
 
                 if(  args.validationFailed | args.notValid | args.tableShown ){
                     <!--PF('multiPoliceChecksDialog').show();-->

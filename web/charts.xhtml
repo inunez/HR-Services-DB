@@ -1,0 +1,60 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:form id="charts">
+
+        <p:growl id="msgs" showDetail="true" />
+        <p:dashboard id="board" model="#{dashboardViewCharts.model}" >
+
+            <p:ajax event="reorder" listener="#{dashboardViewCharts.handleReorder}" update="msgs" />
+
+            <p:panel id="infraCall" header="Infra Calls">
+                <div class="panelInfraCalls">
+                    <p:chart type="line" model="#{chartView.lineModel1}" style="height:350px; width: 450px"/>
+                </div>
+            </p:panel>
+
+            <p:panel id="infraVoicemails" header="Police Checks">
+                <div class="panelInfraVoicemails">
+                    <p:chart type="pie" model="#{chartView.pieModel1}" style="width:400px;height:300px" />
+                </div>
+            </p:panel>
+
+            <p:panel id="infra" header="Requisitions">
+                <div class="panelInfra">
+                    <p:chart type="metergauge" model="#{chartView.meterGaugeModel1}" style="width:300px;height:300px" />
+                </div>
+            </p:panel>
+
+            <p:panel id="eRecruitRequisitions" header="eRecruit Requisitions">
+                <div class="paneleRecruitRequisitions">
+                    
+                </div>
+            </p:panel>
+
+            <p:panel id="eRecruitJobs" header="eRecruit Jobs">
+                <div class="paneleRecruitJobs">
+                    <div>
+
+                    </div>
+                </div>
+            </p:panel>
+
+            <p:panel id="eRecruitCandidates" header="eRecruit Candidates">
+                <div class="paneleRecruitCandidates">
+                    <div>
+
+                    </div>
+                </div>
+            </p:panel>
+
+        </p:dashboard>
+
+    </h:form>
+
+</ui:composition>
